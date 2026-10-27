@@ -1,0 +1,296 @@
+{
+  "supplier": "KORFAD",
+  "catalog_date": null,
+  "currency": "грн",
+  "models": [
+    {
+      "collection_name": "Darumi",
+      "model_name": "Darumi",
+      "coating_type": "PP",
+      "thickness_mm": 40.0,
+      "standard_widths": "400",
+      "standard_height": null,
+      "production_days": "10/15/20/25/30 роб. днів",
+      "variants": [],
+      "non_standard_height_markup": 15.0,
+      "non_standard_notes": "Нестандарт по висоті: +15%. Нестандарт по ширині: +10%, крок 50 мм. Діапазони, що видно в джерелі: 1700–1990, 2010–2200, 450–850 мм.",
+      "model_notes": "Під замовлення; термін виготовлення на фабриці до 10/15/20/25/30 роб. днів залежно від опції. У джерелі для моделі вказано стандартну ширину 400 мм, крок ширини 10 мм, нестандарт по висоті +15%, нестандарт по ширині +10%."
+    },
+    {
+      "collection_name": "STARK / ESPER / EDMOND",
+      "model_name": "STARK",
+      "coating_type": "PP",
+      "thickness_mm": 40.0,
+      "standard_widths": null,
+      "standard_height": null,
+      "production_days": null,
+      "variants": [
+        {
+          "decor": "Сріблястий тауп",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4990.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Сріблястий тауп",
+          "glass": "Чорне",
+          "edge": null,
+          "price": 4990.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Сріблястий блиск",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4990.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Сріблястий блиск",
+          "glass": "Чорне",
+          "edge": null,
+          "price": 4990.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Білий преміум",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4990.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Білий преміум",
+          "glass": "Чорне",
+          "edge": null,
+          "price": 4990.0,
+          "is_special_price": false,
+          "notes": null
+        }
+      ],
+      "non_standard_height_markup": 15.0,
+      "non_standard_notes": "Нестандарт по висоті: +15%. Нестандарт по ширині: +10%.",
+      "model_notes": "Збірна конструкція. Ціни в таблиці однакові для всіх декорів моделі; для STARK доступні скло/виконання: Сатин білий або Чорне. Нестандарт по ширині позначений для окремих декорів через маркери у таблиці."
+    },
+    {
+      "collection_name": "STARK / ESPER / EDMOND",
+      "model_name": "ESPER",
+      "coating_type": "PP",
+      "thickness_mm": 40.0,
+      "standard_widths": null,
+      "standard_height": null,
+      "production_days": null,
+      "variants": [
+        {
+          "decor": "Сріблястий тауп",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4990.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Сріблястий тауп",
+          "glass": "Чорне",
+          "edge": null,
+          "price": 4990.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Сріблястий блиск",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4990.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Сріблястий блиск",
+          "glass": "Чорне",
+          "edge": null,
+          "price": 4990.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Білий преміум",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4990.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Білий преміум",
+          "glass": "Чорне",
+          "edge": null,
+          "price": 4990.0,
+          "is_special_price": false,
+          "notes": null
+        }
+      ],
+      "non_standard_height_markup": 15.0,
+      "non_standard_notes": "Нестандарт по висоті: +15%. Нестандарт по ширині: +10%.",
+      "model_notes": "Збірна конструкція. Ціни в таблиці однакові для всіх декорів моделі; для ESPER доступні скло/виконання: Сатин білий або Чорне."
+    },
+    {
+      "collection_name": "STARK / ESPER / EDMOND",
+      "model_name": "EDMOND",
+      "coating_type": "PP",
+      "thickness_mm": 40.0,
+      "standard_widths": null,
+      "standard_height": null,
+      "production_days": null,
+      "variants": [
+        {
+          "decor": "Сріблястий тауп",
+          "glass": "Глухе",
+          "edge": null,
+          "price": 5790.0,
+          "is_special_price": false,
+          "notes": "Врізний декоративний алюмінієвий молдинг 8 мм; можливі кольори: Чорний / Алюмінієвий / Золотий; + фрезерування."
+        },
+        {
+          "decor": "Сріблястий блиск",
+          "glass": "Глухе",
+          "edge": null,
+          "price": 5790.0,
+          "is_special_price": false,
+          "notes": "Врізний декоративний алюмінієвий молдинг 8 мм; можливі кольори: Чорний / Алюмінієвий / Золотий; + фрезерування."
+        },
+        {
+          "decor": "Білий преміум",
+          "glass": "Глухе",
+          "edge": null,
+          "price": 5790.0,
+          "is_special_price": false,
+          "notes": "Врізний декоративний алюмінієвий молдинг 8 мм; можливі кольори: Чорний / Алюмінієвий / Золотий; + фрезерування."
+        }
+      ],
+      "non_standard_height_markup": 15.0,
+      "non_standard_notes": "Нестандарт по висоті: +15%. Нестандарт по ширині: +10%.",
+      "model_notes": "Збірна конструкція. Вказано врізний декоративний алюмінієвий молдинг товщиною 8 мм. Колір молдингу: Чорний, Алюмінієвий або Золотий. Для моделі також зазначено фрезерування."
+    },
+    {
+      "collection_name": "HELIOS / NADIN / CASCAD",
+      "model_name": "HELIOS",
+      "coating_type": "PP",
+      "thickness_mm": 40.0,
+      "standard_widths": null,
+      "standard_height": null,
+      "production_days": null,
+      "variants": [
+        {
+          "decor": "Сріблястий тауп",
+          "glass": "Глухе + Фрезерування",
+          "edge": null,
+          "price": 5500.0,
+          "is_special_price": false,
+          "notes": "Фото: Helios door beige"
+        },
+        {
+          "decor": "Сріблястий блиск",
+          "glass": "Глухе + Фрезерування",
+          "edge": null,
+          "price": 5500.0,
+          "is_special_price": false,
+          "notes": "Фото: Helios door white"
+        },
+        {
+          "decor": "Білий преміум",
+          "glass": "Глухе + Фрезерування",
+          "edge": null,
+          "price": 5500.0,
+          "is_special_price": false,
+          "notes": "Фото: Helios door grey"
+        }
+      ],
+      "non_standard_height_markup": 15.0,
+      "non_standard_notes": "Нестандарт по висоті: +15%. Нестандарт по ширині: +10%.",
+      "model_notes": "Збірна конструкція. Ціна однакова для всіх декорів. У джерелі показано варіанти фото/виконання без зміни ціни: Глухе або + Фрезерування."
+    },
+    {
+      "collection_name": "HELIOS / NADIN / CASCAD",
+      "model_name": "NADIN",
+      "coating_type": "PP",
+      "thickness_mm": 40.0,
+      "standard_widths": null,
+      "standard_height": null,
+      "production_days": null,
+      "variants": [
+        {
+          "decor": "Сріблястий тауп",
+          "glass": "Глухе + Фрезерування",
+          "edge": null,
+          "price": 5500.0,
+          "is_special_price": false,
+          "notes": "Фото: Nadin door white"
+        },
+        {
+          "decor": "Сріблястий блиск",
+          "glass": "Глухе + Фрезерування",
+          "edge": null,
+          "price": 5500.0,
+          "is_special_price": false,
+          "notes": "Фото: Nadin door grey"
+        },
+        {
+          "decor": "Білий преміум",
+          "glass": "Глухе + Фрезерування",
+          "edge": null,
+          "price": 5500.0,
+          "is_special_price": false,
+          "notes": "Фото: Nadin door beige"
+        }
+      ],
+      "non_standard_height_markup": 15.0,
+      "non_standard_notes": "Нестандарт по висоті: +15%. Нестандарт по ширині: +10%.",
+      "model_notes": "Збірна конструкція. Ціна однакова для всіх декорів. У джерелі показано варіанти фото/виконання без зміни ціни: Глухе або + Фрезерування."
+    },
+    {
+      "collection_name": "HELIOS / NADIN / CASCAD",
+      "model_name": "CASCAD",
+      "coating_type": "PP",
+      "thickness_mm": 40.0,
+      "standard_widths": null,
+      "standard_height": null,
+      "production_days": null,
+      "variants": [
+        {
+          "decor": "Сріблястий тауп",
+          "glass": "Глухе + Фрезерування",
+          "edge": null,
+          "price": 5500.0,
+          "is_special_price": false,
+          "notes": "Фото: Cascad door grey"
+        },
+        {
+          "decor": "Сріблястий блиск",
+          "glass": "Глухе + Фрезерування",
+          "edge": null,
+          "price": 5500.0,
+          "is_special_price": false,
+          "notes": "Фото: Cascad door beige"
+        },
+        {
+          "decor": "Білий преміум",
+          "glass": "Глухе + Фрезерування",
+          "edge": null,
+          "price": 5500.0,
+          "is_special_price": false,
+          "notes": "Фото: Cascad door white"
+        }
+      ],
+      "non_standard_height_markup": 15.0,
+      "non_standard_notes": "Нестандарт по висоті: +15%. Нестандарт по ширині: +10%.",
+      "model_notes": "Збірна конструкція. Ціна однакова для всіх декорів. У джерелі показано варіанти фото/виконання без зміни ціни: Глухе або + Фрезерування."
+    }
+  ]
+}

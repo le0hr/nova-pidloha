@@ -1,0 +1,475 @@
+{
+  "supplier": "LEADOR",
+  "catalog_date": null,
+  "currency": "грн",
+  "models": [
+    {
+      "collection_name": "LEADOR",
+      "model_name": "OSTIA",
+      "coating_type": "PP",
+      "thickness_mm": null,
+      "standard_widths": "400",
+      "standard_height": null,
+      "production_days": "до 10 роб. днів",
+      "variants": [
+        {
+          "decor": "Білий матовий",
+          "glass": "Скло сатин білий",
+          "edge": null,
+          "price": 5570.0,
+          "is_special_price": false,
+          "notes": "Фото: photo: OSTIA door white glass / alt"
+        },
+        {
+          "decor": "Білий матовий",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 5810.0,
+          "is_special_price": false,
+          "notes": "Фото: photo: OSTIA door black glass / alt"
+        }
+      ],
+      "non_standard_height_markup": 15.0,
+      "non_standard_notes": "Нестандарт по висоті: +15%. Для ширини в таблиці позначено окремі нестандартні рядки, але без чіткого значення для цієї моделі; ширина 400 мм виготовляється окремо.",
+      "model_notes": null
+    },
+    {
+      "collection_name": "LEADOR",
+      "model_name": "VISALIA",
+      "coating_type": "PP",
+      "thickness_mm": null,
+      "standard_widths": "400",
+      "standard_height": null,
+      "production_days": "до 10 роб. днів",
+      "variants": [
+        {
+          "decor": "Білий матовий",
+          "glass": "Скло сатин білий",
+          "edge": null,
+          "price": 5680.0,
+          "is_special_price": false,
+          "notes": "Фото: photo: VISALIA door white glass / alt"
+        },
+        {
+          "decor": "Білий матовий",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 5925.0,
+          "is_special_price": false,
+          "notes": "Фото: photo: VISALIA door black glass / alt"
+        }
+      ],
+      "non_standard_height_markup": 15.0,
+      "non_standard_notes": "Нестандарт по висоті: +15%. Для ширини в таблиці позначено окремі нестандартні рядки, але без чіткого значення для цієї моделі; ширина 400 мм виготовляється окремо.",
+      "model_notes": null
+    },
+    {
+      "collection_name": "LEADOR",
+      "model_name": "BARIANO",
+      "coating_type": "Sincrolam®",
+      "thickness_mm": null,
+      "standard_widths": "400",
+      "standard_height": null,
+      "production_days": "до 10 роб. днів",
+      "variants": [
+        {
+          "decor": "Дуб мокко",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4300.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Дуб мокко",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4300.0,
+          "is_special_price": false,
+          "notes": "Ціна в таблиці однакова для всіх скла в цьому декорі; відображено як окремий варіант за правилом."
+        },
+        {
+          "decor": "Дуб латте",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4300.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Дуб латте",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4300.0,
+          "is_special_price": false,
+          "notes": "Ціна в таблиці однакова для всіх скла в цьому декорі; відображено як окремий варіант за правилом."
+        },
+        {
+          "decor": "Кедр сірий",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4300.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Кедр сірий",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4300.0,
+          "is_special_price": false,
+          "notes": "Ціна в таблиці однакова для всіх скла в цьому декорі; відображено як окремий варіант за правилом."
+        },
+        {
+          "decor": "Сіре дерево NEW",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4600.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Сіре дерево NEW",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4600.0,
+          "is_special_price": false,
+          "notes": "Ціна в таблиці однакова для всіх скла в цьому декорі; відображено як окремий варіант за правилом."
+        },
+        {
+          "decor": "Монблан NEW",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4600.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Монблан NEW",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4600.0,
+          "is_special_price": false,
+          "notes": "Ціна в таблиці однакова для всіх скла в цьому декорі; відображено як окремий варіант за правилом."
+        },
+        {
+          "decor": "Білий матовий",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 5065.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Білий матовий",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 5065.0,
+          "is_special_price": false,
+          "notes": "Ціна в таблиці однакова для всіх скла в цьому декорі; відображено як окремий варіант за правилом."
+        }
+      ],
+      "non_standard_height_markup": 15.0,
+      "non_standard_notes": "Нестандарт по висоті: +15%. У таблиці є позначки для нестандартних ширин/висот, але без повністю читабельних значень для всіх комбінацій; ширина 400 мм згадана окремо.",
+      "model_notes": "У прайсі вказано кілька декорів і однакові варіанти скла; окрема позиція для ширини 400 мм. Фото: photo: BARIANO door models"
+    },
+    {
+      "collection_name": "LEADOR",
+      "model_name": "AGRA",
+      "coating_type": "Sincrolam®",
+      "thickness_mm": null,
+      "standard_widths": "400",
+      "standard_height": null,
+      "production_days": "до 10 роб. днів",
+      "variants": [
+        {
+          "decor": "Дуб мокко",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4080.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Дуб мокко",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4080.0,
+          "is_special_price": false,
+          "notes": "Ціна однакова для обох типів скла в цьому декорі; сформовано окремі варіанти."
+        },
+        {
+          "decor": "Дуб латте",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4080.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Дуб латте",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4080.0,
+          "is_special_price": false,
+          "notes": "Ціна однакова для обох типів скла в цьому декорі; сформовано окремі варіанти."
+        },
+        {
+          "decor": "Кедр сірий",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4080.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Кедр сірий",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4080.0,
+          "is_special_price": false,
+          "notes": "Ціна однакова для обох типів скла в цьому декорі; сформовано окремі варіанти."
+        },
+        {
+          "decor": "Сіре дерево NEW",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4365.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Сіре дерево NEW",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4365.0,
+          "is_special_price": false,
+          "notes": "Ціна однакова для обох типів скла в цьому декорі; сформовано окремі варіанти."
+        },
+        {
+          "decor": "Монблан NEW",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4365.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Монблан NEW",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4365.0,
+          "is_special_price": false,
+          "notes": "Ціна однакова для обох типів скла в цьому декорі; сформовано окремі варіанти."
+        },
+        {
+          "decor": "Білий матовий",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4825.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Білий матовий",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4825.0,
+          "is_special_price": false,
+          "notes": "Ціна однакова для обох типів скла в цьому декорі; сформовано окремі варіанти."
+        }
+      ],
+      "non_standard_height_markup": 15.0,
+      "non_standard_notes": "Нестандарт по висоті: +15%. Ширина 400 мм та інші нестандартні ширини/висоти позначені в таблиці, але без повної розшифровки для всіх комбінацій.",
+      "model_notes": "У прайсі вказано декори та два типи скла; фото: photo: AGRA door models"
+    },
+    {
+      "collection_name": "LEADOR",
+      "model_name": "CREMONA",
+      "coating_type": "Sincrolam®",
+      "thickness_mm": null,
+      "standard_widths": "400",
+      "standard_height": null,
+      "production_days": "до 10 роб. днів",
+      "variants": [
+        {
+          "decor": "Дуб мокко",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4080.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Дуб мокко",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4080.0,
+          "is_special_price": false,
+          "notes": "Ціна однакова для обох типів скла в цьому декорі; сформовано окремі варіанти."
+        },
+        {
+          "decor": "Дуб латте",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4080.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Дуб латте",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4080.0,
+          "is_special_price": false,
+          "notes": "Ціна однакова для обох типів скла в цьому декорі; сформовано окремі варіанти."
+        },
+        {
+          "decor": "Сіре дерево NEW",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4365.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Сіре дерево NEW",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4365.0,
+          "is_special_price": false,
+          "notes": "Ціна однакова для обох типів скла в цьому декорі; сформовано окремі варіанти."
+        },
+        {
+          "decor": "Монблан NEW",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4365.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Монблан NEW",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4365.0,
+          "is_special_price": false,
+          "notes": "Ціна однакова для обох типів скла в цьому декорі; сформовано окремі варіанти."
+        },
+        {
+          "decor": "Білий матовий",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4825.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Білий матовий",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4825.0,
+          "is_special_price": false,
+          "notes": "Ціна однакова для обох типів скла в цьому декорі; сформовано окремі варіанти."
+        }
+      ],
+      "non_standard_height_markup": 15.0,
+      "non_standard_notes": "Нестандарт по висоті: +15%. Ширина 400 мм та інші нестандартні значення в таблиці присутні, але не повністю розшифровані.",
+      "model_notes": "Фото нечитабельні, модель визначена з таблиці. У прайсі є два типи скла та три групи декорів."
+    },
+    {
+      "collection_name": "LEADOR",
+      "model_name": "COLICO",
+      "coating_type": "Sincrolam®",
+      "thickness_mm": null,
+      "standard_widths": "400",
+      "standard_height": null,
+      "production_days": "до 10 роб. днів",
+      "variants": [
+        {
+          "decor": "Дуб мокко",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4080.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Дуб мокко",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4080.0,
+          "is_special_price": false,
+          "notes": "Ціна однакова для обох типів скла в цьому декорі; сформовано окремі варіанти."
+        },
+        {
+          "decor": "Дуб латте",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4080.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Дуб латте",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4080.0,
+          "is_special_price": false,
+          "notes": "Ціна однакова для обох типів скла в цьому декорі; сформовано окремі варіанти."
+        },
+        {
+          "decor": "Сіре дерево NEW",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4365.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Сіре дерево NEW",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4365.0,
+          "is_special_price": false,
+          "notes": "Ціна однакова для обох типів скла в цьому декорі; сформовано окремі варіанти."
+        },
+        {
+          "decor": "Монблан NEW",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4365.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Монблан NEW",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4365.0,
+          "is_special_price": false,
+          "notes": "Ціна однакова для обох типів скла в цьому декорі; сформовано окремі варіанти."
+        },
+        {
+          "decor": "Білий матовий",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 4825.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Білий матовий",
+          "glass": "Чорне скло",
+          "edge": null,
+          "price": 4825.0,
+          "is_special_price": false,
+          "notes": "Ціна однакова для обох типів скла в цьому декорі; сформовано окремі варіанти."
+        }
+      ],
+      "non_standard_height_markup": 15.0,
+      "non_standard_notes": "Нестандарт по висоті: +15%. Ширина 400 мм та інші нестандартні значення в таблиці присутні, але не повністю розшифровані.",
+      "model_notes": "Фото нечитабельні, модель визначена з таблиці. У прайсі є два типи скла та три групи декорів."
+    }
+  ]
+}

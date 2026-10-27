@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "decor_glasses",
+  "info": {
+    "singularName": "decor-glass",
+    "pluralName": "decor-glasses",
+    "displayName": "DecorGlass"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "product_variations": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product-variation.product-variation",
+      "mappedBy": "decor_glass"
+    },
+    "external_id": {
+      "type": "string",
+      "unique": true
+    }
+  }
+}

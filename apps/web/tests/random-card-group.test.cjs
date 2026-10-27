@@ -1,0 +1,30 @@
+const assert = require('node:assert/strict');
+const React = require('react');
+const { loader } = require('./load-ts.cjs');
+const intervals = new Map();
+let id = 0;
+global.window = { setInterval(fn, delay) { assert.equal(delay, 3000); intervals.set(++id, fn); return id; }, clearInterval(id) { intervals.delete(id); } };
+const cleanups = [];
+const hooks = { ...React, useRef: current => ({ current }), useCallback: fn => fn, useEffect: fn => cleanups.push(fn()) };
+const Group = loader({ react: hooks })(require('node:path').join(__dirname, '../src/components/home/RandomCardGroup.tsx')).default;
+const categories = Group({ children: null, className: '' });
+const products = Group({ children: null, className: '' });
+const calls = [];
+const remove = categories.props.value(() => calls.push('category 1'));
+categories.props.value(() => calls.push('category 2'));
+products.props.value(() => calls.push('product 1'));
+products.props.value(() => calls.push('product 2'));
+const random = Math.random;
+try {
+ Math.random = () => 0;
+ intervals.forEach(fn => fn());
+ assert.deepEqual(calls.splice(0), ['category 1', 'product 1']);
+ Math.random = () => 0.99;
+ intervals.forEach(fn => fn());
+ assert.deepEqual(calls.splice(0), ['category 2', 'product 2']);
+ remove(); Math.random = () => 0;
+ intervals.forEach(fn => fn());
+ assert.deepEqual(calls, ['category 2', 'product 1']);
+ cleanups.forEach(fn => fn()); assert.equal(intervals.size, 0);
+} finally { Math.random = random; }
+console.log('PASS: exactly one random card per section, independent groups, eligibility cleanup');

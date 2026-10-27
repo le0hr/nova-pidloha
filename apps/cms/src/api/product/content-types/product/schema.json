@@ -1,0 +1,97 @@
+{
+  "kind": "collectionType",
+  "collectionName": "products",
+  "info": {
+    "singularName": "product",
+    "pluralName": "products",
+    "displayName": "Product"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "uid"
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "shortDescription": {
+      "type": "string"
+    },
+    "price": {
+      "type": "decimal"
+    },
+    "oldPrice": {
+      "type": "decimal"
+    },
+    "sku": {
+      "type": "string"
+    },
+    "category": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::category.category",
+      "inversedBy": "products"
+    },
+    "brand": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::brand.brand",
+      "inversedBy": "products"
+    },
+    "filter_values": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::filter-code.filter-code",
+      "inversedBy": "products"
+    },
+    "isFeatured": {
+      "type": "boolean"
+    },
+    "isNew": {
+      "type": "boolean"
+    },
+    "product_variations": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::product-variation.product-variation",
+      "mappedBy": "products"
+    },
+    "external_id": {
+      "type": "string",
+      "unique": true
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "catalog_attributes": {
+      "type": "json"
+    },
+    "attribute_definitions": {
+      "type": "json"
+    },
+    "characteristics": {
+      "type": "component",
+      "repeatable": true,
+      "component": "catalog.characteristic"
+    },
+    "addons": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::architrave-type.architrave-type"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "kind": "collectionType",
+  "collectionName": "decor_colors",
+  "info": {
+    "singularName": "decor-color",
+    "pluralName": "decor-colors",
+    "displayName": "DecorColor"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "hex": {
+      "type": "string"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "decor": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::decor.decor",
+      "inversedBy": "decor_colors"
+    },
+    "product_variations": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product-variation.product-variation",
+      "mappedBy": "decor_color"
+    },
+    "external_id": {
+      "type": "string",
+      "unique": true
+    }
+  }
+}

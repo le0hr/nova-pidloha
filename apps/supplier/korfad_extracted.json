@@ -1,0 +1,535 @@
+{
+  "supplier": "COLLECTION DOORS",
+  "catalog_date": "01.04.2026",
+  "currency": "грн",
+  "collections": [
+    {
+      "collection_name": "CITY LINE",
+      "collection_type": "каркасно-щитові двері",
+      "models": [
+        {
+          "model_code": "TRENTON",
+          "construction": "PVC",
+          "decors": [
+            {
+              "name": "Астана Розвуд",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Бетон Сніжний",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Венге Савіола",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Біла Структура",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Хромікс Антрацит",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Хромікс Грей",
+              "technical_type": "PVC",
+              "is_special": false
+            }
+          ],
+          "variants": [
+            {
+              "edge_type": "звичайна кромка",
+              "glass_type": "Дзеркало срібне",
+              "coating_type": [
+                "Астана Розвуд",
+                "Бетон Сніжний"
+              ],
+              "wholesale_price": 5335.0,
+              "retail_price": 5335.0,
+              "is_special_price": false
+            },
+            {
+              "edge_type": "звичайна кромка",
+              "glass_type": "Глухе",
+              "coating_type": [
+                "Астана Розвуд",
+                "Бетон Сніжний"
+              ],
+              "wholesale_price": 5335.0,
+              "retail_price": 5335.0,
+              "is_special_price": false
+            },
+            {
+              "edge_type": "звичайна кромка",
+              "glass_type": "Скло Сатин",
+              "coating_type": [
+                "Венге Савіола"
+              ],
+              "wholesale_price": 4125.0,
+              "retail_price": 4125.0,
+              "is_special_price": false
+            },
+            {
+              "edge_type": "звичайна кромка",
+              "glass_type": "Чорне скло",
+              "coating_type": [
+                "Венге Савіола"
+              ],
+              "wholesale_price": 4125.0,
+              "retail_price": 4125.0,
+              "is_special_price": false
+            },
+            {
+              "edge_type": "звичайна кромка",
+              "glass_type": "Глухе",
+              "coating_type": [
+                "Венге Савіола"
+              ],
+              "wholesale_price": 4125.0,
+              "retail_price": 4125.0,
+              "is_special_price": false
+            }
+          ],
+          "non_standard": {
+            "height_markup_percent": 15.0,
+            "width_markup_percent": null,
+            "standard_heights_mm": [
+              1700,
+              1710,
+              1720,
+              1730,
+              1740,
+              1750,
+              1760,
+              1770,
+              1780,
+              1790,
+              1800,
+              1810,
+              1820,
+              1830,
+              1840,
+              1850,
+              1860,
+              1870,
+              1880,
+              1890,
+              1900,
+              1910,
+              1920,
+              1930,
+              1940,
+              1950,
+              1960,
+              1970,
+              1980,
+              1990
+            ],
+            "standard_widths_mm": [
+              400,
+              600,
+              700,
+              800,
+              900,
+              2000
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "collection_name": "CITY LINE",
+      "collection_type": "каркасно-щитові двері",
+      "models": [
+        {
+          "model_code": "ARABELA",
+          "construction": "PVC",
+          "decors": [
+            {
+              "name": "Астана Розвуд",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Бетон Сніжний",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Атлантік Крем",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Біла Структура",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Венге Савіола",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Дуб Айс",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Дуб Білий",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Дуб Бронзовий",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Дуб Монако",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Дуб Шато",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Парма Грей",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Рустік Авіньйон Білий",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Рустік Авіньйон Сірий",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Сансет",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Хромікс Антрацит",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Хромікс Грей",
+              "technical_type": "PVC",
+              "is_special": false
+            }
+          ],
+          "variants": [
+            {
+              "edge_type": "звичайна кромка",
+              "glass_type": "Скло Сатин",
+              "coating_type": [
+                "Астана Розвуд",
+                "Бетон Сніжний",
+                "Атлантік Крем",
+                "Біла Структура",
+                "Венге Савіола",
+                "Дуб Айс",
+                "Дуб Білий",
+                "Дуб Бронзовий",
+                "Дуб Монако",
+                "Дуб Шато",
+                "Парма Грей",
+                "Рустік Авіньйон Білий",
+                "Рустік Авіньйон Сірий",
+                "Сансет"
+              ],
+              "wholesale_price": 4125.0,
+              "retail_price": 4125.0,
+              "is_special_price": false
+            },
+            {
+              "edge_type": "звичайна кромка",
+              "glass_type": "Чорне скло",
+              "coating_type": [
+                "Астана Розвуд",
+                "Бетон Сніжний",
+                "Атлантік Крем",
+                "Біла Структура",
+                "Венге Савіола",
+                "Дуб Айс",
+                "Дуб Білий",
+                "Дуб Бронзовий",
+                "Дуб Монако",
+                "Дуб Шато",
+                "Парма Грей",
+                "Рустік Авіньйон Білий",
+                "Рустік Авіньйон Сірий",
+                "Сансет"
+              ],
+              "wholesale_price": 4125.0,
+              "retail_price": 4125.0,
+              "is_special_price": false
+            },
+            {
+              "edge_type": "звичайна кромка",
+              "glass_type": "Глухе",
+              "coating_type": [
+                "Хромікс Антрацит"
+              ],
+              "wholesale_price": 4125.0,
+              "retail_price": 4125.0,
+              "is_special_price": false
+            },
+            {
+              "edge_type": "звичайна кромка",
+              "glass_type": "Глухе",
+              "coating_type": [
+                "Хромікс Грей"
+              ],
+              "wholesale_price": 4125.0,
+              "retail_price": 4125.0,
+              "is_special_price": false
+            }
+          ],
+          "non_standard": {
+            "height_markup_percent": 15.0,
+            "width_markup_percent": null,
+            "standard_heights_mm": [
+              1700,
+              1710,
+              1720,
+              1730,
+              1740,
+              1750,
+              1760,
+              1770,
+              1780,
+              1790,
+              1800,
+              1810,
+              1820,
+              1830,
+              1840,
+              1850,
+              1860,
+              1870,
+              1880,
+              1890,
+              1900,
+              1910,
+              1920,
+              1930,
+              1940,
+              1950,
+              1960,
+              1970,
+              1980,
+              1990
+            ],
+            "standard_widths_mm": [
+              400,
+              600,
+              700,
+              800,
+              900,
+              2000
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "collection_name": "CITY LINE",
+      "collection_type": "каркасно-щитові двері",
+      "models": [
+        {
+          "model_code": "BELTON",
+          "construction": "PVC",
+          "decors": [
+            {
+              "name": "Астана Розвуд",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Бетон Сніжний",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Атлантік Крем",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Біла Структура",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Венге Савіола",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Дуб Айс",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Дуб Білий",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Дуб Бронзовий",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Дуб Монако",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Дуб Шато",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Парма Грей",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Рустік Авіньйон Білий",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Рустік Авіньйон Сірий",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Сансет",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Хромікс Антрацит",
+              "technical_type": "PVC",
+              "is_special": false
+            },
+            {
+              "name": "Хромікс Грей",
+              "technical_type": "PVC",
+              "is_special": false
+            }
+          ],
+          "variants": [
+            {
+              "edge_type": "звичайна кромка",
+              "glass_type": "Скло Сатин",
+              "coating_type": [
+                "Астана Розвуд",
+                "Бетон Сніжний",
+                "Атлантік Крем",
+                "Біла Структура",
+                "Дуб Айс",
+                "Дуб Білий"
+              ],
+              "wholesale_price": 4125.0,
+              "retail_price": 4125.0,
+              "is_special_price": false
+            },
+            {
+              "edge_type": "звичайна кромка",
+              "glass_type": "Чорне скло",
+              "coating_type": [
+                "Астана Розвуд",
+                "Бетон Сніжний",
+                "Атлантік Крем",
+                "Біла Структура",
+                "Дуб Айс",
+                "Дуб Білий"
+              ],
+              "wholesale_price": 4125.0,
+              "retail_price": 4125.0,
+              "is_special_price": false
+            },
+            {
+              "edge_type": "звичайна кромка",
+              "glass_type": "Глухе",
+              "coating_type": [
+                "Дуб Бронзовий",
+                "Дуб Монако",
+                "Дуб Шато",
+                "Парма Грей",
+                "Рустік Авіньйон Білий",
+                "Рустік Авіньйон Сірий",
+                "Сансет"
+              ],
+              "wholesale_price": 4125.0,
+              "retail_price": 4125.0,
+              "is_special_price": false
+            }
+          ],
+          "non_standard": {
+            "height_markup_percent": 15.0,
+            "width_markup_percent": null,
+            "standard_heights_mm": [
+              1700,
+              1710,
+              1720,
+              1730,
+              1740,
+              1750,
+              1760,
+              1770,
+              1780,
+              1790,
+              1800,
+              1810,
+              1820,
+              1830,
+              1840,
+              1850,
+              1860,
+              1870,
+              1880,
+              1890,
+              1900,
+              1910,
+              1920,
+              1930,
+              1940,
+              1950,
+              1960,
+              1970,
+              1980,
+              1990
+            ],
+            "standard_widths_mm": [
+              400,
+              600,
+              700,
+              800,
+              900,
+              2000
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

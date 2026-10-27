@@ -1,0 +1,38 @@
+{
+  "kind": "collectionType",
+  "collectionName": "filter_codes",
+  "info": {
+    "singularName": "filter-code",
+    "pluralName": "filter-codes",
+    "displayName": "FilterValue"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string",
+      "unique": true
+    },
+    "filter_group": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::filter-group.filter-group",
+      "inversedBy": "filter_values"
+    },
+    "products": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::product.product",
+      "mappedBy": "filter_values"
+    },
+    "external_id": {
+      "type": "string",
+      "unique": true
+    }
+  }
+}
