@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_door_config_door_interiors",
+  "info": {
+    "displayName": "DoorInterior"
+  },
+  "options": {},
+  "attributes": {
+    "decor": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::decor.decor"
+    },
+    "decor_glass": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::decor-glass.decor-glass"
+    },
+    "architrave_type": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::architrave-type.architrave-type"
+    }
+  },
+  "config": {}
+}

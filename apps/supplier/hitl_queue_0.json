@@ -1,0 +1,666 @@
+{
+  "source_file": "Прайс Korfad/КОРФАД Щитові двері від 01.04.2026_ДИЛЕР.pdf",
+  "confidence": null,
+  "confidence_value": null,
+  "reasons": [
+    "Confidence відсутній у відповіді LlamaCloud",
+    "Є model_notes у «LP-01»: Каркасно-рейкове наповнення МДФ. У джерелі згадується також 'СУПЕР ЦІНА'....",
+    "Є model_notes у «WP-01»: Каркасно-рейкове наповнення МДФ....",
+    "Є model_notes у «DLP-01»: Каркасно-рейкове наповнення МДФ. Накладна декоративна вставка з алюмінію: Чорна,...",
+    "Є model_notes у «GLP-01»: Каркасно-рейкове наповнення МДФ. У джерелі є варіанти зі склом Lacobel чорний та...",
+    "Є model_notes у «GLP-02»: Каркасно-рейкове наповнення МДФ. У джерелі є група цін 7365 / 7840 / 8330 / 8800..."
+  ],
+  "data": {
+    "supplier": "KORFAD",
+    "catalog_date": null,
+    "currency": "грн",
+    "models": [
+      {
+        "collection_name": "LOFT PLATO",
+        "model_name": "LP-01",
+        "coating_type": "PP",
+        "thickness_mm": null,
+        "standard_widths": "400",
+        "standard_height": null,
+        "production_days": "10/15/20/25/30 роб. днів",
+        "variants": [
+          {
+            "decor": "Білий перламутр",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 3545.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Білий перламутр",
+            "glass": "Глухе",
+            "edge": "Чорна матова кромка",
+            "price": 3900.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Білий перламутр",
+            "glass": "Глухе",
+            "edge": "Алюмінієва кромка",
+            "price": 4031.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Дуб білений",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 3664.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Горіх",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 3664.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Дуб грей",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 3664.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Еш-вайт",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 3664.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Сталь кортен",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 3664.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Арт бетон",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 3664.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Лофт бетон",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 3664.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Лайт бетон",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 3664.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Дуб браш",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 3664.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Дуб білений",
+            "glass": "Глухе",
+            "edge": "Чорна матова кромка",
+            "price": 5130.0,
+            "is_special_price": true,
+            "notes": "Ціна для групи декорів у джерелі без окремої прив'язки."
+          },
+          {
+            "decor": "Горіх",
+            "glass": "Глухе",
+            "edge": "Чорна матова кромка",
+            "price": 5130.0,
+            "is_special_price": true,
+            "notes": "Ціна для групи декорів у джерелі без окремої прив'язки."
+          },
+          {
+            "decor": "Дуб грей",
+            "glass": "Глухе",
+            "edge": "Чорна матова кромка",
+            "price": 5130.0,
+            "is_special_price": true,
+            "notes": "Ціна для групи декорів у джерелі без окремої прив'язки."
+          },
+          {
+            "decor": "Еш-вайт",
+            "glass": "Глухе",
+            "edge": "Чорна матова кромка",
+            "price": 5130.0,
+            "is_special_price": true,
+            "notes": "Ціна для групи декорів у джерелі без окремої прив'язки."
+          },
+          {
+            "decor": "Сталь кортен",
+            "glass": "Глухе",
+            "edge": "Чорна матова кромка",
+            "price": 5130.0,
+            "is_special_price": true,
+            "notes": "Ціна для групи декорів у джерелі без окремої прив'язки."
+          },
+          {
+            "decor": "Арт бетон",
+            "glass": "Глухе",
+            "edge": "Чорна матова кромка",
+            "price": 5130.0,
+            "is_special_price": true,
+            "notes": "Ціна для групи декорів у джерелі без окремої прив'язки."
+          },
+          {
+            "decor": "Лофт бетон",
+            "glass": "Глухе",
+            "edge": "Чорна матова кромка",
+            "price": 5130.0,
+            "is_special_price": true,
+            "notes": "Ціна для групи декорів у джерелі без окремої прив'язки."
+          },
+          {
+            "decor": "Лайт бетон",
+            "glass": "Глухе",
+            "edge": "Чорна матова кромка",
+            "price": 5130.0,
+            "is_special_price": true,
+            "notes": "Ціна для групи декорів у джерелі без окремої прив'язки."
+          },
+          {
+            "decor": "Дуб браш",
+            "glass": "Глухе",
+            "edge": "Чорна матова кромка",
+            "price": 5130.0,
+            "is_special_price": true,
+            "notes": "Ціна для групи декорів у джерелі без окремої прив'язки."
+          },
+          {
+            "decor": "Білий перламутр",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 4396.0,
+            "is_special_price": true,
+            "notes": "Групова ціна у джерелі."
+          },
+          {
+            "decor": "Білий перламутр",
+            "glass": "Глухе",
+            "edge": "Чорна матова кромка",
+            "price": 4396.0,
+            "is_special_price": true,
+            "notes": "Групова ціна у джерелі."
+          },
+          {
+            "decor": "Білий перламутр",
+            "glass": "Глухе",
+            "edge": "Алюмінієва кромка",
+            "price": 4762.0,
+            "is_special_price": true,
+            "notes": "Групова ціна у джерелі."
+          },
+          {
+            "decor": "Super PET аляска",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 4396.0,
+            "is_special_price": true,
+            "notes": "Група декорів: Super PET аляска / Super PET сірий / Super PET антрацит / Super PET чорний (від 5 шт.)."
+          },
+          {
+            "decor": "Super PET сірий",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 4396.0,
+            "is_special_price": true,
+            "notes": "Група декорів: Super PET аляска / Super PET сірий / Super PET антрацит / Super PET чорний (від 5 шт.)."
+          },
+          {
+            "decor": "Super PET антрацит",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 4396.0,
+            "is_special_price": true,
+            "notes": "Група декорів: Super PET аляска / Super PET сірий / Super PET антрацит / Super PET чорний (від 5 шт.)."
+          },
+          {
+            "decor": "Super PET чорний",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 4396.0,
+            "is_special_price": true,
+            "notes": "Від 5 шт. за приміткою в джерелі."
+          },
+          {
+            "decor": "Super PET аляска",
+            "glass": "Глухе",
+            "edge": "Чорна матова кромка",
+            "price": 4396.0,
+            "is_special_price": true,
+            "notes": "Ціна з джерела без окремої деталізації для всіх декорів групи."
+          },
+          {
+            "decor": "Super PET сірий",
+            "glass": "Глухе",
+            "edge": "Алюмінієва кромка",
+            "price": 4762.0,
+            "is_special_price": true,
+            "notes": "Ціна з джерела без окремої деталізації для всіх декорів групи."
+          },
+          {
+            "decor": "Super PET антрацит",
+            "glass": "Глухе",
+            "edge": "Алюмінієва кромка",
+            "price": 4762.0,
+            "is_special_price": true,
+            "notes": "Ціна з джерела без окремої деталізації для всіх декорів групи."
+          }
+        ],
+        "non_standard_height_markup": 15.0,
+        "non_standard_notes": "Нестандарт по висоті: +15%.",
+        "model_notes": "Каркасно-рейкове наповнення МДФ. У джерелі згадується також 'СУПЕР ЦІНА'."
+      },
+      {
+        "collection_name": "WOOD PLATO",
+        "model_name": "WP-01",
+        "coating_type": "PP",
+        "thickness_mm": null,
+        "standard_widths": "400",
+        "standard_height": null,
+        "production_days": "10/15/20/25/30 роб. днів",
+        "variants": [
+          {
+            "decor": "Дуб тобакко",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 3664.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Дуб нордік",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 3664.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Дуб тобакко",
+            "glass": "Глухе",
+            "edge": "Алюмінієва кромка",
+            "price": 4031.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Дуб нордік",
+            "glass": "Глухе",
+            "edge": "Алюмінієва кромка",
+            "price": 4031.0,
+            "is_special_price": true,
+            "notes": null
+          }
+        ],
+        "non_standard_height_markup": 15.0,
+        "non_standard_notes": "Нестандарт по висоті: +15%.",
+        "model_notes": "Каркасно-рейкове наповнення МДФ."
+      },
+      {
+        "collection_name": "DECO LOFT PLATO",
+        "model_name": "DLP-01",
+        "coating_type": "PP",
+        "thickness_mm": null,
+        "standard_widths": "400",
+        "standard_height": null,
+        "production_days": "10/15/20/25/30 роб. днів",
+        "variants": [
+          {
+            "decor": "Сталь кортен",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 4031.0,
+            "is_special_price": true,
+            "notes": "З джерела: декоративна вставка з алюмінію (чорна/золота/антрацит)."
+          },
+          {
+            "decor": "Арт бетон",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 4031.0,
+            "is_special_price": true,
+            "notes": "З джерела: декоративна вставка з алюмінію (чорна/золота/антрацит)."
+          },
+          {
+            "decor": "Лофт бетон",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 4031.0,
+            "is_special_price": true,
+            "notes": "З джерела: декоративна вставка з алюмінію (чорна/золота/антрацит)."
+          },
+          {
+            "decor": "Лайт бетон",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 4031.0,
+            "is_special_price": true,
+            "notes": "З джерела: декоративна вставка з алюмінію (чорна/золота/антрацит)."
+          },
+          {
+            "decor": "Білий перламутр",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 4031.0,
+            "is_special_price": true,
+            "notes": "З джерела: декоративна вставка з алюмінію (чорна/золота/антрацит)."
+          },
+          {
+            "decor": "Сталь кортен",
+            "glass": "Глухе",
+            "edge": "Алюмінієва кромка",
+            "price": 4396.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Арт бетон",
+            "glass": "Глухе",
+            "edge": "Алюмінієва кромка",
+            "price": 4396.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Лофт бетон",
+            "glass": "Глухе",
+            "edge": "Алюмінієва кромка",
+            "price": 4396.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Лайт бетон",
+            "glass": "Глухе",
+            "edge": "Алюмінієва кромка",
+            "price": 4396.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Білий перламутр",
+            "glass": "Глухе",
+            "edge": "Алюмінієва кромка",
+            "price": 4396.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Super PET аляска",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 4762.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Super PET сірий",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 4762.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Super PET антрацит",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 4762.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Super PET аляска",
+            "glass": "Глухе",
+            "edge": "Чорна матова кромка",
+            "price": 4762.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Super PET сірий",
+            "glass": "Глухе",
+            "edge": "Чорна матова кромка",
+            "price": 4762.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Super PET антрацит",
+            "glass": "Глухе",
+            "edge": "Чорна матова кромка",
+            "price": 4762.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Super PET аляска",
+            "glass": "Глухе",
+            "edge": "Алюмінієва кромка",
+            "price": 5129.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Super PET сірий",
+            "glass": "Глухе",
+            "edge": "Алюмінієва кромка",
+            "price": 5129.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Super PET антрацит",
+            "glass": "Глухе",
+            "edge": "Алюмінієва кромка",
+            "price": 5129.0,
+            "is_special_price": true,
+            "notes": null
+          }
+        ],
+        "non_standard_height_markup": 15.0,
+        "non_standard_notes": "Нестандарт по висоті: +15%.",
+        "model_notes": "Каркасно-рейкове наповнення МДФ. Накладна декоративна вставка з алюмінію: Чорна, Золота, Антрацит."
+      },
+      {
+        "collection_name": "GLASS LOFT PLATO",
+        "model_name": "GLP-01",
+        "coating_type": "PP",
+        "thickness_mm": null,
+        "standard_widths": "400",
+        "standard_height": null,
+        "production_days": "10/15/20/25/30 роб. днів",
+        "variants": [
+          {
+            "decor": "Сталь кортен",
+            "glass": "Lacobel чорний",
+            "edge": "Звичайна кромка",
+            "price": 5170.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Арт бетон",
+            "glass": "Lacobel чорний",
+            "edge": "Звичайна кромка",
+            "price": 5516.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Лофт бетон",
+            "glass": "Lacobel чорний",
+            "edge": "Звичайна кромка",
+            "price": 5516.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Лайт бетон",
+            "glass": "Lacobel чорний",
+            "edge": "Звичайна кромка",
+            "price": 5859.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Білий перламутр",
+            "glass": "Lacobel чорний",
+            "edge": "Звичайна кромка",
+            "price": 5859.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Сталь кортен",
+            "glass": "Графіт дзеркало",
+            "edge": "Чорна матова кромка",
+            "price": 5600.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Арт бетон",
+            "glass": "Графіт дзеркало",
+            "edge": "Чорна матова кромка",
+            "price": 5947.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Лофт бетон",
+            "glass": "Графіт дзеркало",
+            "edge": "Чорна матова кромка",
+            "price": 5947.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Лайт бетон",
+            "glass": "Графіт дзеркало",
+            "edge": "Чорна матова кромка",
+            "price": 6289.0,
+            "is_special_price": true,
+            "notes": null
+          },
+          {
+            "decor": "Білий перламутр",
+            "glass": "Графіт дзеркало",
+            "edge": "Чорна матова кромка",
+            "price": 6289.0,
+            "is_special_price": true,
+            "notes": null
+          }
+        ],
+        "non_standard_height_markup": 15.0,
+        "non_standard_notes": "Нестандарт по висоті: +15%.",
+        "model_notes": "Каркасно-рейкове наповнення МДФ. У джерелі є варіанти зі склом Lacobel чорний та Графіт дзеркало, але таблиця подана неоднозначно; частину цін віднесено як групові."
+      },
+      {
+        "collection_name": "GLASS LOFT PLATO",
+        "model_name": "GLP-02",
+        "coating_type": "PP",
+        "thickness_mm": null,
+        "standard_widths": "400",
+        "standard_height": null,
+        "production_days": "10/15/20/25/30 роб. днів",
+        "variants": [
+          {
+            "decor": "Super PET аляска",
+            "glass": "Глухе",
+            "edge": "Чорна матова кромка",
+            "price": 7365.0,
+            "is_special_price": true,
+            "notes": "Ціна з джерела прочитана неоднозначно."
+          },
+          {
+            "decor": "Super PET сірий",
+            "glass": "Глухе",
+            "edge": "Чорна матова кромка",
+            "price": 7840.0,
+            "is_special_price": true,
+            "notes": "Ціна з джерела прочитана неоднозначно."
+          },
+          {
+            "decor": "Super PET антрацит",
+            "glass": "Глухе",
+            "edge": "Чорна матова кромка",
+            "price": 8330.0,
+            "is_special_price": true,
+            "notes": "Ціна з джерела прочитана неоднозначно."
+          },
+          {
+            "decor": "Super PET чорний",
+            "glass": "Глухе",
+            "edge": "Чорна матова кромка",
+            "price": 8800.0,
+            "is_special_price": true,
+            "notes": "Ціна з джерела прочитана неоднозначно."
+          },
+          {
+            "decor": "Дуб білений",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 4827.0,
+            "is_special_price": true,
+            "notes": "Ціна з джерела прочитана неоднозначно."
+          },
+          {
+            "decor": "Горіх",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 7240.0,
+            "is_special_price": true,
+            "notes": "Ціна з джерела прочитана неоднозначно."
+          },
+          {
+            "decor": "Дуб грей",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 7725.0,
+            "is_special_price": true,
+            "notes": "Ціна з джерела прочитана неоднозначно."
+          },
+          {
+            "decor": "Еш-вайт",
+            "glass": "Глухе",
+            "edge": "Звичайна кромка",
+            "price": 8200.0,
+            "is_special_price": true,
+            "notes": "Ціна з джерела прочитана неоднозначно."
+          }
+        ],
+        "non_standard_height_markup": 15.0,
+        "non_standard_notes": "Нестандарт по висоті: +15%.",
+        "model_notes": "Каркасно-рейкове наповнення МДФ. У джерелі є група цін 7365 / 7840 / 8330 / 8800 і 4827 / 7240 / 7725 / 8200, але прив'язка до декору/скла не завжди читається однозначно."
+      }
+    ]
+  }
+}

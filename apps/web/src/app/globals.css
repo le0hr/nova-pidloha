@@ -1,0 +1,549 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --scrollbar-accent: #e53935;
+  --scrollbar-accent-hover: #c62828;
+  --scrollbar-track: #f1f1f1;
+  /* One place to tune the desktop gutter for every shop page. */
+  --desktop-page-gutter: 16px;
+  /* Vertical space for page sections (breadcrumb, content) */
+  --page-vertical-gutter: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Shared vertical and horizontal scrollbars, including nested panels. */
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-accent) var(--scrollbar-track);
+  }
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-corner {
+  background: var(--scrollbar-track);
+  border-radius: 0;
+}
+
+*::-webkit-scrollbar-thumb {
+  min-height: 28px;
+  min-width: 28px;
+  background: var(--scrollbar-accent);
+  border-radius: 0;
+}
+
+*::-webkit-scrollbar-thumb:hover,
+*::-webkit-scrollbar-thumb:active {
+  background: var(--scrollbar-accent-hover);
+}
+
+@media (forced-colors: active) {
+  :root {
+    --scrollbar-accent: ButtonText;
+    --scrollbar-accent-hover: Highlight;
+    --scrollbar-track: Canvas;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: "Outfit", sans-serif;
+  background: #ffffff;
+  color: #1a1a1a;
+}
+
+.topbar {
+  height: 23px;
+  background: #1d1d1d;
+  color: #a5a5a5;
+  padding: 0 calc((100% - 1260px) / 2);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 11px;
+}
+.topbar span:last-child {
+  margin-left: auto;
+}
+.topbar b {
+  color: #fff;
+  font-size: 11px;
+}
+.site-footer {
+  background: #1e1e1e;
+  color: white;
+}
+.footer-inner {
+  max-width: 1260px;
+  margin: auto;
+  padding: 38px 0 24px;
+  display: grid;
+  grid-template-columns: 1.2fr 0.65fr 1fr;
+  gap: 72px;
+}
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+}
+.footer-brand img {
+  width: 32px;
+  height: 32px;
+}
+.footer-brand em {
+  color: #e53935;
+  font-style: normal;
+}
+.footer-inner p {
+  max-width: 360px;
+  color: #939393;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #999;
+  font-size: 11px;
+}
+.footer-links b {
+  color: white;
+  font-size: 11px;
+}
+.copyright {
+  border-top: 1px solid #363636;
+  max-width: 1260px;
+  margin: auto;
+  padding: 15px 0 18px;
+  color: #777;
+  font-size: 10px;
+}
+
+@media (max-width: 800px) {
+  .topbar {
+    display: none;
+  }
+  .site-footer {
+    margin-top: 0;
+  }
+  .footer-inner {
+    padding: 22px 13px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  .footer-links:first-of-type {
+    display: none;
+  }
+  .footer-inner p {
+    margin: 0;
+    font-size: 10px;
+  }
+  .copyright {
+    margin: 0 13px;
+    padding: 12px 0;
+    font-size: 9px;
+  }
+}
+
+a {
+  text-decoration: none;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+/* Shared page gutter: intentionally enabled only on large screens. */
+@media (min-width: 768px) {
+  :root {
+    /* Match header's md padding */
+    --desktop-page-gutter: 80px;
+    --page-vertical-gutter: 18px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --desktop-page-gutter: clamp(48px, 5vw, 112px);
+    --page-vertical-gutter: clamp(24px, 1.6vw, 32px);
+  }
+
+  .desktop-page-gutter {
+    padding-inline: var(--desktop-page-gutter) !important;
+  }
+
+  .page-gutter {
+    padding-inline: var(--desktop-page-gutter);
+    padding-block: var(--page-vertical-gutter);
+  }
+}
+
+.page-gutter {
+  padding-inline: var(--desktop-page-gutter);
+  padding-block: var(--page-vertical-gutter);
+}
+
+/* Use the width remaining beside filters, rather than forcing four columns. */
+@media (min-width: 768px) {
+  .catalog-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  }
+}
+
+/*
+ * Desktop UI uses a fluid scale rather than fixed pixel-only dimensions.
+ * The base layout stays unchanged through normal laptop widths; from 1600px
+ * onward typography and key interactive surfaces grow proportionally, with a
+ * cap so ultra-wide displays retain a compact, readable composition.
+ */
+@media (min-width: 1600px) {
+  .desktop-header {
+  height: clamp(84px, 5.25vw, 102px);
+  }
+
+  .desktop-header .logo-img {
+    width: clamp(42px, 2.7vw, 52px);
+    height: clamp(42px, 2.7vw, 52px);
+  }
+
+  .desktop-header .logo-title {
+    font-size: clamp(18px, 1.18vw, 23px);
+  }
+
+  .desktop-header .logo-subtitle {
+    font-size: clamp(11px, 0.72vw, 14px);
+  }
+
+  .desktop-header nav {
+    gap: clamp(28px, 1.8vw, 36px);
+  }
+
+  .desktop-header nav a {
+    font-size: clamp(14px, 0.9vw, 17px);
+  }
+
+  .catalog-content {
+    width: min(100%, 1760px);
+    margin-inline: auto;
+    padding-inline: var(--desktop-page-gutter);
+    padding-block: clamp(24px, 1.6vw, 32px);
+    gap: clamp(24px, 1.6vw, 32px);
+  }
+  .catalog-title {
+    font-size: clamp(32px, 2.1vw, 40px);
+  }
+  .catalog-additional {
+    font-size: clamp(14px, 0.9vw, 17px);
+  }
+  .catalog-filter-wrap {
+    width: clamp(300px, 18vw, 340px);
+    flex: 0 0 clamp(300px, 18vw, 340px);
+  }
+  .catalog-filters {
+    width: 100%;
+    padding: clamp(16px, 1.15vw, 22px);
+    gap: clamp(20px, 1.35vw, 26px);
+  }
+  .catalog-filters h2 { font-size: clamp(16px, 1.05vw, 20px); }
+  .catalog-filters h3,
+  .catalog-filters label span,
+  .catalog-filters input { font-size: clamp(14px, 0.9vw, 17px); }
+  .catalog-filters button span { font-size: clamp(12px, 0.82vw, 15px); }
+  .catalog-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(16px, 1.15vw, 22px);
+  }
+  .catalog-card { width: 100%; }
+  .catalog-card-image { height: clamp(360px, 23vw, 460px); }
+  .catalog-card-details { min-height: clamp(54px, 3.5vw, 68px); padding: clamp(14px, 0.95vw, 18px); }
+  .catalog-card-details h3 { font-size: clamp(15px, 1vw, 19px); }
+  .catalog-card-details span { font-size: clamp(12px, 0.8vw, 15px); }
+  .catalog-card-purchase { height: clamp(55px, 3.6vw, 70px); padding-inline: clamp(10px, 0.7vw, 14px); }
+  .catalog-card-purchase > div:first-child > span:first-child { font-size: clamp(16px, 1.05vw, 20px); }
+  .catalog-card-purchase > div:first-child > span:last-child { font-size: clamp(12px, 0.8vw, 15px); }
+
+  .footer-inner {
+    max-width: min(1760px, calc(100% - 160px));
+    padding-top: clamp(38px, 2.5vw, 48px);
+    padding-bottom: clamp(24px, 1.6vw, 32px);
+    gap: clamp(72px, 4.5vw, 96px);
+  }
+  .footer-brand { font-size: clamp(15px, 1vw, 19px); gap: clamp(8px, 0.6vw, 12px); }
+  .footer-brand img { width: clamp(32px, 2.1vw, 40px); height: clamp(32px, 2.1vw, 40px); }
+  .footer-inner p,
+  .footer-links,
+  .footer-links b { font-size: clamp(11px, 0.75vw, 14px); }
+  .copyright { max-width: min(1760px, calc(100% - 160px)); font-size: clamp(10px, 0.68vw, 13px); }
+  .product-title {
+    font-size: clamp(32px, 2.1vw, 40px);
+  }
+  .product-category {
+    font-size: clamp(14px, 0.9vw, 17px);
+  }
+  .product-step-label {
+    font-size: clamp(14px, 0.9vw, 17px);
+  }
+  .product-step-note,
+  .product-step-number {
+    font-size: clamp(12px, 0.8vw, 15px);
+  }
+  .product-option-btn {
+    font-size: clamp(13px, 0.85vw, 16px);
+  }
+  .product-price {
+    font-size: clamp(28px, 1.8vw, 36px);
+  }
+  .product-old-price {
+    font-size: clamp(14px, 0.9vw, 17px);
+  }
+  .product-add-btn {
+    font-size: clamp(15px, 0.95vw, 18px);
+    padding-block: clamp(14px, 0.9vw, 18px);
+  }
+  .product-accessory-name {
+    font-size: clamp(13px, 0.85vw, 16px);
+  }
+  .product-accessory-spec {
+    font-size: clamp(12px, 0.78vw, 14px);
+  }
+  .product-accessory-price {
+    font-size: clamp(13px, 0.85vw, 16px);
+  }
+  .product-section-title {
+    font-size: clamp(15px, 0.95vw, 18px);
+  }
+  .product-section-note {
+    font-size: clamp(12px, 0.8vw, 15px);
+  }
+
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-120%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(40px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+@keyframes scale-in {
+  from { transform: scale(0.88); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+@keyframes chip-in {
+  from { transform: scale(0.75); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0); }
+  50%       { box-shadow: 0 0 0 8px rgba(229, 57, 53, 0.18); }
+}
+
+@keyframes bar-enter {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes shimmer {
+  from { background-position: -200% center; }
+  to   { background-position:  200% center; }
+}
+
+@keyframes badge-pop {
+  0%   { transform: scale(0); opacity: 0; }
+  70%  { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+
+.animate-fade-up    { animation: fade-up    0.38s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-fade-in    { animation: fade-in    0.28s ease both; }
+.animate-slide-left { animation: slide-in-left 0.32s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-slide-right{ animation: slide-in-right 0.36s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-scale-in   { animation: scale-in   0.24s cubic-bezier(0.34, 1.4, 0.64, 1) both; }
+.animate-chip-in    { animation: chip-in    0.22s cubic-bezier(0.34, 1.4, 0.64, 1) both; }
+.animate-bar-enter  { animation: bar-enter  0.34s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-badge-pop  { animation: badge-pop  0.3s  cubic-bezier(0.34, 1.4, 0.64, 1) both; }
+.animate-pulse-red  { animation: pulse-red  0.7s  ease both; }
+
+.content-container {
+  width: min(100%, 1760px);
+  margin-inline: auto;
+}
+
+
+.yarl__root {
+  --yarl__color_backdrop: rgba(0, 0, 0, 0.5);
+}
+
+.yarl__slide_image {
+  max-width: 95vw !important;
+  max-height: 90vh !important;
+}
+
+/* Reuse the catalog entrance motion for one-time homepage reveals. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-home-reveal="pending"] { opacity: 0; }
+  [data-home-reveal="visible"] {
+    animation: fade-up 0.38s cubic-bezier(0.22, 1, 0.36, 1) var(--home-reveal-delay, 0ms) both;
+  }
+  [data-home-reveal="pending"]:focus-within { opacity: 1; }
+}
+
+
+.home-hero {
+  width: 100%;
+}
+
+html { scroll-padding-top: 80px; }
+@media (min-width: 1024px) {
+  html { scroll-padding-top: 120px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mobile-shop-menu[open] {
+    animation: slide-in-left 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+
+/* Keep checkout branding, progress, and form content on the same grid. */
+.checkout-container {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+@media (min-width: 768px) {
+  .checkout-container { padding-inline: 40px; }
+}
+@media (min-width: 1024px) {
+  .checkout-container { padding-inline: 160px; }
+}
+
+
+@keyframes cart-enter {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+@keyframes cart-exit {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+@keyframes backdrop-exit {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+.cart-drawer[data-state="closed"] { pointer-events: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .cart-drawer[data-state="open"] .cart-drawer-panel { animation: cart-enter 0.3s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .cart-drawer[data-state="closed"] .cart-drawer-panel { animation: cart-exit 0.2s ease-in both; }
+  .cart-drawer[data-state="open"] .cart-drawer-backdrop { animation: fade-in 0.25s ease both; }
+  .cart-drawer[data-state="closed"] .cart-drawer-backdrop { animation: backdrop-exit 0.2s ease both; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .checkout-step-panel {
+    animation: fade-up 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-media { transition: opacity 750ms ease-in-out; }
+  .hero-photo { transition: transform 1000ms cubic-bezier(0.22, 1, 0.36, 1); }
+  .hero-media[aria-hidden="true"] .hero-photo { transform: scale(1.035); }
+  .hero-copy > * { animation: fade-up 650ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .hero-copy > :nth-child(2) { animation-delay: 60ms; }
+  .hero-copy > :nth-child(3) { animation-delay: 120ms; }
+  .hero-copy > :nth-child(n+4) { animation-delay: 180ms; }
+}
+
+
+@keyframes sale-ticker-scroll {
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sale-ticker-track { animation: sale-ticker-scroll 38s linear infinite; }
+  .sale-ticker:hover .sale-ticker-track,
+  .sale-ticker:focus-visible .sale-ticker-track { animation-play-state: paused; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sale-ticker-track, .sale-ticker-group { width: 100%; }
+  .sale-ticker-group { justify-content: center; padding: 0 16px; }
+  .sale-ticker-group > :first-child { flex-wrap: wrap; justify-content: center; gap: 8px 12px; white-space: normal; }
+  .sale-ticker-group + .sale-ticker-group,
+  .sale-ticker-group > :not(:first-child) { display: none; }
+}
+
+
+.site-footer .footer-inner { max-width: none; padding-inline: 0; }
+.site-footer .copyright { max-width: none; margin-inline: 0; }
+
+
+/* Pin the photo within the product section during normal page scrolling. */
+@media (min-width: 1024px) {
+  .product-detail-layout {
+    --product-sticky-top: 104px;
+    --product-panel-height: calc(100dvh - var(--product-sticky-top) - 24px);
+  }
+
+  .product-detail-media {
+    position: sticky;
+    top: var(--product-sticky-top);
+  }
+
+  .product-detail-gallery {
+    max-height: var(--product-panel-height);
+  }
+
+  .product-detail-image {
+    flex-shrink: 1;
+    min-height: 0;
+  }
+
+  .product-detail-gallery > :not(.product-detail-image) {
+    flex-shrink: 0;
+  }
+
+
+}
+
+@media (min-width: 1600px) {
+  .product-detail-layout {
+    --product-sticky-top: calc(clamp(84px, 5.25vw, 102px) + 20px);
+  }
+}

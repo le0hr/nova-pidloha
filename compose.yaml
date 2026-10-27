@@ -1,0 +1,112 @@
+name: novapidloha
+
+x-service: &service
+  restart: unless-stopped
+  init: true
+  stop_grace_period: 30s
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+services:
+  db:
+    <<: *service
+    image: postgres:16-bookworm
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-novapidloha}
+      POSTGRES_USER: ${DATABASE_USERNAME:-novapidloha}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?Set DATABASE_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks: [nova-internal]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  cms:
+    <<: *service
+    image: novapidloha-cms:${IMAGE_TAG:?Set IMAGE_TAG}
+    build:
+      context: ./apps/cms
+      args:
+        PUBLIC_URL: ${CMS_PUBLIC_URL:?Set CMS_PUBLIC_URL}
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: "1337"
+      PUBLIC_URL: ${CMS_PUBLIC_URL:?Set CMS_PUBLIC_URL}
+      TRUST_PROXY: "true"
+      CORS_ORIGINS: ${WEB_PUBLIC_URL:?Set WEB_PUBLIC_URL},${CMS_PUBLIC_URL:?Set CMS_PUBLIC_URL}
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: db
+      DATABASE_PORT: "5432"
+      DATABASE_NAME: ${DATABASE_NAME:-novapidloha}
+      DATABASE_USERNAME: ${DATABASE_USERNAME:-novapidloha}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:?Set DATABASE_PASSWORD}
+      DATABASE_SSL: "false"
+      APP_KEYS: ${APP_KEYS:?Set APP_KEYS}
+      API_TOKEN_SALT: ${API_TOKEN_SALT:?Set API_TOKEN_SALT}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET:?Set ADMIN_JWT_SECRET}
+      TRANSFER_TOKEN_SALT: ${TRANSFER_TOKEN_SALT:?Set TRANSFER_TOKEN_SALT}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?Set ENCRYPTION_KEY}
+      NP_API_KEY: ${NP_API_KEY:-}
+    volumes:
+      - uploads:/app/public/uploads
+    networks:
+      nova-internal:
+      novapidloha_edge:
+        aliases: [nova-cms]
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:1337/_health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 90s
+
+  web:
+    <<: *service
+    image: novapidloha-web:${IMAGE_TAG:?Set IMAGE_TAG}
+    build:
+      context: ./apps/web
+      args:
+        NEXT_PUBLIC_STRAPI_URL: ${CMS_PUBLIC_URL:?Set CMS_PUBLIC_URL}
+    environment:
+      NODE_ENV: production
+      HOSTNAME: 0.0.0.0
+      PORT: "3000"
+      STRAPI_URL: http://nova-cms:1337
+      STRAPI_READ_TOKEN: ${STRAPI_READ_TOKEN:-}
+    networks:
+      nova-internal:
+      novapidloha_edge:
+        aliases: [nova-web]
+    depends_on:
+      cms:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+networks:
+  nova-internal:
+    internal: true
+  novapidloha_edge:
+    external: true
+
+volumes:
+  postgres_data:
+    name: ${DB_VOLUME_NAME:-novapidloha_postgres_data}
+  uploads:
+    name: ${UPLOADS_VOLUME_NAME:-novapidloha_uploads}

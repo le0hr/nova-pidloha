@@ -1,0 +1,86 @@
+{
+  "collectionName": "components_home_hero_slides",
+  "info": {
+    "displayName": "Hero slide",
+    "description": "Additional rich hero banners. Reorder these slides; the permanent shop map always stays first."
+  },
+  "options": {},
+  "attributes": {
+    "enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "kind": {
+      "type": "enumeration",
+      "enum": [
+        "promotion",
+        "map"
+      ],
+      "default": "promotion",
+      "required": true
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "eyebrow": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "mobileDescription": {
+      "type": "text"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "imageAlt": {
+      "type": "string"
+    },
+    "buttonLabel": {
+      "type": "string"
+    },
+    "buttonUrl": {
+      "type": "string"
+    },
+    "secondaryButtonLabel": {
+      "type": "string"
+    },
+    "secondaryButtonUrl": {
+      "type": "string"
+    },
+    "mapEmbedUrl": {
+      "type": "text"
+    },
+    "mapTitle": {
+      "type": "string"
+    },
+    "body": {
+      "type": "blocks"
+    },
+    "badge": {
+      "type": "string"
+    },
+    "mobileImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "alignment": {
+      "type": "enumeration",
+      "enum": [
+        "left",
+        "center",
+        "right"
+      ],
+      "default": "left"
+    }
+  }
+}

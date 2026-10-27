@@ -1,0 +1,771 @@
+{
+  "supplier": "KORFAD",
+  "catalog_date": null,
+  "currency": "грн",
+  "models": [
+    {
+      "collection_name": "ALIANO",
+      "model_name": "AL-01",
+      "coating_type": "Super PET",
+      "thickness_mm": null,
+      "standard_widths": "400",
+      "standard_height": null,
+      "production_days": "до 25 роб. днів",
+      "variants": [
+        {
+          "decor": "Super PET аляска",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6635.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET магнолія",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6635.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET сірий",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6635.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET антрацит",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6635.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET чорний",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6635.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET аляска",
+          "glass": "Двостороннє чорне скло",
+          "edge": null,
+          "price": 7230.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET магнолія",
+          "glass": "Двостороннє чорне скло",
+          "edge": null,
+          "price": 7230.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET сірий",
+          "glass": "Двостороннє чорне скло",
+          "edge": null,
+          "price": 7230.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET антрацит",
+          "glass": "Двостороннє чорне скло",
+          "edge": null,
+          "price": 7230.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET чорний",
+          "glass": "Двостороннє чорне скло",
+          "edge": null,
+          "price": 7230.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET аляска",
+          "glass": "Двостороннє графіт дзеркало",
+          "edge": null,
+          "price": 8440.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET магнолія",
+          "glass": "Двостороннє графіт дзеркало",
+          "edge": null,
+          "price": 8440.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET сірий",
+          "glass": "Двостороннє графіт дзеркало",
+          "edge": null,
+          "price": 8440.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET антрацит",
+          "glass": "Двостороннє графіт дзеркало",
+          "edge": null,
+          "price": 8440.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET чорний",
+          "glass": "Двостороннє графіт дзеркало",
+          "edge": null,
+          "price": 8440.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET аляска",
+          "glass": "Двостороннє бронзове дзеркало",
+          "edge": null,
+          "price": 8440.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET магнолія",
+          "glass": "Двостороннє бронзове дзеркало",
+          "edge": null,
+          "price": 8440.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET сірий",
+          "glass": "Двостороннє бронзове дзеркало",
+          "edge": null,
+          "price": 8440.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET антрацит",
+          "glass": "Двостороннє бронзове дзеркало",
+          "edge": null,
+          "price": 8440.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET чорний",
+          "glass": "Двостороннє бронзове дзеркало",
+          "edge": null,
+          "price": 8440.0,
+          "is_special_price": false,
+          "notes": null
+        }
+      ],
+      "non_standard_height_markup": 20.0,
+      "non_standard_notes": "Нестандарт по висоті: 1800-1990, 2010-2060, 2070-2200 мм.",
+      "model_notes": "ДП шириною 400 мм виготовляється у наступному вигляді."
+    },
+    {
+      "collection_name": "ALIANO",
+      "model_name": "AL-02",
+      "coating_type": "Super PET",
+      "thickness_mm": null,
+      "standard_widths": "400",
+      "standard_height": null,
+      "production_days": "до 25 роб. днів",
+      "variants": [
+        {
+          "decor": "Super PET аляска",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6635.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET магнолія",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6635.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET сірий",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6635.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET антрацит",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6635.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET чорний",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6635.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET аляска",
+          "glass": "Двостороннє чорне скло",
+          "edge": null,
+          "price": 7230.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET магнолія",
+          "glass": "Двостороннє чорне скло",
+          "edge": null,
+          "price": 7230.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET сірий",
+          "glass": "Двостороннє чорне скло",
+          "edge": null,
+          "price": 7230.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET антрацит",
+          "glass": "Двостороннє чорне скло",
+          "edge": null,
+          "price": 7230.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET чорний",
+          "glass": "Двостороннє чорне скло",
+          "edge": null,
+          "price": 7230.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET аляска",
+          "glass": "Двостороннє графіт дзеркало",
+          "edge": null,
+          "price": 8440.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET магнолія",
+          "glass": "Двостороннє графіт дзеркало",
+          "edge": null,
+          "price": 8440.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET сірий",
+          "glass": "Двостороннє графіт дзеркало",
+          "edge": null,
+          "price": 8440.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET антрацит",
+          "glass": "Двостороннє графіт дзеркало",
+          "edge": null,
+          "price": 8440.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET чорний",
+          "glass": "Двостороннє графіт дзеркало",
+          "edge": null,
+          "price": 8440.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET аляска",
+          "glass": "Двостороннє бронзове дзеркало",
+          "edge": null,
+          "price": 8440.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET магнолія",
+          "glass": "Двостороннє бронзове дзеркало",
+          "edge": null,
+          "price": 8440.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET сірий",
+          "glass": "Двостороннє бронзове дзеркало",
+          "edge": null,
+          "price": 8440.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET антрацит",
+          "glass": "Двостороннє бронзове дзеркало",
+          "edge": null,
+          "price": 8440.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET чорний",
+          "glass": "Двостороннє бронзове дзеркало",
+          "edge": null,
+          "price": 8440.0,
+          "is_special_price": false,
+          "notes": null
+        }
+      ],
+      "non_standard_height_markup": 20.0,
+      "non_standard_notes": "Нестандарт по висоті: 1800-1990, 2010-2060, 2070-2200 мм.",
+      "model_notes": "ДП шириною 400 мм виготовляється у наступному вигляді."
+    },
+    {
+      "collection_name": "ALIANO",
+      "model_name": "AL-03",
+      "coating_type": "Super PET",
+      "thickness_mm": null,
+      "standard_widths": "400",
+      "standard_height": null,
+      "production_days": "до 25 роб. днів",
+      "variants": [
+        {
+          "decor": "Super PET аляска",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET магнолія",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET сірий",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET антрацит",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET чорний",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET аляска",
+          "glass": "Lacobel чорний",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET магнолія",
+          "glass": "Lacobel чорний",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET сірий",
+          "glass": "Lacobel чорний",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET антрацит",
+          "glass": "Lacobel чорний",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET чорний",
+          "glass": "Lacobel чорний",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        }
+      ],
+      "non_standard_height_markup": 20.0,
+      "non_standard_notes": "Нестандарт по висоті: 1800-1990, 2010-2060, 2070-2200 мм.",
+      "model_notes": "ДП шириною 400 мм виготовляється у наступному вигляді."
+    },
+    {
+      "collection_name": "ALIANO",
+      "model_name": "AL-04",
+      "coating_type": "Super PET",
+      "thickness_mm": null,
+      "standard_widths": "400",
+      "standard_height": null,
+      "production_days": "до 25 роб. днів",
+      "variants": [
+        {
+          "decor": "Super PET аляска",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET магнолія",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET сірий",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET антрацит",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET чорний",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET аляска",
+          "glass": "Lacobel чорний",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET магнолія",
+          "glass": "Lacobel чорний",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET сірий",
+          "glass": "Lacobel чорний",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET антрацит",
+          "glass": "Lacobel чорний",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET чорний",
+          "glass": "Lacobel чорний",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        }
+      ],
+      "non_standard_height_markup": 20.0,
+      "non_standard_notes": "Нестандарт по висоті: 1800-1990, 2010-2060, 2070-2200 мм.",
+      "model_notes": "ДП шириною 400 мм виготовляється у наступному вигляді."
+    },
+    {
+      "collection_name": "ALIANO",
+      "model_name": "AL-05",
+      "coating_type": "Super PET",
+      "thickness_mm": null,
+      "standard_widths": "400",
+      "standard_height": null,
+      "production_days": "до 25 роб. днів",
+      "variants": [
+        {
+          "decor": "Super PET аляска",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET магнолія",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET сірий",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET антрацит",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET чорний",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        }
+      ],
+      "non_standard_height_markup": 20.0,
+      "non_standard_notes": "Нестандарт по висоті: 1800-1990, 2010-2060, 2070-2200 мм.",
+      "model_notes": "ДП шириною 400 мм виготовляється у наступному вигляді."
+    },
+    {
+      "collection_name": "ALIANO",
+      "model_name": "AL-06",
+      "coating_type": "Super PET",
+      "thickness_mm": null,
+      "standard_widths": "400",
+      "standard_height": null,
+      "production_days": "до 25 роб. днів",
+      "variants": [
+        {
+          "decor": "Super PET аляска",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET магнолія",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET сірий",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET антрацит",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET чорний",
+          "glass": "Сатин білий",
+          "edge": null,
+          "price": 6030.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET аляска",
+          "glass": "Двостороннє чорне скло",
+          "edge": null,
+          "price": 6635.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET магнолія",
+          "glass": "Двостороннє чорне скло",
+          "edge": null,
+          "price": 6635.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET сірий",
+          "glass": "Двостороннє чорне скло",
+          "edge": null,
+          "price": 6635.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET антрацит",
+          "glass": "Двостороннє чорне скло",
+          "edge": null,
+          "price": 6635.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET чорний",
+          "glass": "Двостороннє чорне скло",
+          "edge": null,
+          "price": 6635.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET аляска",
+          "glass": "Двостороннє графіт дзеркало",
+          "edge": null,
+          "price": 7230.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET магнолія",
+          "glass": "Двостороннє графіт дзеркало",
+          "edge": null,
+          "price": 7230.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET сірий",
+          "glass": "Двостороннє графіт дзеркало",
+          "edge": null,
+          "price": 7230.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET антрацит",
+          "glass": "Двостороннє графіт дзеркало",
+          "edge": null,
+          "price": 7230.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET чорний",
+          "glass": "Двостороннє графіт дзеркало",
+          "edge": null,
+          "price": 7230.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET аляска",
+          "glass": "Двостороннє бронзове дзеркало",
+          "edge": null,
+          "price": 7230.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET магнолія",
+          "glass": "Двостороннє бронзове дзеркало",
+          "edge": null,
+          "price": 7230.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET сірий",
+          "glass": "Двостороннє бронзове дзеркало",
+          "edge": null,
+          "price": 7230.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET антрацит",
+          "glass": "Двостороннє бронзове дзеркало",
+          "edge": null,
+          "price": 7230.0,
+          "is_special_price": false,
+          "notes": null
+        },
+        {
+          "decor": "Super PET чорний",
+          "glass": "Двостороннє бронзове дзеркало",
+          "edge": null,
+          "price": 7230.0,
+          "is_special_price": false,
+          "notes": null
+        }
+      ],
+      "non_standard_height_markup": 20.0,
+      "non_standard_notes": "Нестандарт по висоті: 1800-1990, 2010-2060, 2070-2200 мм.",
+      "model_notes": "ДП шириною 400 мм виготовляється у наступному вигляді."
+    }
+  ]
+}

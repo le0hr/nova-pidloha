@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_catalog_characteristics",
+  "info": {
+    "displayName": "Characteristic"
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "value": {
+      "type": "text",
+      "required": true
+    },
+    "unit": {
+      "type": "string"
+    }
+  }
+}

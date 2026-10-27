@@ -1,0 +1,94 @@
+{
+  "kind": "collectionType",
+  "collectionName": "product_variations",
+  "info": {
+    "singularName": "product-variation",
+    "pluralName": "product-variations",
+    "displayName": "ProductVariation"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "products": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::product.product",
+      "inversedBy": "product_variations"
+    },
+    "price": {
+      "type": "string"
+    },
+    "decor": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::decor.decor",
+      "inversedBy": "product_variations"
+    },
+    "decor_color": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::decor-color.decor-color",
+      "inversedBy": "product_variations"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "decor_glass": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::decor-glass.decor-glass",
+      "inversedBy": "product_variations"
+    },
+    "architrave_types": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::architrave-type.architrave-type",
+      "mappedBy": "product_variations"
+    },
+    "slug": {
+      "type": "uid"
+    },
+    "external_id": {
+      "type": "string",
+      "unique": true
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "catalog_attributes": {
+      "type": "json"
+    },
+    "attribute_definitions": {
+      "type": "json"
+    },
+    "sku": {
+      "type": "string"
+    },
+    "note": {
+      "type": "string"
+    },
+    "supplier_code": {
+      "type": "string"
+    },
+    "filter_values": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::filter-code.filter-code"
+    },
+    "addons": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::architrave-type.architrave-type"
+    }
+  }
+}

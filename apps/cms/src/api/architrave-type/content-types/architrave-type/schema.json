@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "architrave_types",
+  "info": {
+    "singularName": "architrave-type",
+    "pluralName": "architrave-types",
+    "displayName": "Extra"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "additionalCost": {
+      "type": "decimal"
+    },
+    "product_variations": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::product-variation.product-variation",
+      "inversedBy": "architrave_types"
+    },
+    "external_id": {
+      "type": "string",
+      "unique": true
+    },
+    "group": {
+      "type": "string"
+    },
+    "price": {
+      "type": "decimal"
+    }
+  }
+}

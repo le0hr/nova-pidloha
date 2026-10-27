@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_shops_adresses",
+  "info": {
+    "displayName": "adresses"
+  },
+  "options": {},
+  "attributes": {
+    "adress": {
+      "type": "string"
+    },
+    "Schedule": {
+      "type": "blocks"
+    }
+  },
+  "config": {}
+}
