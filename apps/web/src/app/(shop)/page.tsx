@@ -20,7 +20,7 @@ export default async function HomePage() {
 
   return (
     <HomeMotion>
-      <Hero slides={slides} />
+      <Hero slides={slides} shops={shops} />
       <Categories />
       <PopularProducts products={products} />
       <Promotion />

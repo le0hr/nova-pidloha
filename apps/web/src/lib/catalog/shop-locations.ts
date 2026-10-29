@@ -15,6 +15,13 @@ export const SHOP_LOCATIONS: ShopLocation[] = [
   { name: "Нова Підлога та Двері — магазин 2", lat: 49.42909246799387, lng: 32.00709050070083 },
 ];
 
+export function shopMapEmbedUrl(shop: ShopLocation): string {
+  const params = new URLSearchParams({
+    q: `${shop.lat},${shop.lng}`, z: "16", hl: "uk", output: "embed",
+  });
+  return `https://www.google.com/maps?${params}`;
+}
+
 export function shopDirectionsUrl(shop: ShopLocation): string {
   const params = new URLSearchParams({ api: "1", destination: `${shop.lat},${shop.lng}` });
   if (shop.placeId) params.set("destination_place_id", shop.placeId);

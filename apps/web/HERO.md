@@ -17,4 +17,4 @@ Promotional slides come only from the CMS. If the list is empty or the CMS is un
 
 The carousel advances every 7 seconds. Visitors can use arrows, dots, left/right keyboard arrows, and horizontal swipes. A thin red progress bar tracks the seven-second banner duration and pauses with rotation. Rotation pauses on hover, keyboard focus, hidden browser tabs, or interactive map use. Reduced-motion preferences disable automatic rotation.
 
-Map tiles are loaded directly from OpenStreetMap with visible attribution. Pin coordinates are in `src/lib/catalog/shop-locations.ts`.
+Google Maps displays the selected store. “Знайти магазини” enables map interaction, store selection and directions. Locations come from CMS, shared with the store cards, with fallback coordinates in `src/lib/catalog/shop-locations.ts`.
