@@ -1,3 +1,4 @@
+
 # syntax=docker/dockerfile:1
 FROM node:22-bookworm-slim AS build
 WORKDIR /app
@@ -17,6 +18,7 @@ COPY --from=build --chown=node:node /app/package.json /app/package-lock.json /ap
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
 COPY --from=build --chown=node:node /app/dist ./dist
 COPY --from=build --chown=node:node /app/public ./public
+RUN mkdir -p /app/database/migrations && chown -R node:node /app/database
 USER node
 EXPOSE 1337
 CMD ["node", "node_modules/@strapi/strapi/bin/strapi.js", "start"]
