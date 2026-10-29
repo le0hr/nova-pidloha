@@ -6,9 +6,10 @@ import Link from "next/link";
 import type { HeroSlide } from "@/types/home";
 import HomeIcon from "./HomeIcon";
 import ShopMap from "./ShopMap";
+import type { ShopLocation } from "@/lib/catalog/shop-locations";
 import HeroBody from "./HeroBody";
 
-export default function Hero({ slides }: { slides: HeroSlide[] }) {
+export default function Hero({ slides, shops }: { slides: HeroSlide[]; shops?: ShopLocation[] }) {
   const [active, setActive] = useState(0);
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -85,7 +86,7 @@ export default function Hero({ slides }: { slides: HeroSlide[] }) {
       className="home-hero relative isolate w-full overflow-hidden bg-[#35332e] text-white">
       {slides.map((background, index) => <div key={`${index}:${background.title}`} aria-hidden={index !== currentIndex} inert={index !== currentIndex}
         className={`hero-media absolute inset-0 bg-[#35332e] ${index === currentIndex ? "opacity-100" : "pointer-events-none opacity-0"}`}>
-        {background.kind === "map" ? <ShopMap interactive={index === currentIndex && mapInteractive} /> : <>
+        {background.kind === "map" ? <ShopMap shops={shops} interactive={index === currentIndex && mapInteractive} /> : <>
           {background.image && <Image src={background.image} alt={background.imageAlt ?? ""} fill sizes="100vw"
             className={`hero-photo object-cover ${background.mobileImage ? "hidden md:block" : ""}`} priority={index === currentIndex} unoptimized={background.image.startsWith("http")} />}
           {background.mobileImage && <Image src={background.mobileImage} alt={background.imageAlt ?? ""} fill sizes="100vw" className="hero-photo object-cover md:hidden" priority={index === currentIndex} unoptimized={background.mobileImage.startsWith("http")} />}
@@ -106,9 +107,8 @@ export default function Hero({ slides }: { slides: HeroSlide[] }) {
           </div>
         </div>}
       </div>
-      {isMap && <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" className="absolute bottom-1 right-0 z-[3] bg-white/90 px-2 py-0.5 text-[10px] text-[#333]">© OpenStreetMap contributors</a>}
       {mapInteractive && <button type="button" onClick={() => setMapInteractive(false)} className="absolute top-4 left-4 z-[3] bg-[#35332e] px-4 py-3 text-sm font-bold shadow">Закрити мапу ×</button>}
-      {slides.length > 1 && <div className="absolute bottom-7 left-0 right-0 z-[3] flex items-center justify-center gap-2 px-3">
+      {slides.length > 1 && !mapInteractive && <div className="absolute bottom-7 left-0 right-0 z-[3] flex items-center justify-center gap-2 px-3">
         <button type="button" aria-label="Попередній слайд" onClick={() => selectSlide(currentIndex - 1)} className="flex size-10 items-center justify-center rounded-full border border-white/40 bg-black/40 hover:bg-black/60"><HomeIcon name="chevron-left" /></button>
         <div className="flex flex-wrap justify-center rounded-full bg-black/35 px-2">
           {slides.map((item, index) => <button key={`${index}-${item.title}`} type="button" onClick={() => selectSlide(index)} aria-label={`Слайд ${index + 1}: ${item.title}`} aria-current={currentIndex === index ? "true" : undefined} className="flex size-9 items-center justify-center rounded-full"><span className={`size-2 rounded-full ${currentIndex === index ? "bg-white" : "bg-white/40"}`} /></button>)}

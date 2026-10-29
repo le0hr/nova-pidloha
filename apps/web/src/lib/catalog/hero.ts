@@ -43,9 +43,7 @@ export function mapEmbed(value?: string | null): string | undefined {
     const google = ["www.google.com", "maps.google.com"].includes(url.hostname) &&
       (url.pathname === "/maps/embed" || url.pathname.startsWith("/maps/embed/") ||
         url.pathname === "/maps" && url.searchParams.get("output") === "embed");
-    const osm = ["www.openstreetmap.org", "openstreetmap.org"].includes(url.hostname) &&
-      url.pathname === "/export/embed.html";
-    return google || osm ? url.toString() : undefined;
+    return google ? url.toString() : undefined;
   } catch { return undefined; }
 }
 function normalizeSlides(slides: RawHeroSlide[]): HeroSlide[] {

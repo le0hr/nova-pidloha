@@ -1,70 +1,30 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import type { Map as LeafletMap } from "leaflet";
-import "leaflet/dist/leaflet.css";
+import { useState } from "react";
+import { SHOP_LOCATIONS, shopDirectionsUrl, shopMapEmbedUrl, type ShopLocation } from "@/lib/catalog/shop-locations";
 
-import { SHOP_LOCATIONS } from "@/lib/catalog/shop-locations";
+export default function ShopMap({ interactive, shops = SHOP_LOCATIONS }: { interactive: boolean; shops?: ShopLocation[] }) {
+  const [selected, setSelected] = useState(0);
+  const locations = shops.length ? shops : SHOP_LOCATIONS;
+  const shop = locations[selected] ?? locations[0];
 
-export default function ShopMap({ interactive }: { interactive: boolean }) {
-  const container = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<LeafletMap | null>(null);
-  const interactiveRef = useRef(interactive);
-  useEffect(() => { interactiveRef.current = interactive; }, [interactive]);
-
-  useEffect(() => {
-    let disposed = false;
-    let resize: ResizeObserver | undefined;
-    import("leaflet").then((L) => {
-      if (disposed || !container.current) return;
-      const map = L.map(container.current, { zoomControl: false, attributionControl: false, scrollWheelZoom: false });
-      mapRef.current = map;
-      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      }).addTo(map);
-      L.control.zoom({ position: "topright" }).addTo(map);
-      SHOP_LOCATIONS.forEach((shop, index) => {
-        const link = document.createElement("a");
-        link.textContent = `${shop.name} — прокласти маршрут`;
-        link.href = `https://www.google.com/maps/dir/?api=1&destination=${shop.lat},${shop.lng}`;
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-        L.marker([shop.lat, shop.lng], {
-          title: shop.name, alt: shop.name,
-          icon: L.divIcon({
-            className: "",
-            html: `<span style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border:3px solid white;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#e53935;box-shadow:0 3px 12px #0005;color:white;font:bold 16px sans-serif"><span style="transform:rotate(45deg)">${index + 1}</span></span>`,
-            iconSize: [38, 38], iconAnchor: [19, 38],
-          }),
-        }).addTo(map).bindPopup(link);
-      });
-      const fit = () => {
-        map.invalidateSize();
-        const width = container.current?.clientWidth ?? 0;
-        const desktop = width >= 768;
-        map.fitBounds(SHOP_LOCATIONS.map((shop) => [shop.lat, shop.lng] as [number, number]), {
-          paddingTopLeft: !interactiveRef.current && desktop ? [width * 0.53, 70] : [45, 60],
-          paddingBottomRight: [55, 70], maxZoom: 14, animate: false,
-        });
-      };
-      fit();
-      resize = new ResizeObserver(fit);
-      resize.observe(container.current);
-    });
-    return () => { disposed = true; resize?.disconnect(); mapRef.current?.remove(); mapRef.current = null; };
-  }, []);
-
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !container.current) return;
-    const width = container.current.clientWidth;
-    map.fitBounds(SHOP_LOCATIONS.map((shop) => [shop.lat, shop.lng] as [number, number]), {
-      paddingTopLeft: !interactive && width >= 768 ? [width * 0.53, 70] : [45, 60],
-      paddingBottomRight: [55, 70], maxZoom: 14, animate: false,
-    });
-  }, [interactive]);
-
-  return <div ref={container} role="region" aria-label="Мапа двох магазинів у Черкасах"
-    inert={!interactive} className={`absolute inset-0 z-0 bg-[#dfe3dc] ${interactive ? "" : "[&_.leaflet-control-container]:hidden"}`} />;
+  return (
+    <div className="absolute inset-0 z-0 bg-[#dfe3dc]" inert={!interactive}>
+      <iframe title={`Google Maps — ${shop.name}`} src={shopMapEmbedUrl(shop)}
+        className={`absolute inset-x-0 bottom-0 w-full border-0 ${interactive ? "top-36 h-[calc(100%-9rem)] md:top-20 md:h-[calc(100%-5rem)]" : "top-0 h-full pointer-events-none"}`}
+        tabIndex={interactive ? 0 : -1} allowFullScreen referrerPolicy="no-referrer-when-downgrade" />
+      {interactive && <div className="absolute inset-x-0 top-16 flex items-center gap-2 bg-white px-4 py-2 text-[#333] md:top-0 md:min-h-20 md:pl-52">
+        <label className="flex min-w-0 flex-1 items-center gap-2 text-sm font-semibold">
+          <span className="sr-only">Оберіть магазин</span>
+          <select value={Math.min(selected, locations.length - 1)} onChange={(event) => setSelected(Number(event.target.value))}
+            className="min-h-11 w-full min-w-0 border border-[#ddd] bg-white px-3 md:max-w-sm">
+            {locations.map((location, index) => <option key={`${location.lat}:${location.lng}:${index}`} value={index}>{location.name}</option>)}
+          </select>
+        </label>
+        <a href={shopDirectionsUrl(shop)} target="_blank" rel="noopener noreferrer"
+          aria-label={`Прокласти маршрут: ${shop.name} (нова вкладка)`}
+          className="flex min-h-11 items-center bg-[#e53935] px-4 text-sm font-bold text-white hover:bg-[#c62828]">Маршрут ↗</a>
+      </div>}
+    </div>
+  );
 }
