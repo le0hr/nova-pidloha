@@ -78,6 +78,8 @@ services:
     build:
       context: ./apps/web
       args:
+        NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:-}
+        NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID: ${NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID:-}
         NEXT_PUBLIC_STRAPI_URL: ${CMS_PUBLIC_URL:?Set CMS_PUBLIC_URL}
     environment:
       NODE_ENV: production

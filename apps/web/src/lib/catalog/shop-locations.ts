@@ -22,6 +22,17 @@ export function shopMapEmbedUrl(shop: ShopLocation): string {
   return `https://www.google.com/maps?${params}`;
 }
 
+export function shopsMapEmbedUrl(shops: ShopLocation[]): string {
+  const locations = shops.length ? shops : SHOP_LOCATIONS;
+  if (locations.length === 1) return shopMapEmbedUrl(locations[0]);
+  const lat = locations.reduce((sum, shop) => sum + shop.lat, 0) / locations.length;
+  const lng = locations.reduce((sum, shop) => sum + shop.lng, 0) / locations.length;
+  const params = new URLSearchParams({
+    q: "Нова Підлога та Двері Черкаси", ll: `${lat},${lng}`, z: "13", hl: "uk", output: "embed",
+  });
+  return `https://www.google.com/maps?${params}`;
+}
+
 export function shopDirectionsUrl(shop: ShopLocation): string {
   const params = new URLSearchParams({ api: "1", destination: `${shop.lat},${shop.lng}` });
   if (shop.placeId) params.set("destination_place_id", shop.placeId);
