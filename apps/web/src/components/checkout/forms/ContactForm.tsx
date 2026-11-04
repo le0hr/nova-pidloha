@@ -2,18 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-type ContactsForm = {
-  lastName: string;
-  firstName: string;
-  phone: string;
-  email: string;
-  isCompany: boolean;
-  companyName: string;
-  edrpou: string;
-};
+import { useCheckoutStore, type CheckoutContacts } from "@/store/checkout-store";
+type ContactsForm = CheckoutContacts;
 
 export default function ContactsForm() {
-  const [form, setForm] = useState<ContactsForm>({
+  const { contacts, setContacts, editing, setEditing } = useCheckoutStore();
+  const [form, setForm] = useState<ContactsForm>(contacts ?? {
     lastName: "",
     firstName: "",
     phone: "",
@@ -67,7 +61,9 @@ export default function ContactsForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
-      router.push("/cart/checkout/delivery");
+      setContacts(form);
+      setEditing(false);
+      router.push(editing ? "/cart/checkout/confirmation" : "/cart/checkout/delivery");
     }
   };
 
@@ -95,7 +91,7 @@ export default function ContactsForm() {
 
         <div className="flex flex-col gap-1.5">
           <label className="font-['Inter',sans-serif] text-sm text-[#1A1A1A]">
-            Ім'я
+            Ім&apos;я
           </label>
           <input
             type="text"
@@ -224,7 +220,7 @@ export default function ContactsForm() {
         type="submit"
         className="mt-2 w-full bg-[#E53935] py-3.5 font-['Outfit',sans-serif] text-[15px] font-bold text-white transition-colors hover:bg-[#C62828]"
       >
-        Продовжити
+        {editing ? "Зберегти зміни" : "Продовжити"}
       </button>
     </form>
   );

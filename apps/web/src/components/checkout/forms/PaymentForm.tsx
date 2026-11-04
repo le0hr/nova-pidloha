@@ -1,19 +1,24 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-type PaymentMethod = "cod" | "card" | "invoice";
+import { useCheckoutStore, type PaymentMethod } from "@/store/checkout-store";
 
 export default function PaymentForm() {
   const router = useRouter();
-  const [method, setMethod] = useState<PaymentMethod>("cod");
+  const { payment, setPayment, editing, setEditing } = useCheckoutStore();
+  const [method, setMethod] = useState<PaymentMethod>(payment ?? "cod");
 
   const handleBack = () => {
+    setPayment(method);
     router.push("/cart/checkout/delivery");
   };
 
   const handleSubmit = () => {
+    setPayment(method);
+    setEditing(false);
     router.push("/cart/checkout/confirmation");
   };
 
@@ -47,7 +52,7 @@ export default function PaymentForm() {
                 Накладений платіж (при отриманні)
               </span>
 
-              <span className="rounded bg-[#2e7d32] px-2 py-0.5 text-[12px] font-medium text-white">
+              <span className="inline-flex shrink-0 items-center whitespace-nowrap border border-[#dedede] bg-[#f5f5f5] px-2 py-1 text-[10px] font-semibold uppercase leading-none tracking-[0.06em] text-[#555]">
                 Рекомендовано
               </span>
             </div>
@@ -90,18 +95,28 @@ export default function PaymentForm() {
           </div>
 
           <div className="flex-1">
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
               <div className="font-medium leading-tight">
-                Оплата карткою онлайн (LiqPay / Portmone)
+                Оплата карткою онлайн
               </div>
 
-              <div className="flex shrink-0 items-center gap-1.5">
-                <span className="border border-[#ddd] bg-white px-1.5 py-0.5 text-[11px] font-semibold tracking-wide text-[#1a1f71]">
-                  VISA
-                </span>
-                <span className="border border-[#ddd] bg-white px-1.5 py-0.5 text-[11px] font-semibold tracking-wide text-[#eb001b]">
-                  MC
-                </span>
+              <div className="flex flex-wrap items-center gap-1.5">
+                {[
+                  { name: "Visa", file: "visa" },
+                  { name: "Mastercard", file: "mastercard" },
+                  { name: "Google Pay", file: "googlepay" },
+                  { name: "Apple Pay", file: "applepay" },
+                ].map(({ name, file }) => (
+                  <span key={file} className="flex h-8 w-[50px] items-center justify-center overflow-hidden border border-[#e0e0e0] bg-white" title={name}>
+                    <Image
+                      src={`/images/payments/${file}.svg`}
+                      alt={name}
+                      width={48}
+                      height={30}
+                      className="h-[30px] w-12 object-contain"
+                    />
+                  </span>
+                ))}
               </div>
             </div>
 
@@ -177,7 +192,7 @@ export default function PaymentForm() {
           onClick={handleSubmit}
           className="bg-[#e53935] px-8 py-2.5 text-[15px] font-medium text-white transition hover:bg-[#d32f2f]"
         >
-          Продовжити
+          {editing ? "Зберегти зміни" : "Продовжити"}
         </button>
       </div>
     </>
