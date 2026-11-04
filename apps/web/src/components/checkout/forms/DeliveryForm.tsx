@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { shopDirectionsUrl, type ShopLocation } from "@/lib/catalog/shop-locations";
 import CityAutocomplete from "./CityAutocomplete";
 
 import { searchCities, getWarehouses, type DeliveryCity, type DeliveryWarehouse } from "@/lib/services/nova-poshta.service";
@@ -9,15 +10,21 @@ import { useCheckoutStore, type DeliveryMethod } from "@/store/checkout-store";
 
 const cityLabel = (city: DeliveryCity) => [city.name, city.area].filter(Boolean).join(", ");
 
-export default function DeliveryForm() {
+const shopKey = (shop: ShopLocation) => `${shop.lat},${shop.lng}`;
+
+export default function DeliveryForm({ shops }: { shops: ShopLocation[] }) {
   const router = useRouter();
+  const { editing, setEditing } = useCheckoutStore();
 
   const saved = useCheckoutStore((state) => state.delivery);
   const setDelivery = useCheckoutStore((state) => state.setDelivery);
+  const [address, setAddress] = useState(saved?.address ?? "");
   const [method, setMethod] = useState<DeliveryMethod>(saved?.method ?? "nova");
+  const [pickupShopKey, setPickupShopKey] = useState(saved?.pickupShop ? shopKey(saved.pickupShop) : "");
   const [city, setCity] = useState(saved?.city ? cityLabel(saved.city) : "");
   const [selectedCity, setSelectedCity] = useState<DeliveryCity | null>(saved?.city ?? null);
   const [department, setDepartment] = useState(saved?.warehouse?.ref ?? "");
+  const [warehouseOpen, setWarehouseOpen] = useState(!saved?.warehouse);
   const [warehouseQuery, setWarehouseQuery] = useState("");
   const [cities, setCities] = useState<DeliveryCity[]>([]);
   const [warehouses, setWarehouses] = useState<DeliveryWarehouse[]>([]);
@@ -58,6 +65,7 @@ export default function DeliveryForm() {
     setCity(value);
     setSelectedCity(null);
     setDepartment("");
+    setWarehouseOpen(true);
     setWarehouseQuery("");
     setWarehouses([]);
     setCities([]);
@@ -72,6 +80,7 @@ export default function DeliveryForm() {
     setCity(cityLabel(value));
     setSelectedCity(value);
     setDepartment("");
+    setWarehouseOpen(true);
     setWarehouseQuery("");
     setWarehouses([]);
     setCities([]);
@@ -97,8 +106,18 @@ export default function DeliveryForm() {
       setValidationError("Оберіть місто зі списку та відділення Нової Пошти.");
       return;
     }
-    setDelivery({ method, city: method === "nova" ? selectedCity : null, warehouse: method === "nova" ? warehouse : null });
-    router.push("/cart/checkout/payment");
+    const pickupShop = shops.find((shop) => shopKey(shop) === pickupShopKey) ?? null;
+    if (method === "pickup" && !pickupShop) {
+      setValidationError("Оберіть магазин для самовивозу.");
+      return;
+    }
+    if ((method === "courier" || method === "address") && !address.trim()) {
+      setValidationError("Вкажіть адресу доставки.");
+      return;
+    }
+    setDelivery({ method, address: address.trim(), pickupShop: method === "pickup" ? pickupShop : null, city: method === "nova" ? selectedCity : null, warehouse: method === "nova" ? warehouse : null });
+    setEditing(false);
+    router.push(editing ? "/cart/checkout/confirmation" : "/cart/checkout/payment");
   };
 
   const handleBack = () => {
@@ -108,13 +127,14 @@ export default function DeliveryForm() {
   return (
     <form onSubmit={handleSubmit} className="w-full">
       <div className="flex w-full flex-col gap-3">
-        <label
-          className={`flex cursor-pointer items-start gap-3 border bg-white px-4 py-4 transition-colors ${
+        <div
+          className={`border bg-white transition-colors ${
             method === "pickup"
               ? "border-[#e53935]"
               : "border-[#e0e0e0] hover:border-[#c0c0c0]"
           }`}
         >
+          <label className="flex cursor-pointer items-start gap-3 px-4 py-4">
           <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center">
             <div
               className={`h-4 w-4 rounded-full border-2 ${
@@ -136,7 +156,7 @@ export default function DeliveryForm() {
                   Самовивіз з магазину
                 </div>
                 <div className="mt-0.5 text-[13px] leading-snug text-[#777]">
-                  Київ, вул. Велика Васильківська, 42 (Пн-Сб)
+                  Оберіть зручний магазин для отримання замовлення
                 </div>
               </div>
 
@@ -150,10 +170,41 @@ export default function DeliveryForm() {
             type="radio"
             name="delivery"
             checked={method === "pickup"}
-            onChange={() => setMethod("pickup")}
+            onChange={() => { setMethod("pickup"); setValidationError(""); }}
             className="sr-only"
           />
-        </label>
+          </label>
+          {method === "pickup" && (
+            <div className="border-t border-[#f0f0f0] px-4 pb-5 pt-4">
+              <fieldset>
+                <legend className="mb-2 text-[13px] text-[#444]">Оберіть магазин</legend>
+                <div className="space-y-2">
+                  {shops.map((shop) => (
+                    <div key={shopKey(shop)} className={`border p-3 ${pickupShopKey === shopKey(shop) ? "border-[#e53935] bg-[#fff3f2]" : "border-[#e0e0e0]"}`}>
+                      <label className="flex cursor-pointer items-start gap-3">
+                        <input
+                          type="radio"
+                          name="pickup-shop"
+                          value={shopKey(shop)}
+                          checked={pickupShopKey === shopKey(shop)}
+                          onChange={() => { setPickupShopKey(shopKey(shop)); setValidationError(""); }}
+                          className="mt-0.5 h-4 w-4 shrink-0 accent-[#e53935]"
+                        />
+                        <span className="min-w-0 text-sm">
+                          <span className="block font-medium">{shop.name}</span>
+                          {shop.address && <span className="mt-1 block text-[#666]">{shop.address}</span>}
+                          {shop.hours && <span className="mt-1 block text-[#777]">{shop.hours}</span>}
+                        </span>
+                      </label>
+                      <a href={shopDirectionsUrl(shop)} target="_blank" rel="noopener noreferrer" className="ml-7 mt-2 inline-block text-[13px] text-[#e53935] underline">Показати на мапі</a>
+                    </div>
+                  ))}
+                </div>
+              </fieldset>
+              {validationError && <p role="alert" className="mt-3 text-sm text-red-700">{validationError}</p>}
+            </div>
+          )}
+        </div>
 
         <div
           className={`border bg-white transition-colors ${
@@ -217,6 +268,18 @@ export default function DeliveryForm() {
 
               <fieldset>
                 <legend className="mb-1.5 text-[13px] text-[#444]">Оберіть відділення або поштомат</legend>
+                {selectedWarehouse && !warehouseOpen ? (
+                  <button
+                    type="button"
+                    onClick={() => { setWarehouseQuery(""); setWarehouseOpen(true); }}
+                    aria-expanded={false}
+                    className="flex w-full items-center justify-between gap-3 border border-[#d0d0d0] bg-white px-3 py-2.5 text-left text-[15px] text-[#222] outline-none hover:border-[#999] focus-visible:border-[#e53935] focus-visible:ring-1 focus-visible:ring-[#e53935]"
+                  >
+                    <span>{selectedWarehouse.description}</span>
+                    <span className="shrink-0 text-[13px] font-medium text-[#e53935]">Змінити</span>
+                  </button>
+                ) : (
+                  <>
                 <label htmlFor="delivery-warehouse-search" className="sr-only">Пошук за номером або адресою</label>
                 <div className="relative">
                   <input
@@ -245,7 +308,7 @@ export default function DeliveryForm() {
                         name="delivery-warehouse"
                         value={item.ref}
                         checked={department === item.ref}
-                        onChange={() => { setDepartment(item.ref); setValidationError(""); }}
+                        onChange={() => { setDepartment(item.ref); setWarehouseOpen(false); setValidationError(""); }}
                         className="mt-0.5 h-4 w-4 shrink-0 accent-[#e53935]"
                       />
                       <span>{item.description}</span>
@@ -253,7 +316,9 @@ export default function DeliveryForm() {
                   ))}
                   {!warehouseDisabled && !filteredWarehouses.length && <p className="px-3 py-4 text-[13px] text-[#777]">{warehouses.length ? "Нічого не знайдено. Спробуйте інший номер або назву вулиці." : "У цьому місті відділень не знайдено."}</p>}
                 </div>
-                {selectedWarehouse && <p className="mt-2 text-[13px] text-[#444]"><span className="font-medium">Обрано:</span> {selectedWarehouse.description}</p>}
+                {selectedWarehouse && <button type="button" onClick={() => setWarehouseOpen(false)} className="mt-2 text-[13px] text-[#666] underline underline-offset-2">Залишити поточне відділення</button>}
+                  </>
+                )}
               </fieldset>
               {(cityError || warehouseError) && <div role="alert" className="text-sm text-red-700">
                 <p>{cityError || warehouseError}</p>
@@ -363,6 +428,13 @@ export default function DeliveryForm() {
         </label>
       </div>
 
+      {(method === "courier" || method === "address") && (
+        <div className="mt-4">
+          <label htmlFor="delivery-address" className="mb-1.5 block text-sm text-[#444]">Адреса доставки</label>
+          <textarea id="delivery-address" value={address} onChange={(event) => { setAddress(event.target.value); setValidationError(""); }} placeholder="Місто, вулиця, будинок, квартира" rows={2} className="w-full border border-[#d0d0d0] p-3 text-sm outline-none focus:border-[#e53935]" />
+          {validationError && <p role="alert" className="mt-2 text-sm text-red-700">{validationError}</p>}
+        </div>
+      )}
       <div className="mt-6 flex items-center gap-3">
         <button
           type="button"
@@ -376,7 +448,7 @@ export default function DeliveryForm() {
           type="submit"
           className="bg-[#e53935] px-8 py-2.5 text-[15px] font-medium text-white transition hover:bg-[#d32f2f]"
         >
-          Продовжити
+          {editing ? "Зберегти зміни" : "Продовжити"}
         </button>
       </div>
     </form>

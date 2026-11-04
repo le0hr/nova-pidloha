@@ -1,9 +1,13 @@
 "use client"
 
+import { useSyncExternalStore } from "react";
+
 import SideSummary from "@/components/checkout/SideSummary";
 import StatBar from "@/components/layout/cart/StatBar";
 import { usePathname } from "next/navigation";
 import MobileOrderSummary from "@/components/checkout/MobileSummary";
+
+const subscribe = () => () => {};
 
 export default function CheckoutStepsLayout({
   children,
@@ -11,6 +15,7 @@ export default function CheckoutStepsLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const hydrated = useSyncExternalStore(subscribe, () => true, () => false);
 
   const step =
     pathname.includes("/contact") ? 1 :
@@ -18,6 +23,8 @@ export default function CheckoutStepsLayout({
     pathname.includes("/payment") ? 3 :
     pathname.includes("/confirmation") ? 4 :
     1;
+
+  if (!hydrated) return <p role="status" className="checkout-container py-10 text-sm text-[#666]">Завантажуємо дані замовлення…</p>;
 
   return (
     <>
