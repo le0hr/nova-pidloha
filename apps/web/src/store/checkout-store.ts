@@ -1,3 +1,4 @@
+import type { OrderView } from "@/lib/checkout/client";
 import type { ShopLocation } from "@/lib/catalog/shop-locations";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
@@ -28,6 +29,9 @@ type Delivery = {
 };
 
 export const useCheckoutStore = create<{
+  order: OrderView | null;
+  setOrder: (order: OrderView) => void;
+  resetCheckout: () => void;
   contacts: CheckoutContacts | null;
   payment: PaymentMethod | null;
   comment: string;
@@ -41,6 +45,8 @@ export const useCheckoutStore = create<{
 }>()(
   persist(
     (set) => ({
+      order: null, setOrder: (order) => set({order}),
+      resetCheckout: () => set({order: null, contacts: null, delivery: null, payment: null, comment: "", editing: false}),
       contacts: null, payment: null, comment: "", editing: false, delivery: null,
       setContacts: (contacts) => set({ contacts }),
       setPayment: (payment) => set({ payment }),

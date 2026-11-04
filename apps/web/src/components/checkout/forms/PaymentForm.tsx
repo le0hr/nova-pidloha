@@ -6,8 +6,12 @@ import { useRouter } from "next/navigation";
 
 import { useCheckoutStore, type PaymentMethod } from "@/store/checkout-store";
 
+import { saveCheckout } from "@/lib/checkout/client";
+
 export default function PaymentForm() {
   const router = useRouter();
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
   const { payment, setPayment, editing, setEditing } = useCheckoutStore();
   const [method, setMethod] = useState<PaymentMethod>(payment ?? "cod");
 
@@ -16,14 +20,19 @@ export default function PaymentForm() {
     router.push("/cart/checkout/delivery");
   };
 
-  const handleSubmit = () => {
-    setPayment(method);
-    setEditing(false);
-    router.push("/cart/checkout/confirmation");
+  const handleSubmit = async () => {
+    if (saving) return;
+    setPayment(method); setSaving(true); setSaveError("");
+    try {
+      await saveCheckout('payment'); setEditing(false);
+      router.push("/cart/checkout/confirmation");
+    } catch (error) { setSaveError((error as Error).message); }
+    finally { setSaving(false); }
   };
 
   return (
     <>
+      {saveError && <p role="alert" className="mb-3 text-sm text-red-700">{saveError}</p>}
       <div className="flex flex-col gap-3">
         <label
           className={`flex cursor-pointer items-start gap-3 border bg-white px-4 py-4 transition-colors ${
@@ -104,8 +113,6 @@ export default function PaymentForm() {
                 {[
                   { name: "Visa", file: "visa" },
                   { name: "Mastercard", file: "mastercard" },
-                  { name: "Google Pay", file: "googlepay" },
-                  { name: "Apple Pay", file: "applepay" },
                 ].map(({ name, file }) => (
                   <span key={file} className="flex h-8 w-[50px] items-center justify-center overflow-hidden border border-[#e0e0e0] bg-white" title={name}>
                     <Image
@@ -121,8 +128,7 @@ export default function PaymentForm() {
             </div>
 
             <div className="mt-1.5 text-[13px] leading-snug text-[#777]">
-              Миттєва оплата будь-якою банківською карткою без додаткових
-              комісій. Безпечний платіжний сертифікат.
+              Кошти буде зарезервовано на картці. Списання відбудеться після підтвердження замовлення магазином. Реквізити картки вводяться на сторінці LiqPay.
             </div>
           </div>
 
@@ -189,10 +195,10 @@ export default function PaymentForm() {
 
         <button
           type="button"
-          onClick={handleSubmit}
+          onClick={handleSubmit} disabled={saving}
           className="bg-[#e53935] px-8 py-2.5 text-[15px] font-medium text-white transition hover:bg-[#d32f2f]"
         >
-          {editing ? "Зберегти зміни" : "Продовжити"}
+          {saving ? "Зберігаємо…" : editing ? "Зберегти зміни" : "Продовжити"}
         </button>
       </div>
     </>

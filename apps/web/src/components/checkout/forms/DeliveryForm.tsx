@@ -8,6 +8,8 @@ import CityAutocomplete from "./CityAutocomplete";
 import { searchCities, getWarehouses, type DeliveryCity, type DeliveryWarehouse } from "@/lib/services/nova-poshta.service";
 import { useCheckoutStore, type DeliveryMethod } from "@/store/checkout-store";
 
+import { saveCheckout } from "@/lib/checkout/client";
+
 const cityLabel = (city: DeliveryCity) => [city.name, city.area].filter(Boolean).join(", ");
 
 const shopKey = (shop: ShopLocation) => `${shop.lat},${shop.lng}`;
@@ -33,6 +35,7 @@ export default function DeliveryForm({ shops }: { shops: ShopLocation[] }) {
   const [cityError, setCityError] = useState("");
   const [warehouseError, setWarehouseError] = useState("");
   const [validationError, setValidationError] = useState("");
+  const [saving, setSaving] = useState(false);
   const [retry, setRetry] = useState(0);
 
   useEffect(() => {
@@ -99,8 +102,9 @@ export default function DeliveryForm({ shops }: { shops: ShopLocation[] }) {
   const selectedWarehouse = warehouses.find((item) => item.ref === department);
   const warehouseDisabled = !selectedCity || warehouseLoading || Boolean(warehouseError);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (saving) return;
     const warehouse = warehouses.find((item) => item.ref === department) ?? null;
     if (method === "nova" && (!selectedCity || !warehouse || warehouse.cityRef !== selectedCity.ref)) {
       setValidationError("Оберіть місто зі списку та відділення Нової Пошти.");
@@ -116,8 +120,13 @@ export default function DeliveryForm({ shops }: { shops: ShopLocation[] }) {
       return;
     }
     setDelivery({ method, address: address.trim(), pickupShop: method === "pickup" ? pickupShop : null, city: method === "nova" ? selectedCity : null, warehouse: method === "nova" ? warehouse : null });
-    setEditing(false);
-    router.push(editing ? "/cart/checkout/confirmation" : "/cart/checkout/payment");
+    setSaving(true); setValidationError("");
+    try {
+      await saveCheckout('delivery');
+      setEditing(false);
+      router.push(editing ? "/cart/checkout/confirmation" : "/cart/checkout/payment");
+    } catch (error) { setValidationError((error as Error).message); }
+    finally { setSaving(false); }
   };
 
   const handleBack = () => {
@@ -445,10 +454,10 @@ export default function DeliveryForm({ shops }: { shops: ShopLocation[] }) {
         </button>
 
         <button
-          type="submit"
+          type="submit" disabled={saving}
           className="bg-[#e53935] px-8 py-2.5 text-[15px] font-medium text-white transition hover:bg-[#d32f2f]"
         >
-          {editing ? "Зберегти зміни" : "Продовжити"}
+          {saving ? "Зберігаємо…" : editing ? "Зберегти зміни" : "Продовжити"}
         </button>
       </div>
     </form>

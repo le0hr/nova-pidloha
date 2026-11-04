@@ -1,0 +1,152 @@
+{
+  "kind": "collectionType",
+  "collectionName": "orders",
+  "info": {
+    "singularName": "order",
+    "pluralName": "orders",
+    "displayName": "Замовлення"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "number": {
+      "type": "string",
+      "unique": true,
+      "required": true
+    },
+    "sessionHash": {
+      "type": "string",
+      "unique": true,
+      "private": true
+    },
+    "checkoutStep": {
+      "type": "enumeration",
+      "enum": [
+        "cart",
+        "contacts",
+        "delivery",
+        "payment",
+        "confirmation"
+      ],
+      "default": "cart"
+    },
+    "orderStatus": {
+      "type": "enumeration",
+      "enum": [
+        "draft",
+        "awaiting_payment",
+        "awaiting_confirmation",
+        "confirmed",
+        "fulfilling",
+        "shipped",
+        "completed",
+        "cancelled"
+      ],
+      "default": "draft"
+    },
+    "paymentStatus": {
+      "type": "enumeration",
+      "enum": [
+        "unpaid",
+        "pending",
+        "held",
+        "paid",
+        "failed",
+        "reversed",
+        "refunded",
+        "test"
+      ],
+      "default": "unpaid"
+    },
+    "paymentMethod": {
+      "type": "enumeration",
+      "enum": [
+        "card",
+        "cod",
+        "invoice"
+      ],
+      "default": "cod"
+    },
+    "paymentProvider": {
+      "type": "string"
+    },
+    "currency": {
+      "type": "string",
+      "default": "UAH"
+    },
+    "totalMinor": {
+      "type": "integer",
+      "default": 0
+    },
+    "customerName": {
+      "type": "string"
+    },
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email"
+    },
+    "isCompany": {
+      "type": "boolean",
+      "default": false
+    },
+    "companyName": {
+      "type": "string"
+    },
+    "edrpou": {
+      "type": "string"
+    },
+    "deliveryMethod": {
+      "type": "string"
+    },
+    "delivery": {
+      "type": "json"
+    },
+    "items": {
+      "type": "json"
+    },
+    "itemsSummary": {
+      "type": "text"
+    },
+    "comment": {
+      "type": "text"
+    },
+    "managerNotes": {
+      "type": "text"
+    },
+    "history": {
+      "type": "json"
+    },
+    "lastActivityAt": {
+      "type": "datetime"
+    },
+    "submittedAt": {
+      "type": "datetime"
+    },
+    "activeAttemptId": {
+      "type": "string"
+    },
+    "paymentAttempts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::payment-attempt.payment-attempt",
+      "mappedBy": "order"
+    },
+    "paymentTestMode": {
+      "type": "boolean",
+      "default": false
+    },
+    "totalAmount": {
+      "type": "decimal",
+      "default": 0
+    }
+  }
+}

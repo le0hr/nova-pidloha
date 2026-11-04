@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCheckoutStore, type CheckoutContacts } from "@/store/checkout-store";
+import { saveCheckout } from "@/lib/checkout/client";
 type ContactsForm = CheckoutContacts;
 
 export default function ContactsForm() {
@@ -19,6 +20,8 @@ export default function ContactsForm() {
 
   const [errors, setErrors] = useState<Partial<Record<keyof ContactsForm, string>>>({});
   const router = useRouter();
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
   const handleChange = (field: keyof ContactsForm, value: string | boolean) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
@@ -58,13 +61,16 @@ export default function ContactsForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validate()) {
-      setContacts(form);
+    if (saving || !validate()) return;
+    setSaving(true); setSaveError(""); setContacts(form);
+    try {
+      await saveCheckout('contacts');
       setEditing(false);
       router.push(editing ? "/cart/checkout/confirmation" : "/cart/checkout/delivery");
-    }
+    } catch (error) { setSaveError((error as Error).message); }
+    finally { setSaving(false); }
   };
 
   return (
@@ -216,11 +222,13 @@ export default function ContactsForm() {
         </div>
       )}
 
+      {saveError && <p role="alert" className="text-sm text-red-700">{saveError}</p>}
       <button
+        disabled={saving}
         type="submit"
         className="mt-2 w-full bg-[#E53935] py-3.5 font-['Outfit',sans-serif] text-[15px] font-bold text-white transition-colors hover:bg-[#C62828]"
       >
-        {editing ? "Зберегти зміни" : "Продовжити"}
+        {saving ? "Зберігаємо…" : editing ? "Зберегти зміни" : "Продовжити"}
       </button>
     </form>
   );

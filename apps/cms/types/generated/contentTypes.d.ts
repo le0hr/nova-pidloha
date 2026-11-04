@@ -764,6 +764,149 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
+  collectionName: 'orders';
+  info: {
+    displayName: '\u0417\u0430\u043C\u043E\u0432\u043B\u0435\u043D\u043D\u044F';
+    pluralName: 'orders';
+    singularName: 'order';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    activeAttemptId: Schema.Attribute.String;
+    checkoutStep: Schema.Attribute.Enumeration<
+      ['cart', 'contacts', 'delivery', 'payment', 'confirmation']
+    > &
+      Schema.Attribute.DefaultTo<'cart'>;
+    comment: Schema.Attribute.Text;
+    companyName: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    currency: Schema.Attribute.String & Schema.Attribute.DefaultTo<'UAH'>;
+    customerName: Schema.Attribute.String;
+    delivery: Schema.Attribute.JSON;
+    deliveryMethod: Schema.Attribute.String;
+    edrpou: Schema.Attribute.String;
+    email: Schema.Attribute.Email;
+    firstName: Schema.Attribute.String;
+    history: Schema.Attribute.JSON;
+    isCompany: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    items: Schema.Attribute.JSON;
+    itemsSummary: Schema.Attribute.Text;
+    lastActivityAt: Schema.Attribute.DateTime;
+    lastName: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::order.order'> &
+      Schema.Attribute.Private;
+    managerNotes: Schema.Attribute.Text;
+    number: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    orderStatus: Schema.Attribute.Enumeration<
+      [
+        'draft',
+        'awaiting_payment',
+        'awaiting_confirmation',
+        'confirmed',
+        'fulfilling',
+        'shipped',
+        'completed',
+        'cancelled',
+      ]
+    > &
+      Schema.Attribute.DefaultTo<'draft'>;
+    paymentAttempts: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::payment-attempt.payment-attempt'
+    >;
+    paymentMethod: Schema.Attribute.Enumeration<['card', 'cod', 'invoice']> &
+      Schema.Attribute.DefaultTo<'cod'>;
+    paymentProvider: Schema.Attribute.String;
+    paymentStatus: Schema.Attribute.Enumeration<
+      [
+        'unpaid',
+        'pending',
+        'held',
+        'paid',
+        'failed',
+        'reversed',
+        'refunded',
+        'test',
+      ]
+    > &
+      Schema.Attribute.DefaultTo<'unpaid'>;
+    paymentTestMode: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    phone: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    sessionHash: Schema.Attribute.String &
+      Schema.Attribute.Private &
+      Schema.Attribute.Unique;
+    submittedAt: Schema.Attribute.DateTime;
+    totalAmount: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    totalMinor: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPaymentAttemptPaymentAttempt
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'payment_attempts';
+  info: {
+    displayName: '\u041F\u043B\u0430\u0442\u0456\u0436\u043D\u0456 \u0441\u043F\u0440\u043E\u0431\u0438';
+    pluralName: 'payment-attempts';
+    singularName: 'payment-attempt';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    action: Schema.Attribute.String & Schema.Attribute.DefaultTo<'hold'>;
+    amount: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    amountMinor: Schema.Attribute.Integer;
+    checkoutExpiresAt: Schema.Attribute.DateTime;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    currency: Schema.Attribute.String & Schema.Attribute.DefaultTo<'UAH'>;
+    errorCode: Schema.Attribute.String;
+    events: Schema.Attribute.JSON;
+    heldAt: Schema.Attribute.DateTime;
+    holdReviewAt: Schema.Attribute.DateTime;
+    lastCheckedAt: Schema.Attribute.DateTime;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::payment-attempt.payment-attempt'
+    > &
+      Schema.Attribute.Private;
+    order: Schema.Attribute.Relation<'manyToOne', 'api::order.order'>;
+    paidAt: Schema.Attribute.DateTime;
+    paymentId: Schema.Attribute.String;
+    provider: Schema.Attribute.String & Schema.Attribute.DefaultTo<'liqpay'>;
+    providerOrderId: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    providerStatus: Schema.Attribute.String;
+    publicKey: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    status: Schema.Attribute.Enumeration<
+      ['pending', 'held', 'paid', 'failed', 'reversed', 'refunded', 'test']
+    > &
+      Schema.Attribute.DefaultTo<'pending'>;
+    testMode: Schema.Attribute.Boolean;
+    transactionId: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiProductVariationProductVariation
   extends Struct.CollectionTypeSchema {
   collectionName: 'product_variations';
@@ -1400,6 +1543,8 @@ declare module '@strapi/strapi' {
       'api::filter-code.filter-code': ApiFilterCodeFilterCode;
       'api::filter-group.filter-group': ApiFilterGroupFilterGroup;
       'api::global.global': ApiGlobalGlobal;
+      'api::order.order': ApiOrderOrder;
+      'api::payment-attempt.payment-attempt': ApiPaymentAttemptPaymentAttempt;
       'api::product-variation.product-variation': ApiProductVariationProductVariation;
       'api::product.product': ApiProductProduct;
       'plugin::content-releases.release': PluginContentReleasesRelease;

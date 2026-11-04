@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 
+import CheckoutSync from "@/components/checkout/CheckoutSync";
 import SideSummary from "@/components/checkout/SideSummary";
 import StatBar from "@/components/layout/cart/StatBar";
 import { usePathname } from "next/navigation";
@@ -28,6 +29,7 @@ export default function CheckoutStepsLayout({
 
   return (
     <>
+      <CheckoutSync />
       <MobileOrderSummary />
 
       <div className="hidden lg:block">

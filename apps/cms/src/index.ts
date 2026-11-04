@@ -1,9 +1,17 @@
 import type { Core } from '@strapi/strapi';
+import { configureCheckoutAdmin } from './checkout/admin';
+import { reconcilePending } from './checkout/orders';
 
 export default {
-  register() {},
+  register({ strapi }: { strapi: Core.Strapi }) {
+    // Checkout data is never exposed through the catalog GraphQL API.
+    const extension = strapi.plugin('graphql')?.service('extension');
+    for (const uid of ['api::order.order', 'api::payment-attempt.payment-attempt']) extension?.shadowCRUD(uid).disable();
+  },
 
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
+    await configureCheckoutAdmin(strapi);
+    strapi.cron.add({ checkoutPayments: { task: () => reconcilePending(strapi), options: { rule: '*/5 * * * *' } } });
     const role = await strapi.db.query('plugin::users-permissions.role').findOne({
       where: { type: 'public' },
     });

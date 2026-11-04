@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { saveCheckout, submitCheckout, openPayment } from "@/lib/checkout/client";
 import { useCheckoutStore, DELIVERY_LABELS, PAYMENT_LABELS } from "@/store/checkout-store";
 import { useCartStore } from "@/store/cart-store";
 
@@ -21,6 +22,9 @@ function DetailSection({ title, step, children }: { title: string; step: string;
 
 export default function ConfirmationForm() {
   const router = useRouter();
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const order = useCheckoutStore(state => state.order);
   const { contacts, delivery, payment, comment, setComment } = useCheckoutStore();
   const items = useCartStore((state) => state.items);
   const contactsReady = Boolean(contacts?.firstName.trim() && contacts?.lastName.trim() && contacts?.phone.trim() && contacts?.email.trim() && (!contacts.isCompany || (contacts.companyName.trim() && contacts.edrpou.trim())));
@@ -30,6 +34,27 @@ export default function ConfirmationForm() {
     delivery.address?.trim()
   ));
   const ready = contactsReady && deliveryReady && Boolean(payment) && items.length > 0;
+
+  useEffect(() => {
+    if (!ready) return;
+    const timer = setTimeout(() => {
+      saveCheckout('confirmation').catch(error => setSaveError(error.message));
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [ready, comment]);
+
+  const submit = async () => {
+    if (!ready || saving || !order) return;
+    setSaving(true); setSaveError("");
+    try {
+      const saved = await saveCheckout('confirmation');
+      if (saved.totalMinor !== order.totalMinor) throw new Error('Ціни змінилися. Перевірте оновлену суму та підтвердіть ще раз.');
+      const result = await submitCheckout(saved.totalMinor);
+      useCheckoutStore.getState().setOrder(result.order);
+      if (result.checkout) openPayment(result.checkout);
+      else router.push('/cart/checkout/success');
+    } catch (error) { setSaveError((error as Error).message); setSaving(false); }
+  };
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-5">
@@ -74,8 +99,11 @@ export default function ConfirmationForm() {
       </div>
       <div className="border-t border-[#e0e0e0] pt-5">
         {!ready && <p role="status" className="mb-3 text-sm text-red-700">{items.length ? "Заповніть контактні дані та оберіть доставку й оплату перед підтвердженням." : "Додайте товари до кошика перед підтвердженням."}</p>}
-        <button type="button" disabled={!ready} onClick={() => { if (ready) router.push("/cart/checkout/success"); }} className="min-h-11 w-full bg-[#e53935] px-6 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-[#d32f2f] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e53935] disabled:cursor-not-allowed disabled:bg-[#bdbdbd] sm:w-auto">
-          Підтвердити замовлення
+        {order && <p className="mb-3 font-semibold">До {payment === 'card' ? 'резервування' : 'сплати'}: {(order.totalMinor / 100).toLocaleString('uk-UA')} ₴</p>}
+        <p className="mb-3 text-sm text-[#666]">Доставка, крім самовивозу, оплачується окремо. Її вартість уточнить менеджер.</p>
+        {saveError && <p role="alert" className="mb-3 text-sm text-red-700">{saveError}</p>}
+        <button type="button" disabled={!ready || saving || !order} onClick={submit} className="min-h-11 w-full bg-[#e53935] px-6 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-[#d32f2f] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e53935] disabled:cursor-not-allowed disabled:bg-[#bdbdbd] sm:w-auto">
+          {saving ? "Зачекайте…" : payment === "card" ? "Перейти до оплати" : "Підтвердити замовлення"}
         </button>
       </div>
     </div>

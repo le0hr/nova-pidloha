@@ -56,6 +56,11 @@ services:
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
       ENCRYPTION_KEY: ${ENCRYPTION_KEY:?Set ENCRYPTION_KEY}
       NP_API_KEY: ${NP_API_KEY:-}
+      CHECKOUT_API_SECRET: ${CHECKOUT_API_SECRET:-}
+      WEB_PUBLIC_URL: ${WEB_PUBLIC_URL:?Set WEB_PUBLIC_URL}
+      LIQPAY_PUBLIC_KEY: ${LIQPAY_PUBLIC_KEY:-}
+      LIQPAY_PRIVATE_KEY: ${LIQPAY_PRIVATE_KEY:-}
+      LIQPAY_TEST_MODE: ${LIQPAY_TEST_MODE:-true}
     volumes:
       - uploads:/app/public/uploads
     networks:
@@ -87,6 +92,8 @@ services:
       PORT: "3000"
       STRAPI_URL: http://nova-cms:1337
       STRAPI_READ_TOKEN: ${STRAPI_READ_TOKEN:-}
+      CHECKOUT_API_SECRET: ${CHECKOUT_API_SECRET:-}
+      WEB_PUBLIC_URL: ${WEB_PUBLIC_URL:?Set WEB_PUBLIC_URL}
     networks:
       nova-internal:
       novapidloha_edge:

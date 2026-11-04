@@ -1,0 +1,93 @@
+{
+  "kind": "collectionType",
+  "collectionName": "payment_attempts",
+  "info": {
+    "singularName": "payment-attempt",
+    "pluralName": "payment-attempts",
+    "displayName": "Платіжні спроби"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "providerOrderId": {
+      "type": "string",
+      "unique": true,
+      "required": true
+    },
+    "order": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::order.order",
+      "inversedBy": "paymentAttempts"
+    },
+    "provider": {
+      "type": "string",
+      "default": "liqpay"
+    },
+    "action": {
+      "type": "string",
+      "default": "hold"
+    },
+    "amountMinor": {
+      "type": "integer"
+    },
+    "currency": {
+      "type": "string",
+      "default": "UAH"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "held",
+        "paid",
+        "failed",
+        "reversed",
+        "refunded",
+        "test"
+      ],
+      "default": "pending"
+    },
+    "providerStatus": {
+      "type": "string"
+    },
+    "paymentId": {
+      "type": "string"
+    },
+    "transactionId": {
+      "type": "string"
+    },
+    "publicKey": {
+      "type": "string"
+    },
+    "testMode": {
+      "type": "boolean"
+    },
+    "checkoutExpiresAt": {
+      "type": "datetime"
+    },
+    "heldAt": {
+      "type": "datetime"
+    },
+    "holdReviewAt": {
+      "type": "datetime"
+    },
+    "paidAt": {
+      "type": "datetime"
+    },
+    "lastCheckedAt": {
+      "type": "datetime"
+    },
+    "errorCode": {
+      "type": "string"
+    },
+    "events": {
+      "type": "json"
+    },
+    "amount": {
+      "type": "decimal",
+      "default": 0
+    }
+  }
+}
