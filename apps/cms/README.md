@@ -1,5 +1,20 @@
 # 🚀 Getting started with Strapi
 
+## Temporary checkout compilation exclusion
+
+`tsconfig.json` temporarily excludes `src/checkout/catalog.ts`: this branch has
+the unused module but not its `./domain` dependency from the payment branch.
+The source is preserved, and TypeScript checks remain enabled for the rest of CMS.
+An import from another module will still cause TypeScript to check this file.
+
+When merging the payment branch:
+
+1. Include `src/checkout/domain.ts` and the related payment implementation.
+2. Remove the `src/checkout/catalog.ts` exclusion from `tsconfig.json`.
+3. Run `npx tsc --noEmit`, `npm run build`, and the payment branch's tests.
+4. Verify CMS startup and checkout/payment flows in the payment sandbox.
+5. Remove this temporary note after verification.
+
 ## Photo uploads
 
 New JPEG, PNG, TIFF and AVIF uploads are automatically converted to WebP

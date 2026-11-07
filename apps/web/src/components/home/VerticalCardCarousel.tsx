@@ -5,10 +5,12 @@ import { useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { scrollCard, cancelCardScroll } from "@/lib/scroll-card";
 import { CardAutoplayContext } from "./RandomCardGroup";
 
-export default function VerticalCardCarousel({ slides, label, className = "" }: {
+export default function VerticalCardCarousel({ slides, label, className = "", controlClassName = "top-[118px] md:top-[140px]" }: {
   slides: { key: string; content: ReactNode }[];
   label: string;
   className?: string;
+  /** Vertical position of the "next" button; keep it 40px above the bottom of the card photo. */
+  controlClassName?: string;
 }) {
   const register = useContext(CardAutoplayContext);
   const viewport = useRef<HTMLDivElement>(null);
@@ -74,7 +76,7 @@ export default function VerticalCardCarousel({ slides, label, className = "" }: 
       </div>
       {multiple && (
         <button type="button" onClick={() => select((active + 1) % slides.length)} aria-label={`Наступна картка: ${label}`}
-          className="absolute right-3 top-[118px] flex size-7 items-center justify-center rounded-full border border-[#e0e0e0] bg-white/80 text-[#1a1a1a] transition-colors hover:border-[#e53935] hover:text-[#e53935] focus-visible:outline-2 focus-visible:outline-[#e53935] md:top-[140px]">
+          className={`absolute right-3 flex size-7 items-center justify-center rounded-full border border-[#e0e0e0] bg-white/80 text-[#1a1a1a] transition-colors hover:border-[#e53935] hover:text-[#e53935] focus-visible:outline-2 focus-visible:outline-[#e53935] ${controlClassName}`}>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m4 10 4-4 4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
       )}

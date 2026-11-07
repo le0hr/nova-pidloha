@@ -1,21 +1,24 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { HomeProduct } from "@/types/home";
 import HomeIcon from "./HomeIcon";
 import SectionHeader from "./SectionHeader";
 import VerticalCardCarousel from "./VerticalCardCarousel";
 import RandomCardGroup from "./RandomCardGroup";
+import HomeCard, { homeCardCarousel } from "./HomeCard";
 
-// Design previews link to the catalog; only CMS products link to a product page.
+import { groupedCardColumns } from "@/lib/catalog/home-cards";
+
+// Design previews link to the catalog; shown until featured products are marked in the CMS.
 const previews: HomeProduct[] = [
-  { name: "Ламінат Kronospan Castello Classic Oak", href: "/catalog/pidloha", image: "/images/home/product-laminate.png", price: null },
-  { name: "SPC підлога Rocko Vinyl Toffee Oak", href: "/catalog/pidloha", image: "/images/home/product-spc.png", price: null },
-  { name: "Вінілова плитка IVC Camino Wood", href: "/catalog/pidloha", image: "/images/home/product-vinyl.png", price: null },
-  { name: "Двері міжкімнатні Porta Loft Grau", href: "/catalog/mizhkimnatni", image: "/images/home/product-door.png", price: null },
+  { name: "Ламінат Kronospan Castello Classic Oak", href: "/catalog/pidloha", image: "/images/home/product-laminate.png", price: null, group: "Підлога" },
+  { name: "SPC підлога Rocko Vinyl Toffee Oak", href: "/catalog/pidloha", image: "/images/home/product-spc.png", price: null, group: "Підлога" },
+  { name: "Вінілова плитка IVC Camino Wood", href: "/catalog/pidloha", image: "/images/home/product-vinyl.png", price: null, group: "Підлога" },
+  { name: "Двері міжкімнатні Porta Loft Grau", href: "/catalog/mizhkimnatni", image: "/images/home/product-door.png", price: null, group: "Міжкімнатні двері" },
 ];
 
 export default function PopularProducts({ products }: { products: HomeProduct[] }) {
   const items = products.length ? products : previews;
+  const columns = groupedCardColumns(items, product => product.group);
 
   return (
     <section aria-labelledby="popular-title" className="bg-white md:bg-[#f5f5f5]">
@@ -25,24 +28,11 @@ export default function PopularProducts({ products }: { products: HomeProduct[] 
           <Link href="#categories" className="hidden items-center gap-2 text-sm font-bold text-[#e53935] hover:underline md:flex">Всі товари<HomeIcon name="arrow-red" size={16} /></Link>
         </div>
         <RandomCardGroup className="grid grid-cols-2 gap-3 md:gap-6 lg:grid-cols-4">
-          {items.slice(0, 4).map((column, columnIndex) => (
-            <VerticalCardCarousel key={column.name + column.href} label={`Товари ${columnIndex + 1}`} className="h-[310px] bg-white md:h-[320px]" slides={(items.length > 4
-              ? items.filter((_, index) => index % 4 === columnIndex)
-              : items.map((_, offset) => items[(columnIndex + offset) % items.length])
-            ).map((product) => ({ key: product.name + product.href, content: (
-            <article key={product.name + product.href} className="flex h-full min-w-0 flex-col bg-white">
-              <Link href={product.href} className="group relative block h-[158px] shrink-0 overflow-hidden md:h-[180px] focus-visible:outline-2 focus-visible:outline-[#e53935]">
-                <Image src={product.image} alt={product.name} fill sizes="(min-width: 1024px) 24vw, 48vw" unoptimized={product.image.startsWith("http")} className="object-cover" />
-                {product.badge && <span className="absolute top-2 left-2 bg-[#e53935] px-2 py-1 text-[10px] font-bold text-white md:top-3 md:left-3 md:text-xs">{product.badge}</span>}
-              </Link>
-              <div className="flex flex-1 flex-col gap-2 p-2.5 md:gap-3 md:p-4">
-                <h3 className="line-clamp-2 text-xs font-medium leading-snug md:text-sm"><Link href={product.href} className="hover:text-[#e53935]">{product.name}</Link></h3>
-                <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-                  <p className="text-sm font-bold md:text-lg">{product.price !== null ? <><span className="text-[11px] font-normal text-[#666]">від </span>₴ {product.price.toLocaleString("uk-UA")}</> : <span className="text-[11px] font-normal text-[#666] md:text-xs">Ціну уточнюйте в каталозі</span>}</p>
-                  <Link href={product.href} aria-label={`Обрати ${product.name}`} className="flex min-h-11 items-center justify-center gap-2 bg-[#e53935] px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-[#c62828] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e53935]"><span>Обрати</span><HomeIcon name="arrow-white" size={14} /></Link>
-                </div>
-              </div>
-            </article>
+          {columns.map((column) => (
+            <VerticalCardCarousel key={column[0].name + column[0].href} label={`Товари: ${column[0].group}`} {...homeCardCarousel} slides={column.map((product) => ({ key: product.name + product.href, content: (
+              <HomeCard title={product.name} href={product.href} image={product.image} imagePortrait={product.imagePortrait} badge={product.badge}
+                description={product.description} actionLabel="Обрати" linkContent
+                footer={<p className="text-sm font-bold md:text-lg">{product.price !== null ? <><span className="text-[11px] font-normal text-[#666]">від </span>₴ {product.price.toLocaleString("uk-UA")}</> : <span className="text-[11px] font-normal text-[#666] md:text-xs">Ціну уточнюйте в каталозі</span>}</p>} />
             ) }))} />
           ))}
         </RandomCardGroup>
