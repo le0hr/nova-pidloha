@@ -1,7 +1,23 @@
+export interface HomeCategory {
+  name: string;
+  href: string;
+  image: string | null;
+  parentName?: string;
+  description?: string;
+  /** Homepage carousel group: the class (parent category) name. */
+  group: string;
+}
+
 export interface HomeProduct {
   name: string;
   href: string;
-  image: string;
+  image: string | null;
+  /** Tall photos (doors) are shown whole instead of cropped. */
+  imagePortrait?: boolean;
+  /** Homepage carousel group: product subclass ("Каркасно-щитові"), otherwise its category name. */
+  group: string;
+  /** Short product description from the CMS, if filled in. */
+  description?: string;
   price: number | null;
   badge?: string;
 }

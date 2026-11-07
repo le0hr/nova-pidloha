@@ -1,20 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { categoryAncestors, categoryHref, type Category } from "@/lib/catalog/categories";
-import { mediaUrl } from "@/lib/client";
-
-function categoryImage(category: Category, categories: Category[]): string {
-  if (category.image?.url) return mediaUrl(category.image.url);
-  const name = `${category.name} ${category.slug}`.toLowerCase();
-  if (/spc|спс/.test(name)) return "/images/home/spc.png";
-  if (/вініл|vinyl|vinil/.test(name)) return "/images/home/vinyl.png";
-  if (/ламінат|laminat/.test(name)) return "/images/home/laminate.png";
-  const path = [...categoryAncestors(categories, category), category]
-    .map(item => `${item.name} ${item.slug}`).join(" ").toLowerCase();
-  if (/двер|dver|doors|mizhkimnat|vhidni/.test(path)) return "/images/home/doors.png";
-  if (/підлог|pidloh|floor/.test(path)) return "/images/home/laminate.png";
-  return "/images/home/hero.png";
-}
+import { categoryHref, categoryImage, type Category } from "@/lib/catalog/categories";
 
 export default function SubclassSelector({ categories, current }: { categories: Category[]; current: Category }) {
   const children = categories.filter(item => item.parent?.documentId === current.documentId);
