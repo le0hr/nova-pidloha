@@ -48,7 +48,7 @@ export interface HomeHeroMap extends Struct.ComponentSchema {
 export interface HomeHeroSlide extends Struct.ComponentSchema {
   collectionName: 'components_home_hero_slides';
   info: {
-    description: 'Additional rich hero banners. Reorder these slides; the permanent shop map always stays first.';
+    description: 'Additional rich hero banners. Reorder these slides; the permanent shop map always stays first. Kind "image": only the picture (no overlay or text), the whole banner links to buttonUrl; title is used as the image description.';
     displayName: 'Hero slide';
   };
   attributes: {
@@ -63,7 +63,7 @@ export interface HomeHeroSlide extends Struct.ComponentSchema {
     eyebrow: Schema.Attribute.String;
     image: Schema.Attribute.Media<'images'>;
     imageAlt: Schema.Attribute.String;
-    kind: Schema.Attribute.Enumeration<['promotion', 'map']> &
+    kind: Schema.Attribute.Enumeration<['promotion', 'map', 'image']> &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'promotion'>;
     mapEmbedUrl: Schema.Attribute.Text;

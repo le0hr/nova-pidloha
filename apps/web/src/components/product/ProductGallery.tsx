@@ -129,11 +129,11 @@ export default function ProductGallery({
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        <img
+        {activeVariation.image ? <img
           src={activeVariation.image}
           alt={getVariationLabel(activeVariation) || "Фото товару"}
           className="absolute inset-0 w-full h-full object-contain pointer-events-none"
-        />
+        /> : <span className="absolute inset-0 flex items-center justify-center text-sm text-[#666]">Фото готується</span>}
         <Lightbox
           open={open}
           close={() => setOpen(false)}

@@ -6,7 +6,7 @@ type CartState = {
   items: CartItemType[]
   isOpen: boolean
 
-  addItem: (item: Omit<CartItemType, 'qty'>) => void
+  addItem: (item: Omit<CartItemType, 'qty'>, qty?: number) => void
   removeItem: (id: string) => void
   updateQty: (id: string, qty: number) => void
   clearCart: () => void
@@ -25,18 +25,18 @@ export const useCartStore = create<CartState>()(
       items: [],
       isOpen: false,
 
-      addItem: (item) => {
+      addItem: (item, qty = 1) => {
         const existing = get().items.find((i) => i.id === item.id)
 
         if (existing) {
           set({
             items: get().items.map((i) =>
-              i.id === item.id ? { ...i, ...item, qty: i.qty + 1 } : i
+              i.id === item.id ? { ...i, ...item, qty: i.qty + qty } : i
             ),
           })
         } else {
           set({
-            items: [...get().items, { ...item, qty: 1 }],
+            items: [...get().items, { ...item, qty }],
           })
         }
 

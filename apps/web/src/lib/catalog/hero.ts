@@ -6,7 +6,7 @@ export type RawHeroSlide = {
   mobileImage?: { url: string } | null;
   alignment?: "left" | "center" | "right";
   enabled?: boolean;
-  kind: "promotion" | "map";
+  kind: "promotion" | "map" | "image";
   title: string;
   eyebrow?: string | null;
   description?: string | null;
@@ -47,7 +47,7 @@ export function mapEmbed(value?: string | null): string | undefined {
   } catch { return undefined; }
 }
 function normalizeSlides(slides: RawHeroSlide[]): HeroSlide[] {
-  return slides.filter((slide) => slide.enabled !== false && text(slide.title)).map((slide) => {
+  return slides.filter((slide) => slide.enabled !== false && text(slide.title) && (slide.kind !== "image" || slide.image?.url)).map((slide) => {
     let image: string | undefined;
     if (slide.image?.url) {
       try {

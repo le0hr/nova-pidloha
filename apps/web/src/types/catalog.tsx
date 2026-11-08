@@ -18,4 +18,12 @@ export interface CatalogProduct {
   price: number;
   images: string[];
   slug: string;
+  /** Price unit, e.g. "м²" for floor coverings. */
+  unit?: string;
+  /** Square photo (floor) instead of the tall door photo. */
+  square?: boolean;
+  /** Short product description from the CMS. */
+  description?: string;
+  /** "isNew" flag from the CMS: shows the NEW badge. */
+  isNew?: boolean;
 }

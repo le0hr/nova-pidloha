@@ -421,3 +421,13 @@ def test_existing_filter_slugs_are_updated(tmp_path: Path, settings: Settings) -
     run(path, settings, client, write=True, journal_directory=tmp_path)
     assert all(op.action == 'unchanged' for op in run(path, settings, client).operations)
     client.close()
+
+
+def test_media_matches_webp_converted_name() -> None:
+    """CMS stores catalog-<sha>.jpg as catalog-<sha>.webp; a re-import must reuse it, not upload again."""
+    from app.services.diff_service import same_asset_name
+
+    assert same_asset_name("catalog-abc.webp", "catalog-abc.jpg")
+    assert same_asset_name("catalog-abc.jpg", "catalog-abc.jpg")
+    assert not same_asset_name("catalog-abd.webp", "catalog-abc.jpg")
+    assert not same_asset_name(None, "catalog-abc.jpg")

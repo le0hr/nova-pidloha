@@ -23,13 +23,14 @@ export interface ProductVariation {
 export interface ProductReturnData {
   addons?: ProductAddon[];
   name: string
+  slug: string;
   description: string;
   characteristics: {
     name: string;
     value: string;
     unit: string | null;
   }[];
-  category: {name: string, slug: string};
+  category: {name: string, slug: string} | null;
   variations: ProductVariation[];
 }
 

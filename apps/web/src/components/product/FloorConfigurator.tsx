@@ -24,6 +24,9 @@ interface FloorConfiguratorProps {
   discount: number;
   totalPrice: number;
   packsApprox: number;
+  /** False for items sold by piece/roll (no pack area): only a piece counter is shown. */
+  byPack?: boolean;
+  boardSize?: string;
 }
 
 export default function FloorConfigurator({
@@ -32,7 +35,7 @@ export default function FloorConfigurator({
   onChange,
   qtyM2,
   onQtyChange,
-  unit,
+  unit: unitProp,
   onUnitChange,
   packArea,
   stockM2,
@@ -41,11 +44,14 @@ export default function FloorConfigurator({
   discount,
   totalPrice,
   packsApprox,
+  byPack = true,
+  boardSize,
 }: FloorConfiguratorProps) {
+  const unit = byPack ? unitProp : "pack";
 
   const handleQtyChange = (delta: number) => {
     if (unit === "m2") {
-      const next = Math.max(packArea, +(qtyM2 + delta).toFixed(3));
+      const next = Math.max(packArea, +(qtyM2 + delta).toFixed(2));
       onQtyChange(next);
     } else {
       const currentPacks = Math.round(qtyM2 / packArea);
@@ -54,7 +60,7 @@ export default function FloorConfigurator({
     }
   };
 
-  const displayValue = unit === "m2" ? qtyM2.toFixed(3) : Math.round(qtyM2 / packArea);
+  const displayValue = unit === "m2" ? +qtyM2.toFixed(2) : Math.round(qtyM2 / packArea);
   const setValue = (partial: Partial<VariationState>) => onChange(partial);
 
   return (
@@ -79,10 +85,11 @@ export default function FloorConfigurator({
           </span>
         </div>
 
+        {byPack && <>
         {/* Info*/}
         <div className="bg-[#fff8f0] border-l-[3px] border-[#e67e22] px-3 py-2">
           <span className="font-['Outfit',sans-serif] text-[13px] font-medium text-[#e67e22]">
-            Упаковка: {packArea} м² / 10 планок / 177×1219×5мм
+            Упаковка: {packArea} м²{boardSize ? ` / дошка ${boardSize} мм` : ""}
           </span>
         </div>
 
@@ -111,6 +118,7 @@ export default function FloorConfigurator({
             упаковки
           </button>
         </div>
+        </>}
 
         {/* Quantity controls */}
         <div className="flex items-center justify-between bg-black text-white h-12 px-4">
@@ -133,14 +141,14 @@ export default function FloorConfigurator({
           </button>
         </div>
 
-        <div className="flex items-center justify-between text-[13px]">
+        {byPack && <div className="flex items-center justify-between text-[13px]">
           <span className="font-['Outfit',sans-serif] text-[#9e9e9e]">
-            ≈ {packsApprox} уп.
+            {packsApprox} уп. = {+(packsApprox * packArea).toFixed(2)} м²
           </span>
           <span className="font-['Outfit',sans-serif] text-[#9e9e9e]">
             Мінімальне замовлення: 1 уп. ({packArea} м²)
           </span>
-        </div>
+        </div>}
       </div>
 
       

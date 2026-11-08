@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node /tmp/claude-1000/-home-levhr-nova-pidloha/862219e6-dd1c-4cb7-9e34-e49693ce5e37/scratchpad/pw/crawl.cjs)"
+    ]
+  }
+}

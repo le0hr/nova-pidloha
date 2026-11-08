@@ -1,17 +1,16 @@
-import { getFilters, getProducts } from "@/lib/services/catalog.service";
+import { getProducts } from "@/lib/services/catalog.service";
+import { getCatalogContext } from "@/lib/services/catalog-page.service";
 import Filters from "@/components/catalog/Filters";
 import SubclassSelector from "@/components/catalog/SubclassSelector";
 import Total from "@/components/catalog/Total";
-import Card from "@/components/catalog/Card";
+import CatalogGrid from "@/components/catalog/CatalogGrid";
 import SortDropdown from "@/components/catalog/SortDropdown";
 import ActiveFilters from "@/components/catalog/ActiveFilters";
 import MobileFilterButton from "@/components/catalog/MobileFilterButton";
 import { FilterDrawerProvider } from "@/components/catalog/FilterDrawerContext";
-import { CatalogProduct } from "@/types/catalog";
 import Pagination from "@/components/catalog/Pagination";
 import Breadcrumb from "@/components/layout/shop/Breadcrumps";
-import { getCategories } from "@/lib/services/category.service";
-import { categoryScope, categoryAncestors, categoryHref } from "@/lib/catalog/categories";
+import { categoryHref } from "@/lib/catalog/categories";
 import { notFound, redirect } from "next/navigation";
 export default async function CatalogPage({
     params,
@@ -27,12 +26,9 @@ export default async function CatalogPage({
   const {category } = await params;
   const query = await searchParams;
 
-  const categories = await getCategories();
-  const current = categories.find(item => item.slug === category);
-  if (!current) notFound();
-  const scope = categoryScope(categories, current).map(item => item.slug);
-  const ancestors = categoryAncestors(categories, current);
-  const filters = await getFilters([...new Set([...scope, ...ancestors.map(item => item.slug)])], scope);
+  const context = await getCatalogContext(category);
+  if (!context) notFound();
+  const { categories, current, scope, ancestors, filters } = context;
   const { products, pagination } = await getProducts(query, filters, scope);
   if (pagination.page > Math.max(1, pagination.pageCount)) {
     const params = new URLSearchParams();
@@ -84,7 +80,7 @@ export default async function CatalogPage({
           <div className="flex items-start gap-8 self-stretch">
             {/* Desktop sidebar */}
             <div
-              className="catalog-filter-wrap hidden w-[300px] xl:block shrink-0 animate-fade-up"
+              className="catalog-filter-wrap relative z-20 hidden w-[300px] xl:block shrink-0 animate-fade-up"
               style={{ animationDelay: "0.12s" }}
             >
               <Filters />
@@ -93,11 +89,7 @@ export default async function CatalogPage({
             <div className="flex flex-1 flex-col items-start gap-10 min-w-0">
               <ActiveFilters />
 
-              <div className="catalog-grid grid grid-cols-2 gap-4 w-full">
-                {products.map((product: CatalogProduct, i: number) => (
-                  <Card key={product.slug ?? i} product={product} index={i} />
-                ))}
-              </div>
+              <CatalogGrid key={`${category}:${JSON.stringify(query)}`} category={category} products={products} pagination={pagination} />
               {products.length === 0 && <p role="status">У цій категорії немає товарів за вибраними параметрами.</p>}
               <Pagination lastPage={pagination.pageCount}/>
             </div>

@@ -19,6 +19,8 @@ export interface HomeProduct {
   /** Short product description from the CMS, if filled in. */
   description?: string;
   price: number | null;
+  /** Price unit, e.g. "м²" for floor coverings. */
+  unit?: string;
   badge?: string;
 }
 
@@ -39,7 +41,8 @@ export interface HeroSlide {
   badge?: string;
   mobileImage?: string;
   alignment?: "left" | "center" | "right";
-  kind: "promotion" | "map";
+  /** "image": a ready-made banner picture only (no overlay, no text), linked to `href`. */
+  kind: "promotion" | "map" | "image";
   title: string;
   eyebrow?: string;
   description?: string;

@@ -3,14 +3,21 @@ import { useState } from "react";
 import { useCartStore } from "@/store/cart-store";
 import { configuredItem } from "@/lib/catalog/configured-item";
 import ItemOptions from "@/components/cart/ItemOptions";
+import { displayOldPrice } from "@/lib/catalog/floor";
 import { ProductVariation, ProductAddon } from "@/types/product";
 
 interface AddToCartButtonProps {
   variation: ProductVariation;
   productName: string;
   addons?: ProductAddon[];
+  /** Non-standard size; `variation.price` already includes its surcharge. */
+  size?: { width: number; height: number };
   inStock?: boolean;
   leadDays?: number;
+  /** Floor: price per pack of `area` m² (null = per piece), `qty` packs at once. */
+  pack?: { area: number | null; qty: number };
+  /** Product slug: the crossed-out price uses the same 5–30% as the catalog card. */
+  oldPriceSeed?: string;
 }
 
 export default function AddToCartButton({
@@ -18,13 +25,19 @@ export default function AddToCartButton({
   productName,
   inStock = true,
   addons = [],
+  size,
+  pack,
+  oldPriceSeed,
 }: AddToCartButtonProps) {
   const [added, setAdded] = useState(false);
   const cartStore = useCartStore();
-  const item = configuredItem(variation, productName, addons);
-  const total = item.price;
+  const item = configuredItem(variation, productName, addons, size, pack?.area);
+  const qty = pack?.qty ?? 1;
+  const total = Math.round(item.price * qty * 100) / 100;
 
-  const oldPrice = variation.oldPrice ? variation.oldPrice + total - variation.price : undefined;
+  const oldPrice = variation.oldPrice && !pack
+    ? variation.oldPrice + total - variation.price
+    : oldPriceSeed ? displayOldPrice(total, oldPriceSeed) ?? undefined : undefined;
 
   const discountPercent =
     oldPrice && oldPrice > total
@@ -35,7 +48,7 @@ export default function AddToCartButton({
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
 
-    cartStore.addItem(item);
+    cartStore.addItem(item, qty);
   };
 
   return (
@@ -64,7 +77,7 @@ export default function AddToCartButton({
           </span>
           {oldPrice && oldPrice > total && (
             <span className="font-['Outfit',sans-serif] font-normal text-[#9e9e9e] text-[18px] line-through">
-              ₴ {oldPrice.toLocaleString()}
+              ₴ {oldPrice.toLocaleString("uk-UA")}
             </span>
           )}
         </div>

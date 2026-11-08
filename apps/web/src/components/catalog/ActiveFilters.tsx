@@ -12,14 +12,18 @@ type ActiveFilter = {
 export default function ActiveFilters() {
   const [removingFilter, setRemovingFilter] = useState<string | null>(null);
 
-  const { removeFilter } = useFilterDrawer();
+  const { removeFilter, filterGroups } = useFilterDrawer();
+  // Only real catalog filters are chips; service params (page, sort, utm_*) are not.
+  const filterKeys = new Set(filterGroups.filter((group) => group.type !== "price").map((group) => group.slug));
 
   const searchParams = useSearchParams();
+  // Chips show the value name from the CMS ("Білий"), not its URL slug ("kolir-bilyi").
+  const valueName = (group: string, slug: string) =>
+    filterGroups.find((item) => item.slug === group)?.filter_values.find((item) => item.slug === slug)?.name ?? slug;
 
   const activeFilters: ActiveFilter[] = Array.from(searchParams.entries()).flatMap(
     ([key, value]) => {
-      // price
-      if (key.endsWith("_min") || key.endsWith("_max")) {
+      if (!filterKeys.has(key)) {
         return [];
       }
 
@@ -65,7 +69,7 @@ export default function ActiveFilters() {
                         }`}
           >
             <span className="font-outfit catalog-additional font-semibold leading-normal text-[#E53935]">
-              {value} ×
+              {valueName(group, value)} ×
             </span>
           </button>
         );

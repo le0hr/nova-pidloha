@@ -19,7 +19,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   const productName = product.name ?? slug;
-  const categoryLabel = product.category.name ?? "Міжкімнатні двері / МДФ";
+  const categoryLabel = product.category?.name ?? "Каталог";
   const characteristics = product.characteristics.map(({ name, value, unit }) => ({
     label: name,
     value: [value, unit].filter(Boolean).join(" "),
@@ -35,7 +35,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           },
           {
             label: categoryLabel,
-            href: `/catalog/${product.category.slug}`,
+            href: product.category ? `/catalog/${product.category.slug}` : "/",
           },
           {
             label: productName,

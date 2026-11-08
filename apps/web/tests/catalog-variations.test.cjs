@@ -17,46 +17,53 @@ test('catalog includes cheaper variations and images beyond the first CMS page',
       if (query.includes('CatalogVariations')) {
         assert.equal(variables.slug, 'door');
         starts.push(variables.start);
-        return { products: [{ product_variations: rows.slice(variables.start, variables.start + 25) }] };
+        // CMS graphql maxLimit is 100 (apps/cms/config/plugins.ts).
+        return { products: [{ product_variations: rows.slice(variables.start, variables.start + 100) }] };
       }
       return { products: [{ name: 'Door', slug: 'door', price: null, image: null,
-        product_variations: rows.slice(0, 25) }], products_connection: { pageInfo } };
+        product_variations: rows.slice(0, 100) }], products_connection: { pageInfo } };
     },
   } })(path.join(__dirname, '../src/lib/services/catalog.service.tsx'));
   const result = await getProducts({ page: '2' }, [], ['doors']);
   assert.equal(result.products[0].price, 50);
   assert.deepEqual(result.products[0].images, ['https://cms.example/last.jpg']);
   assert.deepEqual(result.pagination, pageInfo);
-  assert.deepEqual(starts, [25, 50, 75, 100, 125, 150, 175, 200, 205]);
+  // Full pages continue; the short last page (5) ends the loop without an extra empty request.
+  assert.deepEqual(starts, [100, 200]);
 });
 
-test('price sorting and filtering include variant prices across all pages', async () => {
-  const rows = Array.from({ length: 23 }, (_, i) => ({ name: `P${i}`, slug: `p${i}`,
-    price: i === 22 ? null : String(100 + i), image: null,
-    product_variations: i === 22 ? [{ active: true, price: '9.5', image: null }] : [] }));
-  const { getProducts, getFilters } = loader({ '@/lib/client': {
+test('price sorting, filtering and bounds are done by the CMS on product price (one page, no full download)', async () => {
+  const calls = [];
+  const { getProducts, getFilters, CATALOG_PAGE_SIZE: size } = loader({ '@/lib/client': {
     mediaUrl: url => url,
     graphqlFetch: async (query, variables) => {
-      if (query.includes('CategoryFilters')) return { filterGroups: [{ name: 'Ціна', slug: 'price', type: 'price', filter_values: [] }], filterGroups_connection: { pageInfo: { pageCount: 1 } } };
-      if (query.includes('CatalogVariations')) return { products: [{ product_variations: [] }] };
-      assert.equal(JSON.stringify(variables.filters).includes('"price"'), false);
-      const page = variables.pagination.page;
-      return { products: rows.slice((page - 1) * 20, page * 20), products_connection: {
-        pageInfo: { page, pageSize: 20, pageCount: 2, total: 23 } } };
+      const name = query.match(/query (\w+)/)[1];
+      calls.push({ name, variables });
+      if (name === 'CategoryFilters') return { filterGroups: [{ name: 'Ціна', slug: 'price', type: 'price', filter_values: [] }], filterGroups_connection: { pageInfo: { pageCount: 1 } } };
+      if (name === 'PriceBounds') return { cheapest: [{ price: '9.5' }], priciest: [{ price: '120.2' }] };
+      if (name === 'GetProducts') return { products: [{ name: 'P', slug: 'p', price: '9.5', image: null, product_variations: [] }],
+        products_connection: { pageInfo: { page: variables.pagination.page, pageSize: size, pageCount: 2, total: 30 } } };
+      throw new Error('unexpected query ' + name);
     },
   } })(path.join(__dirname, '../src/lib/services/catalog.service.tsx'));
-  const sorted = await getProducts({ sort: 'price_asc' }, [], ['doors']);
-  assert.equal(sorted.products[0].price, 9.5);
-  assert.equal(sorted.products.length, 20);
-  assert.equal(sorted.pagination.total, 23);
-  const filtered = await getProducts({ price_min: '0', price_max: '10' }, [], ['doors']);
-  assert.deepEqual(filtered.products.map(p => p.price), [9.5]);
-  assert.equal(filtered.pagination.total, 1);
-  const descending = await getProducts({ cost_min: '120', cost_max: '110', sort: 'price_desc' },
-    [{ slug: 'cost', type: 'price', filter_values: [] }], ['doors']);
-  assert.equal(descending.products[0].price, 120);
-  assert.equal(descending.products.at(-1).price, 110);
+  const priceFilter = v => v.filters.and.find(item => item.price)?.price;
+
+  assert.equal(size % 2 + size % 3 + size % 4, 0, 'page size fills 2, 3 and 4 column grids');
+  await getProducts({ sort: 'price_asc', page: '2' }, [], ['doors']);
+  await getProducts({ sort: 'price_desc' }, [], ['doors']);
+  assert.deepEqual(calls.map(c => c.variables.sort), [['price:asc', 'documentId:asc'], ['price:desc', 'documentId:asc']]);
+  assert.deepEqual(calls.map(c => c.variables.pagination), [{ page: 2, pageSize: size }, { page: 1, pageSize: size }]);
+
+  calls.length = 0;
+  await getProducts({ price_min: '0', price_max: '10' }, [], ['doors']);
+  // A price group with another slug, and "from" larger than "to", still becomes one sorted range.
+  await getProducts({ cost_min: '120', cost_max: '110' }, [{ slug: 'cost', type: 'price', filter_values: [] }], ['doors']);
+  assert.deepEqual(calls.map(c => priceFilter(c.variables)), [{ gte: 0, lte: 10 }, { gte: 110, lte: 120 }]);
+  assert.ok(calls.every(c => c.name === 'GetProducts'), 'one CMS page query per catalog page');
+
+  calls.length = 0;
   const groups = await getFilters(['doors']);
-  assert.equal(groups[0].min, 9);
-  assert.equal(groups[0].max, 121);
+  assert.deepEqual([groups[0].min, groups[0].max], [9, 121]);
+  assert.deepEqual(calls.map(c => c.name).filter(n => n !== 'FilterPopularity'), ['CategoryFilters', 'PriceBounds']);
+  assert.deepEqual(calls.find(c => c.name === 'PriceBounds').variables.filters.and.at(-1), { price: { notNull: true } });
 });

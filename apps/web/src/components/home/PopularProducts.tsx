@@ -32,7 +32,7 @@ export default function PopularProducts({ products }: { products: HomeProduct[] 
             <VerticalCardCarousel key={column[0].name + column[0].href} label={`Товари: ${column[0].group}`} {...homeCardCarousel} slides={column.map((product) => ({ key: product.name + product.href, content: (
               <HomeCard title={product.name} href={product.href} image={product.image} imagePortrait={product.imagePortrait} badge={product.badge}
                 description={product.description} actionLabel="Обрати" linkContent
-                footer={<p className="text-sm font-bold md:text-lg">{product.price !== null ? <><span className="text-[11px] font-normal text-[#666]">від </span>₴ {product.price.toLocaleString("uk-UA")}</> : <span className="text-[11px] font-normal text-[#666] md:text-xs">Ціну уточнюйте в каталозі</span>}</p>} />
+                footer={<p className="text-sm font-bold md:text-lg">{product.price !== null ? <><span className="text-[11px] font-normal text-[#666]">від </span>₴ {product.price.toLocaleString("uk-UA")}{product.unit && <span className="text-[11px] font-normal text-[#666]"> /{product.unit}</span>}</> : <span className="text-[11px] font-normal text-[#666] md:text-xs">Ціну уточнюйте в каталозі</span>}</p>} />
             ) }))} />
           ))}
         </RandomCardGroup>

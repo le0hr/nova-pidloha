@@ -29,11 +29,15 @@ export function buildProductFilters(params: CatalogParams, groups: FilterGroup[]
     const values = (Array.isArray(raw) ? raw : [raw ?? '']).flatMap(v => v.split(',')).filter(v => allowed.has(v));
     if (values.length) and.push({ filter_values: { slug: { in: values }, filter_group: { slug: { eq: group.slug } } } });
   }
+  // Product price is the minimum active variation price (set by the importer), so the CMS can filter on it.
   const first = (value: CatalogParams[string]) => Array.isArray(value) ? value[0] : value;
-  const min = numberValue(first(params.price_min));
-  const max = numberValue(first(params.price_max));
-  if (min !== undefined || max !== undefined) {
-    and.push({ price: { ...(min !== undefined ? { gte: max === undefined ? min : Math.min(min, max) } : {}), ...(max !== undefined ? { lte: min === undefined ? max : Math.max(min, max) } : {}) } });
+  const priceSlugs = new Set(['price', ...groups.filter(group => group.type === 'price').map(group => group.slug)]);
+  for (const slug of priceSlugs) {
+    const min = numberValue(first(params[`${slug}_min`]));
+    const max = numberValue(first(params[`${slug}_max`]));
+    if (min === undefined && max === undefined) continue;
+    const [lower, upper] = min !== undefined && max !== undefined ? [Math.min(min, max), Math.max(min, max)] : [min, max];
+    and.push({ price: { ...(lower !== undefined ? { gte: lower } : {}), ...(upper !== undefined ? { lte: upper } : {}) } });
   }
   return { and };
 }
