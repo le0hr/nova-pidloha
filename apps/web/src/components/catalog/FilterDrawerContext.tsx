@@ -44,6 +44,9 @@ type FilterDrawerContextType = {
   resetFilters: () => void;
   applyFilters: () => void;
 
+  /** Last changed option ("group:option", or the price group slug) and how many products the pending selection finds. */
+  preview: { anchor: string; total: number | null } | null;
+
 
 };
 
@@ -121,6 +124,18 @@ function getEmptySelected(filterGroups: FilterGroup[]): SelectedFilters {
   return selected;
 }
 
+/** URL query for a selection (price bounds equal to the full range are left out). */
+function selectionQuery(selected: SelectedFilters, filterGroups: FilterGroup[]): URLSearchParams {
+  const params = selectedToSearchParams(selected);
+  for (const group of filterGroups) {
+    if (group.type !== "price") continue;
+    const range = selected[group.slug] as [number, number];
+    if (range?.[0] === group.min) params.delete(`${group.slug}_min`);
+    if (range?.[1] === group.max) params.delete(`${group.slug}_max`);
+  }
+  return params;
+}
+
 // ——— Provider ———
 type ProviderProps = {
   children: ReactNode;
@@ -143,10 +158,36 @@ export function FilterDrawerProvider({
     searchParamsToSelected(searchParams, filterGroups)
   );
 
+  // The changed option, valid only for the URL it was changed on (a navigation hides the preview).
+  const [anchorState, setAnchorState] = useState<{ value: string; url: string } | null>(null);
+  const currentUrl = searchParams.toString();
+  const anchor = anchorState?.url === currentUrl ? anchorState.value : null;
+  const setAnchor = (value: string | null) => setAnchorState(value ? { value, url: currentUrl } : null);
+  const [counted, setCounted] = useState<{ key: string; total: number } | null>(null);
+
   // Якщо filterGroups прийшли пізніше або змінилися — синхронізуємо
   useEffect(() => {
     setSelected(searchParamsToSelected(searchParams, filterGroups));
   }, [filterGroups, searchParams]);
+
+  // "Знайдено N товарів" next to the option the user just changed (debounced count request).
+  const category = pathname.split("/")[2];
+  const previewQuery = anchor ? selectionQuery(selected, filterGroups).toString() : "";
+  const previewKey = anchor ? `${anchor}|${previewQuery}` : "";
+  useEffect(() => {
+    if (!previewKey) return;
+    const params = new URLSearchParams(previewQuery);
+    params.set("count", "1");
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      fetch(`/api/catalog/${category}?${params}`, { signal: controller.signal })
+        .then(response => response.ok ? response.json() as Promise<{ total: number }> : Promise.reject(response.status))
+        .then(data => setCounted({ key: previewKey, total: data.total }))
+        .catch(() => undefined);
+    }, 300);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [previewKey, previewQuery, category]);
+  const preview = anchor ? { anchor, total: counted?.key === previewKey ? counted.total : null } : null;
 
   // ——— Drawer ———
   const open = () => {
@@ -161,6 +202,7 @@ export function FilterDrawerProvider({
 
   // ——— Filter logic ———
   const toggleCheckbox = (groupSlug: string, optionSlug: string) => {
+    setAnchor(`${groupSlug}:${optionSlug}`);
     setSelected((prev) => {
       const current = (prev[groupSlug] as string[]) || [];
       const next = current.includes(optionSlug)
@@ -171,10 +213,12 @@ export function FilterDrawerProvider({
   };
 
   const setColor = (groupSlug: string, optionSlug: string) => {
+    setAnchor(`${groupSlug}:${optionSlug}`);
     setSelected((prev) => ({ ...prev, [groupSlug]: optionSlug }));
   };
 
   const setPrice = (groupSlug: string, index: 0 | 1, value: number) => {
+    setAnchor(groupSlug);
     setSelected((prev) => {
       const group = filterGroups.find(group => group.slug === groupSlug);
       if (!group || !Number.isFinite(value)) return prev;
@@ -190,6 +234,7 @@ export function FilterDrawerProvider({
   };
 
   const resetFilters = () => {
+    setAnchor(null);
     setSelected(getEmptySelected(filterGroups));
 
     router.push(pathname, {
@@ -248,13 +293,8 @@ export function FilterDrawerProvider({
   };
 
   const applyFilters = () => {
-    const params = selectedToSearchParams(selected);
-    for (const group of filterGroups) {
-      if (group.type !== "price") continue;
-      const range = selected[group.slug] as [number, number];
-      if (range?.[0] === group.min) params.delete(`${group.slug}_min`);
-      if (range?.[1] === group.max) params.delete(`${group.slug}_max`);
-    }
+    setAnchor(null);
+    const params = selectionQuery(selected, filterGroups);
     const sort = searchParams.get("sort");
     if (sort) params.set("sort", sort);
     const query = params.toString();
@@ -278,7 +318,8 @@ export function FilterDrawerProvider({
         setPrice,
         resetFilters,
         applyFilters,
-        removeFilter
+        removeFilter,
+        preview,
       }}
     >
       {children}

@@ -1,5 +1,7 @@
 import { normalizeHero } from "@/lib/catalog/hero";
-import { categoryHref, categoryImage, type Category } from "@/lib/catalog/categories";
+import { categoryHref, categoryImage, categoryRoot, flatSubcategories, type Category } from "@/lib/catalog/categories";
+import { getCategories } from "@/lib/services/category.service";
+import { priceUnit } from "@/lib/catalog/floor";
 import { graphqlFetch, mediaUrl } from "@/lib/client";
 import type { HomeCategory, HomeProduct } from "@/types/home";
 
@@ -9,7 +11,7 @@ type FeaturedProduct = {
   shortDescription: string | null;
   price: string | number | null;
   image: Media | null;
-  category: { name: string | null } | null;
+  category: { name: string | null; slug: string | null } | null;
   catalog_attributes: Record<string, unknown> | null;
   isNew: boolean;
   product_variations: { price: string | number | null; image: Media | null }[];
@@ -35,7 +37,7 @@ export async function getHomeProducts(): Promise<HomeProduct[]> {
         query GetHomeProducts($page: Int!) {
           products(status: PUBLISHED, filters: {isFeatured: {eq: true}, active: {ne: false}},
             pagination: {page: $page, pageSize: 100}, sort: ["name:asc", "documentId:asc"]) {
-            name slug shortDescription price isNew catalog_attributes image { url width height } category { name }
+            name slug shortDescription price isNew catalog_attributes image { url width height } category { name slug }
             # Media fields are not filterable and variation price is a string, so pick price/image in JS.
             product_variations(filters: {active: {ne: false}}, pagination: {limit: 50}, sort: ["documentId:asc"]) {
               price image { url width height }
@@ -64,6 +66,7 @@ export async function getHomeProducts(): Promise<HomeProduct[]> {
         image: image ? mediaUrl(image.url) : null,
         imagePortrait: !!image?.width && !!image.height && image.height / image.width > 1.15,
         price: price !== null && Number.isFinite(price) && price >= 0 ? price : null,
+        unit: priceUnit(product.category?.slug),
         group: productGroup(product),
         description: product.shortDescription?.trim() || undefined,
         badge: product.isNew ? "Новинка" : "Рекомендуємо",
@@ -89,8 +92,8 @@ function plainText(markdown: string | null): string | undefined {
 }
 
 /**
- * Categories grouped by class: a featured class shows all of its subclasses,
- * a featured subclass is shown inside its class.
+ * Categories grouped by class: a featured class shows all of its subcategories as one flat list
+ * (largest first, no nesting), a featured subcategory is shown inside its class.
  */
 export async function getHomeCategories(): Promise<HomeCategory[]> {
   try {
@@ -111,19 +114,27 @@ export async function getHomeCategories(): Promise<HomeCategory[]> {
       page += 1;
     }
     const valid = categories.filter(category => category.name && category.slug);
+    const byId = new Map(valid.map(category => [category.documentId, category]));
+    const tree = await getCategories(); // same categories with product counts, for ordering
     const selected = new Map<string, Item>();
     for (const category of valid.filter(item => item.isFeatured)) {
-      const subclasses = valid.filter(item => item.parent?.documentId === category.documentId);
-      for (const item of subclasses.length ? subclasses : [category]) selected.set(item.documentId, item);
+      const node = tree.find(item => item.documentId === category.documentId);
+      const subcategories = node ? flatSubcategories(tree, node).map(item => byId.get(item.documentId)).filter((item): item is Item => !!item) : [];
+      for (const item of subcategories.length ? subcategories : [category]) selected.set(item.documentId, item);
     }
-    return [...selected.values()].map(category => ({
-      name: category.name,
-      href: categoryHref(category.slug),
-      image: categoryImage(category, valid),
-      parentName: category.parent?.name,
-      description: plainText(category.description),
-      group: category.parent?.name ?? category.name,
-    }));
+    return [...selected.values()].map(category => {
+      const node = tree.find(item => item.documentId === category.documentId);
+      const root = node ? categoryRoot(tree, node) : null;
+      const className = root && root.documentId !== category.documentId ? byId.get(root.documentId)?.name ?? root.name : undefined;
+      return {
+        name: category.name,
+        href: categoryHref(category.slug),
+        image: categoryImage(category, valid),
+        parentName: className,
+        description: plainText(category.description),
+        group: className ?? category.name,
+      };
+    });
   } catch (error) {
     console.error("Unable to load homepage categories:", error instanceof Error ? error.message : error);
     return [];

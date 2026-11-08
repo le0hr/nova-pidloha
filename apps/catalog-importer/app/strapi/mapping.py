@@ -119,6 +119,48 @@ TRANSLITERATION = dict(
 )
 
 
+# Storefront structure on top of the supplier workbook classes.
+# Door subclass ("підклас") -> subcategory of the class, e.g. Двері/Міжкімнатні/Каркасно-щитові.
+DOOR_SUBCATEGORIES = {
+    "збірні": "Збірні",
+    "збірної конструкції": "Збірні",
+    "розсувні, збірні": "Збірні",
+    "двостороннє полотно": "Збірні",
+    "каркасно-щитові": "Каркасно-щитові",
+    "соснові": "Соснові",
+}
+DOOR_CLASSES = {"міжкімнатні", "міжкімнатні двері", "двері міжкімнатні"}
+# Brands whose workbook rows have no subclass; City Line doors are all frame-and-panel (збірні).
+DOOR_BRAND_SUBCATEGORIES = {"city line": "Збірні"}
+# Workbook classes merged into an existing class.
+CLASS_ALIASES = {"профіль": "З’єднувальний профіль"}
+# Services and door options are not storefront goods: imported inactive and without a category.
+HIDDEN_CLASSES = {"послуга", "акційний комплект", "наповнення", "випрямляч"}
+
+
+def door_subcategory(product: Product) -> str | None:
+    subclass = normalize(product.attributes.get("підклас"))
+    if "прихован" in subclass:
+        return "Приховані"
+    if subclass:
+        return DOOR_SUBCATEGORIES.get(subclass)
+    return DOOR_BRAND_SUBCATEGORIES.get(normalize(product.brand))
+
+
+def category_path(product: Product) -> list[str] | None:
+    """Category names from root to leaf, or None for hidden service/option classes."""
+    path = product.category or product.source.sheet
+    if normalize(path.split("/")[0]) != normalize(product.source.sheet):
+        path = product.source.sheet + "/" + path
+    parts = [part.strip() for part in path.split("/") if part.strip()]
+    if not parts or normalize(parts[-1]) in HIDDEN_CLASSES:
+        return None
+    parts[-1] = CLASS_ALIASES.get(normalize(parts[-1]), parts[-1])
+    if normalize(parts[-1]) in DOOR_CLASSES and (subcategory := door_subcategory(product)):
+        parts.append(subcategory)
+    return parts
+
+
 def category_slug(name: str, *scope: str) -> str:
     def readable(value: str) -> str:
         value = normalize(value)
@@ -181,10 +223,9 @@ def desired_records(
 
     categories: dict[str, dict[str, str]] = {}
     for p in sorted(catalog.products, key=lambda p: p.external_id):
-        path = p.category or p.source.sheet
-        if normalize(path.split("/")[0]) != normalize(p.source.sheet):
-            path = p.source.sheet + "/" + path
-        parts = [part.strip() for part in path.split("/") if part.strip()]
+        parts = category_path(p)
+        if parts is None:
+            continue
         parent = None
         for index, part in enumerate(parts):
             parent = named("categories", part, *parts[:index], parent=parent)
@@ -204,8 +245,8 @@ def desired_records(
         )
         group = named("filter-groups", f.name, type="select", categories=[])
         group_data = records["filter-groups"][group["$id"]]
-        category_ref = categories[pid]
-        if category_ref not in group_data["categories"]:
+        category_ref = categories.get(pid)  # hidden service classes have no category
+        if category_ref is not None and category_ref not in group_data["categories"]:
             group_data["categories"].append(category_ref)
         value = named("filter-codes", f.value, f.name, filter_group=group)
         if value not in product_filters[pid]:
@@ -239,9 +280,11 @@ def desired_records(
             "description": p.description,
             "shortDescription": p.short_description,
             "price": str(price) if price is not None else None,
-            "category": categories[p.external_id],
+            "category": categories.get(p.external_id),
             "brand": named("brands", p.brand) if p.brand else None,
-            "active": p.active and (not p.variations or any(v.active for v in p.variations)),
+            "active": p.external_id in categories
+            and p.active
+            and (not p.variations or any(v.active for v in p.variations)),
             "catalog_attributes": p.attributes,
             "attribute_definitions": definitions(p),
             "characteristics": [

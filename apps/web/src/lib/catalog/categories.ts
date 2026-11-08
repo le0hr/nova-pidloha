@@ -7,6 +7,8 @@ export type Category = {
   description?: string | null;
   image?: { url: string } | null;
   parent: { documentId: string } | null;
+  /** Published, active products directly in this category (not its subcategories). */
+  productCount?: number;
 };
 export const categoryHref = (slug: string) => `/catalog/${encodeURIComponent(slug)}`;
 
@@ -51,4 +53,26 @@ export function categoryImage(category: Category, categories: Category[]): strin
   if (/двер|dver|doors|mizhkimnat|vhidni/.test(path)) return "/images/home/doors.png";
   if (/підлог|pidloh|floor/.test(path)) return "/images/home/laminate.png";
   return "/images/home/hero.png";
+}
+
+/** Top-level class of a category (itself for a root). */
+export function categoryRoot(categories: Category[], category: Category): Category {
+  return categoryAncestors(categories, category)[0] ?? category;
+}
+
+/** Products in a category including all its subcategories. */
+export function categoryTotal(categories: Category[], category: Category): number {
+  return categoryScope(categories, category).reduce((sum, item) => sum + (item.productCount ?? 0), 0);
+}
+
+/**
+ * Every subcategory of a class as one flat list (no nesting), largest first:
+ * a general subcategory includes the products of its own subcategories, so it comes before them.
+ */
+export function flatSubcategories(categories: Category[], root: Category): Category[] {
+  return categoryScope(categories, root)
+    .filter(item => item.documentId !== root.documentId)
+    .map(item => ({ item, total: categoryTotal(categories, item) }))
+    .sort((a, b) => b.total - a.total || a.item.name.localeCompare(b.item.name, 'uk'))
+    .map(({ item }) => item);
 }

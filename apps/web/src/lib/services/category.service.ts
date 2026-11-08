@@ -16,7 +16,34 @@ export const getCategories = cache(async (): Promise<Category[]> => {
       categories_connection(status: PUBLISHED, pagination: {page: $page, pageSize: 100}) { pageInfo { pageCount } }
     }`, { page }, { cache: "no-store" });
     categories.push(...data.categories.filter(c => c.slug && c.name));
-    if (page >= data.categories_connection.pageInfo.pageCount) return categories;
+    if (page >= data.categories_connection.pageInfo.pageCount) break;
     page += 1;
   }
+  await addProductCounts(categories);
+  return categories;
 });
+
+/** Own product counts for ordering subcategories; one aliased query per 40 categories, cached for 5 minutes. */
+async function addProductCounts(categories: Category[]): Promise<void> {
+  for (let start = 0; start < categories.length; start += 40) {
+    const batch = categories.slice(start, start + 40);
+    const variables: Record<string, string> = {};
+    const fields = batch.map((category, index) => {
+      variables[`id${index}`] = category.documentId;
+      return `c${index}: products_connection(status: PUBLISHED, filters: {
+        category: {documentId: {eq: $id${index}}},
+        or: [{active: {eq: true}}, {active: {null: true}}]
+      }) { pageInfo { total } }`;
+    });
+    try {
+      const data = await graphqlFetch<Record<string, { pageInfo: { total: number } }>>(`
+        query CategoryCounts(${batch.map((_, index) => `$id${index}: ID!`).join(', ')}) {
+          ${fields.join('\n')}
+        }`, variables, { revalidate: 300 });
+      batch.forEach((category, index) => { category.productCount = data[`c${index}`]?.pageInfo.total ?? 0; });
+    } catch (error) {
+      // Counts only affect ordering; the menu still works alphabetically without them.
+      console.error('Unable to count category products:', error instanceof Error ? error.message : error);
+    }
+  }
+}

@@ -53,6 +53,7 @@ export default function Hero({ slides, shops }: { slides: HeroSlide[]; shops?: S
   const currentIndex = active % slides.length;
   const slide = slides[currentIndex];
   const isMap = slide.kind === "map";
+  const isImage = slide.kind === "image";
   const selectSlide = (index: number) => {
     elapsed.current = 0;
     if (progress.current) progress.current.style.transform = "scaleX(0)";
@@ -87,14 +88,14 @@ export default function Hero({ slides, shops }: { slides: HeroSlide[]; shops?: S
       {slides.map((background, index) => <div key={`${index}:${background.title}`} aria-hidden={index !== currentIndex} inert={index !== currentIndex}
         className={`hero-media absolute inset-0 bg-[#35332e] ${index === currentIndex ? "opacity-100" : "pointer-events-none opacity-0"}`}>
         {background.kind === "map" ? <ShopMap shops={shops} interactive={index === currentIndex && mapInteractive} onClose={() => setMapInteractive(false)} /> : <>
-          {background.image && <Image src={background.image} alt={background.imageAlt ?? ""} fill sizes="100vw"
+          {background.image && <Image src={background.image} alt={background.imageAlt ?? (background.kind === "image" ? background.title : "")} fill sizes="100vw"
             className={`hero-photo object-cover ${background.mobileImage ? "hidden md:block" : ""}`} priority={index === currentIndex} unoptimized={background.image.startsWith("http")} />}
-          {background.mobileImage && <Image src={background.mobileImage} alt={background.imageAlt ?? ""} fill sizes="100vw" className="hero-photo object-cover md:hidden" priority={index === currentIndex} unoptimized={background.mobileImage.startsWith("http")} />}
+          {background.mobileImage && <Image src={background.mobileImage} alt={background.imageAlt ?? (background.kind === "image" ? background.title : "")} fill sizes="100vw" className="hero-photo object-cover md:hidden" priority={index === currentIndex} unoptimized={background.mobileImage.startsWith("http")} />}
         </>}
       </div>)}
-      {!mapInteractive && <div className={`pointer-events-none absolute inset-0 z-[1] ${isMap ? "bg-gradient-to-r from-black/85 via-black/55 to-transparent" : "bg-black/45"}`} />}
+      {!mapInteractive && !isImage && <div className={`pointer-events-none absolute inset-0 z-[1] ${isMap ? "bg-gradient-to-r from-black/85 via-black/55 to-transparent" : "bg-black/45"}`} />}
       <div className={`content-container page-gutter relative z-[2] flex min-h-[340px] items-center !pt-8 !pb-24 md:min-h-[400px] md:!pt-10 lg:min-h-[440px] ${mapInteractive ? "pointer-events-none" : ""}`}>
-        {!mapInteractive && <div key={currentIndex} className={`hero-copy flex w-full max-w-[720px] flex-col gap-3 md:gap-4 ${alignment} ${isMap ? "md:!max-w-[48%]" : ""}`} aria-live={rotating ? "off" : "polite"} aria-atomic="true">
+        {!mapInteractive && !isImage && <div key={currentIndex} className={`hero-copy flex w-full max-w-[720px] flex-col gap-3 md:gap-4 ${alignment} ${isMap ? "md:!max-w-[48%]" : ""}`} aria-live={rotating ? "off" : "polite"} aria-atomic="true">
           {slide.eyebrow && <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide md:text-sm"><span className="h-[3px] w-8 bg-[#e53935]" />{slide.eyebrow}</p>}
           {slide.badge && <span className="bg-[#e53935] px-3 py-1 text-sm font-bold">{slide.badge}</span>}
           <h1 className="max-w-[320px] text-[28px] font-medium leading-[1.1] md:max-w-[680px] md:text-[40px] md:font-extrabold md:leading-[1.15] lg:text-[48px]">{slide.title}</h1>
@@ -107,12 +108,13 @@ export default function Hero({ slides, shops }: { slides: HeroSlide[]; shops?: S
           </div>
         </div>}
       </div>
+      {isImage && slide.href && <Link href={slide.href} aria-label={slide.title} className="absolute inset-0 z-[2]" />}
       {slides.length > 1 && !mapInteractive && <div className="absolute bottom-7 left-0 right-0 z-[3] flex items-center justify-center gap-2 px-3">
-        <button type="button" aria-label="Попередній слайд" onClick={() => selectSlide(currentIndex - 1)} className="flex size-10 items-center justify-center rounded-full border border-white/40 bg-black/40 hover:bg-black/60"><HomeIcon name="chevron-left" /></button>
-        <div className="flex flex-wrap justify-center rounded-full bg-black/35 px-2">
-          {slides.map((item, index) => <button key={`${index}-${item.title}`} type="button" onClick={() => selectSlide(index)} aria-label={`Слайд ${index + 1}: ${item.title}`} aria-current={currentIndex === index ? "true" : undefined} className="flex size-9 items-center justify-center rounded-full"><span className={`size-2 rounded-full ${currentIndex === index ? "bg-white" : "bg-white/40"}`} /></button>)}
+        <button type="button" aria-label="Попередній слайд" onClick={() => selectSlide(currentIndex - 1)} className="flex size-10 items-center justify-center border border-white/40 bg-black/40 hover:bg-black/60"><HomeIcon name="chevron-left" /></button>
+        <div className="flex flex-wrap justify-center px-2">
+          {slides.map((item, index) => <button key={`${index}-${item.title}`} type="button" onClick={() => selectSlide(index)} aria-label={`Слайд ${index + 1}: ${item.title}`} aria-current={currentIndex === index ? "true" : undefined} className="flex size-9 items-center justify-center"><span className={`h-1 w-3 transition-colors ${currentIndex === index ? "bg-[#e53935]" : "bg-white/70"}`} /></button>)}
         </div>
-        <button type="button" aria-label="Наступний слайд" onClick={() => selectSlide(currentIndex + 1)} className="flex size-10 items-center justify-center rounded-full border border-white/40 bg-black/40 hover:bg-black/60"><HomeIcon name="chevron-right" /></button>
+        <button type="button" aria-label="Наступний слайд" onClick={() => selectSlide(currentIndex + 1)} className="flex size-10 items-center justify-center border border-white/40 bg-black/40 hover:bg-black/60"><HomeIcon name="chevron-right" /></button>
 
       </div>}
       {slides.length > 1 && !reducedMotion && <div aria-hidden="true" className="absolute inset-x-0 bottom-0 z-[4] h-[3px] bg-white/20">

@@ -1,9 +1,17 @@
 import { graphqlFetch, mediaUrl } from '@/lib/client';
 import type { CatalogProduct } from '@/types/catalog';
+import { isFloorCategory, priceUnit } from '@/lib/catalog/floor';
 import { buildProductFilters, pageNumber, type CatalogParams, type FilterGroup } from '@/lib/catalog/state';
 
 type PageInfo = { page: number; pageSize: number; pageCount: number; total: number };
+/** Divisible by 2, 3 and 4 so every catalog grid layout ends with a full row. */
+export const CATALOG_PAGE_SIZE = 24;
+/** Must equal graphql maxLimit in apps/cms/config/plugins.ts: a shorter batch means the last one. */
+const VARIATION_PAGE = 100;
 type ProductItem = { name: string; slug: string; price: string | number | null; image: { url: string } | null;
+  category?: { slug: string | null } | null;
+  shortDescription?: string | null;
+  isNew?: boolean | null;
   product_variations: { active: boolean | null; price: string | number | null; image: { url: string } | null }[] };
 
 export function catalogProduct(product: ProductItem): CatalogProduct {
@@ -13,66 +21,38 @@ export function catalogProduct(product: ProductItem): CatalogProduct {
   const images = [product.image?.url, ...variations.map(v => v.image?.url)].filter((url): url is string => !!url);
   return { name: product.name, slug: product.slug,
     price: price !== null && Number.isFinite(price) ? price : prices.length ? Math.min(...prices) : 0,
-    images: [...new Set(images)].map(mediaUrl) };
+    images: [...new Set(images)].map(mediaUrl), unit: priceUnit(product.category?.slug),
+    square: isFloorCategory(product.category?.slug),
+    description: product.shortDescription?.trim() || undefined,
+    isNew: product.isNew === true };
 }
 
-export async function getProducts(params: CatalogParams, groups: FilterGroup[], categorySlugs: string[], collectAll = false): Promise<{ products: CatalogProduct[]; pagination: PageInfo }> {
-  const priceGroups = groups.filter(group => group.type === 'price');
-  const bounds = priceGroups.length ? priceGroups : [{ slug: 'price' }];
-  const readNumber = (value: CatalogParams[string]) => {
-    const raw = Array.isArray(value) ? value[0] : value;
-    if (raw == null || raw.trim() === '') return undefined;
-    const number = Number(raw);
-    return Number.isFinite(number) && number >= 0 ? number : undefined;
-  };
-  const ranges = bounds.map(group => [readNumber(params[`${group.slug}_min`]), readNumber(params[`${group.slug}_max`])]);
-  const priceSort = params.sort === 'price_asc' || params.sort === 'price_desc';
-  if (collectAll || priceSort || ranges.some(range => range.some(value => value !== undefined))) {
-    // Compare the same effective price shown on cards, including variant-only products,
-    // before pagination. CMS sorting cannot coalesce product and variation prices.
-    const clean = { ...params };
-    for (const group of bounds) {
-      delete clean[`${group.slug}_min`];
-      delete clean[`${group.slug}_max`];
-    }
-    delete clean.price_min;
-    delete clean.price_max;
-    if (priceSort) delete clean.sort;
-    const products: CatalogProduct[] = [];
-    let page = 1;
-    let pageCount = 1;
-    do {
-      const result = await getProducts({ ...clean, page: String(page) }, groups, categorySlugs);
-      products.push(...result.products);
-      pageCount = result.pagination.pageCount;
-      page += 1;
-    } while (page <= pageCount);
-    const filtered = products.filter(product => ranges.every(([min, max]) => {
-      const lower = min !== undefined && max !== undefined ? Math.min(min, max) : min;
-      const upper = min !== undefined && max !== undefined ? Math.max(min, max) : max;
-      return (lower === undefined || product.price >= lower) && (upper === undefined || product.price <= upper);
-    }));
-    if (priceSort) filtered.sort((a, b) => params.sort === 'price_desc' ? b.price - a.price : a.price - b.price);
-    const currentPage = pageNumber(params.page);
-    return { products: collectAll ? filtered : filtered.slice((currentPage - 1) * 20, currentPage * 20),
-      pagination: { page: currentPage, pageSize: 20, pageCount: Math.ceil(filtered.length / 20), total: filtered.length } };
-  }
+/** CMS sort for the catalog URL `sort`; price uses product.price (= minimum active variation price). */
+function catalogSort(sort: CatalogParams[string]): string[] {
+  if (sort === 'newest') return ['createdAt:desc', 'documentId:asc'];
+  if (sort === 'price_asc') return ['price:asc', 'documentId:asc'];
+  if (sort === 'price_desc') return ['price:desc', 'documentId:asc'];
+  return ['name:asc', 'documentId:asc'];
+}
+
+export async function getProducts(params: CatalogParams, groups: FilterGroup[], categorySlugs: string[]): Promise<{ products: CatalogProduct[]; pagination: PageInfo }> {
   const filters = buildProductFilters(params, groups, categorySlugs);
   const page = pageNumber(params.page);
-  const sort = params.sort === "newest" ? ["createdAt:desc", "documentId:asc"] : ["name:asc", "documentId:asc"];
+  const sort = catalogSort(params.sort);
   const data = await graphqlFetch<{ products: ProductItem[]; products_connection: { pageInfo: PageInfo } }>(`
     query GetProducts($filters: ProductFiltersInput, $pagination: PaginationArg, $sort: [String]) {
       products(status: PUBLISHED, filters: $filters, pagination: $pagination, sort: $sort) {
-        name slug price image { url }
+        name slug price shortDescription isNew image { url } category { slug }
         product_variations(filters: {active: {ne: false}}, pagination: {start: 0, limit: 100}, sort: ["documentId:asc"]) { active price image { url } }
       }
       products_connection(status: PUBLISHED, filters: $filters, pagination: $pagination) {
         pageInfo { page pageSize pageCount total }
       }
-    }`, { filters, pagination: { page, pageSize: 20 }, sort });
+    }`, { filters, pagination: { page, pageSize: CATALOG_PAGE_SIZE }, sort });
+  // Fetch further variation pages only when a page came back full (100); smaller means it was the last one.
   await Promise.all(data.products.map(async (product) => {
     let batch = product.product_variations;
-    while (batch.length > 0) {
+    while (batch.length === VARIATION_PAGE) {
       const next = await graphqlFetch<{ products: Pick<ProductItem, 'product_variations'>[] }>(`
         query CatalogVariations($slug: String!, $start: Int!) {
           products(status: PUBLISHED, filters: {slug: {eq: $slug}}) {
@@ -88,7 +68,17 @@ export async function getProducts(params: CatalogParams, groups: FilterGroup[], 
   return { products: data.products.map(catalogProduct), pagination: data.products_connection.pageInfo };
 }
 
-export async function getFilters(categorySlugs: string[], productCategorySlugs: string[] = categorySlugs): Promise<FilterGroup[]> {
+/** Only the number of products matching the filters (filter preview "Знайдено N"). */
+export async function countProducts(params: CatalogParams, groups: FilterGroup[], categorySlugs: string[]): Promise<number> {
+  const data = await graphqlFetch<{ products_connection: { pageInfo: { total: number } } }>(`
+    query CountProducts($filters: ProductFiltersInput) {
+      products_connection(status: PUBLISHED, filters: $filters, pagination: {pageSize: 1}) { pageInfo { total } }
+    }`, { filters: buildProductFilters(params, groups, categorySlugs) });
+  return data.products_connection.pageInfo.total;
+}
+
+/** `details: false` skips value popularity and price bounds: enough to apply filters, much cheaper ("Показати ще"). */
+export async function getFilters(categorySlugs: string[], productCategorySlugs: string[] = categorySlugs, { details = true }: { details?: boolean } = {}): Promise<FilterGroup[]> {
   const groups: FilterGroup[] = [];
   let page = 1;
   while (true) {
@@ -103,6 +93,7 @@ export async function getFilters(categorySlugs: string[], productCategorySlugs: 
     if (page >= data.filterGroups_connection.pageInfo.pageCount) break;
     page += 1;
   }
+  if (!details) return groups;
 
   // Rank by published, active products in the current category, independently of selected filters.
   const slugs = [...new Set(groups.flatMap(group => group.filter_values.map(value => value.slug)))];
@@ -126,14 +117,22 @@ export async function getFilters(categorySlugs: string[], productCategorySlugs: 
   }
   const priceGroups = groups.filter(group => group.type === 'price');
   if (priceGroups.length) {
-    const { products } = await getProducts({}, [], productCategorySlugs, true);
-    const prices = products.map(product => product.price);
-    const min = prices.length ? Math.floor(prices.reduce((min, price) => Math.min(min, price), Infinity)) : 0;
-    const max = prices.length ? Math.ceil(prices.reduce((max, price) => Math.max(max, price), 0)) : 0;
+    // Cheapest and most expensive product in the category: two single-row queries instead of the whole catalog.
+    const filters = { and: [...buildProductFilters({}, [], productCategorySlugs).and, { price: { notNull: true } }] };
+    const bounds = await graphqlFetch<{ cheapest: { price: string | number }[]; priciest: { price: string | number }[] }>(`
+      query PriceBounds($filters: ProductFiltersInput) {
+        cheapest: products(status: PUBLISHED, filters: $filters, sort: ["price:asc"], pagination: {limit: 1}) { price }
+        priciest: products(status: PUBLISHED, filters: $filters, sort: ["price:desc"], pagination: {limit: 1}) { price }
+      }`, { filters });
+    const low = Number(bounds.cheapest[0]?.price), high = Number(bounds.priciest[0]?.price);
+    const min = Number.isFinite(low) ? Math.floor(low) : 0;
+    const max = Number.isFinite(high) ? Math.ceil(high) : 0;
     for (const group of priceGroups) Object.assign(group, { min, max });
   }
+  // Values without products in this category are hidden; a group left empty is dropped (price has no values).
   return groups.map(group => ({
     ...group,
-    filter_values: [...group.filter_values].sort((a, b) => (counts.get(b.slug) ?? 0) - (counts.get(a.slug) ?? 0)),
-  }));
+    filter_values: group.filter_values.filter(value => (counts.get(value.slug) ?? 0) > 0)
+      .sort((a, b) => (counts.get(b.slug) ?? 0) - (counts.get(a.slug) ?? 0)),
+  })).filter(group => group.type === 'price' || group.filter_values.length > 0);
 }

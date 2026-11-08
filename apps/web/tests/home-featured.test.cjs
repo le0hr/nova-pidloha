@@ -37,7 +37,12 @@ assert.deepEqual(by(['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'B1', 'B2']
 assert.deepEqual(by(['A1', 'A2', 'A3', 'A4', 'A5']), ['A1A3A5', 'A2A4']);
 assert.deepEqual(groupedCardColumns([], item => item), []);
 let calls = 0;
-const service = loader({ '@/lib/client': {
+// Category tree with product counts (getCategories), used to order subcategories largest first.
+const tree = [
+  ['doors', null, 0], ['inner', 'doors', 10], ['panel', 'inner', 7], ['covers', 'doors', 2],
+  ['floor', null, 0], ['lam', 'floor', 3], ['spc', 'floor', 1], ['misc', null, 4],
+].map(([documentId, parent, productCount]) => ({ documentId, name: documentId, slug: documentId, parent: parent && { documentId: parent }, productCount }));
+const service = loader({ '@/lib/services/category.service': { getCategories: async () => tree }, '@/lib/client': {
   mediaUrl: url => `https://cms.example${url}`,
   graphqlFetch: async (query, variables) => {
     assert.match(query, /status: PUBLISHED/);
@@ -48,6 +53,8 @@ const service = loader({ '@/lib/client': {
         { documentId: 'doors', name: 'Двері', slug: 'dveri', description: null, isFeatured: true, image: null, parent: null },
         { documentId: 'inner', name: 'Міжкімнатні', slug: 'mizhkimnatni', description: null, isFeatured: false, image: null, parent: { documentId: 'doors', name: 'Двері' } },
         { documentId: 'covers', name: 'Накладки', slug: 'nakladky', description: null, isFeatured: null, image: { url: '/covers.jpg' }, parent: { documentId: 'doors', name: 'Двері' } },
+        // a deeper level is still listed flat under the class
+        { documentId: 'panel', name: 'Збірні', slug: 'zbirni', description: null, isFeatured: false, image: null, parent: { documentId: 'inner', name: 'Міжкімнатні' } },
         // featured subclass -> shown inside its class
         { documentId: 'floor', name: 'Підлога', slug: 'pidloha', description: null, isFeatured: false, image: null, parent: null },
         { documentId: 'lam', name: 'Ламінат', slug: 'laminat', description: '## Зносостійкі **покриття**\n- мінерально-композитна основа', isFeatured: true, image: null, parent: { documentId: 'floor', name: 'Підлога' } },
@@ -76,7 +83,9 @@ const service = loader({ '@/lib/client': {
   assert.deepEqual(products.map(p => p.description), ['Каркасно-щитові двері.', undefined]);
   assert.deepEqual(products.map(p => p.group), ['Каркасно-щитові', 'Ламінат']);
   const categories = await service.getHomeCategories();
-  assert.deepEqual(categories.map(c => `${c.group}/${c.name}`), ['Двері/Міжкімнатні', 'Двері/Накладки', 'Підлога/Ламінат', 'Фурнітура/Фурнітура']);
+  // Двері: Міжкімнатні (10 + 7 inside) before Збірні (7) before Накладки (2), one flat level.
+  assert.deepEqual(categories.map(c => `${c.group}/${c.name}`), ['Двері/Міжкімнатні', 'Двері/Збірні', 'Двері/Накладки', 'Підлога/Ламінат', 'Фурнітура/Фурнітура']);
+  assert.equal(categories.find(c => c.name === 'Збірні').parentName, 'Двері', 'badge shows the class, not the middle level');
   const laminate = categories.find(c => c.name === 'Ламінат');
   assert.equal(laminate.href, '/catalog/laminat');
   assert.equal(laminate.parentName, 'Підлога');
