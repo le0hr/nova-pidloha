@@ -1,4 +1,5 @@
-"""Floor filters: Виробник (brand), Клас зносостійкості, Фаска, from the products' variations; groups on category "pidloha".
+"""Floor filters: Виробник (brand), Клас зносостійкості, Товщина, Фаска, Вологостійкість, from the products' variations;
+groups on category "pidloha".
 The furniture "Колір" group is unlinked from floor (its values are door/furniture colours).
 
 Usage: python rebuild_floor_filters.py URL TOKEN JOURNAL [--write]
@@ -40,8 +41,19 @@ def all_pages(path, params):
         page += 1
 
 
-FLOOR = ["pidloha", "pidloha-laminat", "pidloha-pidlozhka"]
-GROUPS = {"vyrobnyk": "Виробник", "klas": "Клас зносостійкості", "faska": "Фаска"}
+_cats = all_pages("categories", {"fields[0]": "slug", "status": "published", "populate[parent][fields][0]": "slug"})
+_parent = {c["slug"]: (c["parent"] or {}).get("slug") for c in _cats}
+
+
+def _root(slug):
+    while _parent.get(slug):
+        slug = _parent[slug]
+    return slug
+
+
+FLOOR = [slug for slug in _parent if _root(slug) == "pidloha"]  # every floor category, incl. new subcategories
+GROUPS = {"vyrobnyk": "Виробник", "klas": "Клас зносостійкості", "tovshchyna": "Товщина", "faska": "Фаска",
+          "volohostiikist": "Вологостійкість"}
 TR = dict(zip("абвгґдеєжзиіїйклмнопрстуфхцчшщьюя", ["a", "b", "v", "h", "g", "d", "e", "ie", "zh", "z", "y", "i", "i", "i", "k", "l", "m",
                                                    "n", "o", "p", "r", "s", "t", "u", "f", "kh", "ts", "ch", "sh", "shch", "", "iu", "ia"]))
 
@@ -51,7 +63,7 @@ def slug(group, name):
     return f"{group}-" + re.sub(r"[^a-z0-9]+", "-", text).strip("-")
 
 
-params = {"status": "published", "fields[0]": "name", "populate[brand][fields][0]": "name",
+params = {"status": "published", "fields[0]": "name", "populate[brand][fields][0]": "name", "populate[category][fields][0]": "slug",
           "populate[product_variations][fields][0]": "catalog_attributes", "populate[product_variations][fields][1]": "active"}
 for i, s in enumerate(FLOOR):
     params[f"filters[category][slug][$in][{i}]"] = s
@@ -64,7 +76,11 @@ for p in products:
     plan[p["documentId"]] = {
         "vyrobnyk": [p["brand"]["name"]] if p.get("brand") else [],
         "klas": sorted({f"{a['клас_зносостійкості']} клас" for a in attrs if a.get("клас_зносостійкості")}),
-        "faska": ["З фаскою"] if any(str(a.get("фаска", "")).lower() == "так" for a in attrs) else [],
+        "tovshchyna": sorted({f"{float(str(a['товщина_мм']).replace(',', '.')):g} мм" for a in attrs
+                              if re.fullmatch(r"\d+([.,]\d+)?", str(a.get("товщина_мм", "")))}),
+        "faska": ["З фаскою"] if any(str(a.get("фаска", "")).strip().lower() not in {"", "-", "ні", "no", "none"} for a in attrs) else [],
+        "volohostiikist": ["Вологостійкий"] if any(str(a.get("вологостійкий", "")).lower() == "так" for a in attrs)
+        or re.search(r"(?i)aqua|hydro|\bwr\b|zero", p["name"]) or "vinilova" in ((p.get("category") or {}).get("slug") or "") else [],
     }
 counts = {g: collections.Counter(x for d in plan.values() for x in d[g]) for g in GROUPS}
 for g, c in counts.items():

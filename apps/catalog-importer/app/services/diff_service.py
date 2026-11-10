@@ -1,3 +1,4 @@
+import json
 """Compute a complete dependency-ordered plan without uploading or writing."""
 
 import logging
@@ -34,7 +35,8 @@ def comparable(value: Any, key: str = "") -> Any:
     if isinstance(value, list):
         items = [comparable(v) for v in value]
         # Owned collections are sets; Excel row/column order must not trigger updates.
-        return sorted(items, key=str)
+        # Sort by canonical JSON: Postgres jsonb returns object keys in its own order, str() would differ.
+        return sorted(items, key=lambda item: json.dumps(item, sort_keys=True, default=str, ensure_ascii=False))
     return value
 
 

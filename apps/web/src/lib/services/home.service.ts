@@ -119,6 +119,7 @@ export async function getHomeCategories(): Promise<HomeCategory[]> {
     const selected = new Map<string, Item>();
     for (const category of valid.filter(item => item.isFeatured)) {
       const node = tree.find(item => item.documentId === category.documentId);
+      if (!node) continue; // technical branch, not shown on the site
       const subcategories = node ? flatSubcategories(tree, node).map(item => byId.get(item.documentId)).filter((item): item is Item => !!item) : [];
       for (const item of subcategories.length ? subcategories : [category]) selected.set(item.documentId, item);
     }

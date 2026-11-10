@@ -1,5 +1,6 @@
 """Rebuild door filters: Колір / Скло / Тип покриття families from variations; drop junk door groups.
-Usage: python apply.py URL TOKEN DOORS_JSON JOURNAL [--write]"""
+Usage: python rebuild_door_filters.py URL TOKEN DOORS_JSON|- JOURNAL [--write]
+DOORS_JSON "-" fetches the door products from the CMS itself. A missing price group ("cost") is created."""
 import json, sys, urllib.request, urllib.parse, collections, re, os
 sys.path.insert(0, os.path.dirname(__file__)); import door_filter_rules as rules
 URL, TOKEN, DOORS, JOURNAL = sys.argv[1:5]; WRITE = "--write" in sys.argv
@@ -40,7 +41,27 @@ def values_of(variation, fn, group):
     if group == "kromka": return fn(next((v for k, v in a.items() if k.startswith("кромка")), None))
     return fn(a.get("тип_покриття"))
 
-prods = json.load(open(DOORS))
+def fetch_doors():
+    cats = all_pages("categories", {"fields[0]": "slug", "status": "published", "populate[parent][fields][0]": "slug"})
+    parent = {c["slug"]: (c["parent"] or {}).get("slug") for c in cats}
+    def root(slug):
+        while parent.get(slug): slug = parent[slug]
+        return slug
+    params = {"status": "published", "fields[0]": "name", "fields[1]": "active",
+              "populate[category][fields][0]": "slug", "populate[filter_values][fields][0]": "name",
+              "populate[product_variations][fields][0]": "catalog_attributes", "populate[product_variations][fields][1]": "active",
+              "populate[product_variations][populate][decor_color][fields][0]": "name",
+              "populate[product_variations][populate][decor_glass][fields][0]": "name"}
+    for i, slug in enumerate(s for s in parent if root(s) == "dveri"):
+        params[f"filters[category][slug][$in][{i}]"] = slug
+    rows, page = [], 1
+    while True:  # 50 per page: products carry all their variations
+        d = call("GET", "products", {**params, "pagination[page]": page, "pagination[pageSize]": 50})
+        rows += d["data"]
+        if page >= d["meta"]["pagination"]["pageCount"]: return rows
+        page += 1
+
+prods = fetch_doors() if DOORS == "-" else json.load(open(DOORS))
 plan = {}
 for p in prods:
     vs = [v for v in p["product_variations"] if v.get("active") is not False] or p["product_variations"]
@@ -52,7 +73,7 @@ print("products without any value:", sum(1 for d in plan.values() if not any(d.v
 groups = all_pages("filter-groups", {"status": "published", "populate[categories][fields][0]": "slug", "populate[filter_values][fields][0]": "slug"})
 cats = {c["slug"]: c["documentId"] for c in all_pages("categories", {"fields[0]": "slug", "status": "published"})}
 door_slugs = {"dveri", "mizhkimnatni", "dveri-nakladky-na-vkhidni-dveri"} | {s for s in cats if s.startswith("dveri-")}
-DROP = [g for g in groups if g["slug"] not in ("cost", "колір", "тип-покриття") and g["slug"] not in GROUPS
+DROP = [g for g in groups if g["type"] != "price" and g["slug"] not in ("cost", "колір", "тип-покриття") and g["slug"] not in GROUPS
         and {c["slug"] for c in g["categories"]} and {c["slug"] for c in g["categories"]} <= door_slugs]
 DROP += [g for g in groups if not g["categories"] and g["slug"] not in GROUPS and g["slug"] != "cost"]
 print("drop groups:", [(g["name"], len(g["filter_values"])) for g in DROP])
@@ -68,9 +89,13 @@ for g, (name, _) in GROUPS.items():
     for value in counts[g]:
         s = vslug(g, value)
         vid[(g, value)] = have.get(s) or call("POST", "filter-codes", {"status": "published"}, {"data": {"name": value, "slug": s, "filter_group": gid[g]}})["data"]["documentId"]
-# 2) price group also for all doors
-cost = existing["cost"]
-call("PUT", f"filter-groups/{cost['documentId']}", {"status": "published"}, {"data": {"categories": sorted({cats[c["slug"]] for c in cost["categories"]} | {cats["dveri"]})}})
+# 2) price group also for all doors (created when the CMS has none)
+cost = existing.get("cost")
+if cost is None:
+    call("POST", "filter-groups", {"status": "published"}, {"data": {"name": "Ціна", "slug": "cost", "type": "price",
+         "categories": [cats[s] for s in ("dveri", "pidloha", "furnitura") if s in cats]}})
+else:
+    call("PUT", f"filter-groups/{cost['documentId']}", {"status": "published"}, {"data": {"categories": sorted({cats[c["slug"]] for c in cost["categories"]} | {cats["dveri"]})}})
 # 3) products
 for i, (doc, d) in enumerate(plan.items()):
     ids = [vid[(g, x)] for g in GROUPS for x in d[g]]

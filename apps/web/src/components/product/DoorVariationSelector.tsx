@@ -27,6 +27,10 @@ interface Props {
   /** When the product has sized variations: pick a standard size or enter a custom one (+surcharge). */
   sizes?: SizeOptions;
   additionalCount?: number;
+  /** Doors pick a size; hardware and other non-sized goods skip the step. */
+  showSize?: boolean;
+  /** Note next to the colour step; omitted when colours are priced differently. */
+  colorNote?: string;
   value: VariationState;
   onChange: (value: Partial<VariationState>) => void;
   options: {
@@ -38,7 +42,7 @@ interface Props {
 
 
 
-export default function VariationSelector({ value, onChange, options, beforeDimensions, additionalCount = 0, sizes }: Props) {
+export default function VariationSelector({ value, onChange, options, beforeDimensions, additionalCount = 0, sizes, showSize = true, colorNote }: Props) {
   const setValue = (partial: Partial<VariationState>) => onChange(partial);
 
   const [custom, setCustom] = useState(value.sizeMode === "custom");
@@ -47,17 +51,17 @@ export default function VariationSelector({ value, onChange, options, beforeDime
     : value.width !== 750 || value.height !== 2050;
 
   const baseCount = Object.values(options).filter((values) => values.length > 0).length;
-  const total = baseCount + additionalCount + 1;
+  const total = baseCount + additionalCount + (showSize ? 1 : 0);
 
   return (
     <div className="flex flex-col gap-5 w-full">
       {options.decor.length > 0 && <DoorDecorSelector decors={options.decor} value={value} setValue={setValue} step={1} total={total} />}
-      {options.decor_color.length > 0 && <ColorSelector decor_colors={options.decor_color} value={value} setValue={setValue} step={Number(options.decor.length > 0) + 1} total={total} />}
+      {options.decor_color.length > 0 && <ColorSelector decor_colors={options.decor_color} value={value} setValue={setValue} step={Number(options.decor.length > 0) + 1} total={total} note={colorNote} />}
       {options.decor_glass.length > 0 && <AccentSelector accents={options.decor_glass} value={value} setValue={setValue} step={baseCount} total={total} />}
       {beforeDimensions}
 
       {/* Крок 4: Розмір */}
-      <div className="flex flex-col gap-2.5">
+      {showSize && <div className="flex flex-col gap-2.5">
         <StepHeader label={`Крок ${total}: Розмір`} step={`${total}/${total}`} />
 
         <div className="flex gap-1 w-fit">
@@ -162,7 +166,7 @@ export default function VariationSelector({ value, onChange, options, beforeDime
             </span>
           </div>
         )}
-      </div>
+      </div>}
     </div>
   );
 }

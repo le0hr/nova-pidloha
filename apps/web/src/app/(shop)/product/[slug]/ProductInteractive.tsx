@@ -55,6 +55,8 @@ export default function DynamicField({ product }: { product: ProductReturnData }
 
   const isFloor = category === "pidloha" || category.startsWith("pidloha-");
   const isMizhkimnatni = !isFloor;
+  // Hardware (locks, handles, hinges) uses the same template with colour only: no size step.
+  const isHardware = category === "furnitura" || category.startsWith("furnitura-");
 
   // Doors with sized variations (width/height in the supplier file): standard sizes are variations.
   const keys = useMemo(() => sizeKeys(variations), [variations]);
@@ -77,6 +79,14 @@ export default function DynamicField({ product }: { product: ProductReturnData }
   const additionalCount = visibleExtraFields(variations, selectedVariation).length;
   const hasExtraAttributes = additionalCount > 0;
   const baseCount = Object.values(options).filter((values) => values.length > 0).length;
+  // Lowest price per colour of the current decor (sizes and glass vary the price on their own).
+  const colorPrices = new Map<string, number>();
+  for (const row of variations) {
+    if ((row.decor?.name ?? "") !== selection.decor) continue;
+    const color = row.decor_color?.name ?? "";
+    colorPrices.set(color, Math.min(colorPrices.get(color) ?? Infinity, Number(row.price)));
+  }
+  const colorNote = new Set(colorPrices.values()).size > 1 ? undefined : "(не впливає на ціну)";
 
   const selectVariation = (variation: ProductVariation) => {
     if (variation.slug !== selectedSlug) setAddonSelection({});
@@ -144,10 +154,10 @@ export default function DynamicField({ product }: { product: ProductReturnData }
         {isMizhkimnatni && (
           <div className="flex flex-col gap-6">
             <VariationSelector value={selection} onChange={updateSelection} options={options}
-              additionalCount={additionalCount} sizes={sizes}
+              additionalCount={additionalCount} sizes={sizes} showSize={!isHardware} colorNote={colorNote}
               beforeDimensions={hasExtraAttributes ? (
                 <TableVariationSelector variations={variations} selected={selectedVariation} onSelect={selectVariation}
-                  startStep={baseCount + 1} total={baseCount + additionalCount + 1} />
+                  startStep={baseCount + 1} total={baseCount + additionalCount + (isHardware ? 0 : 1)} />
               ) : null}
             />
           </div>
