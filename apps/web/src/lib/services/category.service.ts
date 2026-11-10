@@ -19,9 +19,29 @@ export const getCategories = cache(async (): Promise<Category[]> => {
     if (page >= data.categories_connection.pageInfo.pageCount) break;
     page += 1;
   }
-  await addProductCounts(categories);
-  return categories;
+  const visible = withoutTechnical(categories);
+  await addProductCounts(visible);
+  return visible;
 });
+
+/**
+ * Technical branches never shown on the site: moulding sold only together with doors (door add-ons).
+ * Their products stay in the CMS for the importer; customers pick them in the door configurator.
+ */
+const TECHNICAL_ROOTS = new Set(["komplektuiuchi"]);
+
+function withoutTechnical(categories: Category[]): Category[] {
+  const byId = new Map(categories.map(category => [category.documentId, category]));
+  const hidden = (category: Category): boolean => {
+    const seen = new Set<string>();
+    for (let item: Category | undefined = category; item && !seen.has(item.documentId); item = item.parent ? byId.get(item.parent.documentId) : undefined) {
+      if (TECHNICAL_ROOTS.has(item.slug)) return true;
+      seen.add(item.documentId);
+    }
+    return false;
+  };
+  return categories.filter(category => !hidden(category));
+}
 
 /** Own product counts for ordering subcategories; one aliased query per 40 categories, cached for 5 minutes. */
 async function addProductCounts(categories: Category[]): Promise<void> {
