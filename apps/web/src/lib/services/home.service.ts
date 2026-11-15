@@ -3,6 +3,7 @@ import { categoryHref, categoryImage, categoryRoot, flatSubcategories, type Cate
 import { getCategories } from "@/lib/services/category.service";
 import { priceUnit } from "@/lib/catalog/floor";
 import { graphqlFetch, mediaUrl } from "@/lib/client";
+import { clip } from "@/lib/seo";
 import type { HomeCategory, HomeProduct } from "@/types/home";
 
 type FeaturedProduct = {
@@ -23,6 +24,11 @@ function productGroup(product: FeaturedProduct): string {
   const subclass = product.catalog_attributes?.["підклас"];
   if (typeof subclass === "string" && subclass.trim()) return subclass.trim();
   return product.category?.name?.trim() || "Інше";
+}
+
+function cardCaption(description: string | null | undefined): string {
+  const first = plainText(String(description ?? "").split(/\n\s*\n/)[0]) ?? "";
+  return clip(first.match(/^.+?[.!?](?=\s|$)/)?.[0] ?? first, 90);
 }
 
 export async function getHomeProducts(): Promise<HomeProduct[]> {
@@ -132,7 +138,8 @@ export async function getHomeCategories(): Promise<HomeCategory[]> {
         href: categoryHref(category.slug),
         image: categoryImage(category, valid),
         parentName: className,
-        description: plainText(category.description),
+        // The card shows a caption: the first sentence of the category text (the full text is on the category page).
+        description: cardCaption(category.description),
         group: className ?? category.name,
       };
     });

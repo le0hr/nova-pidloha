@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "2026-11-15T12:23:08.267Z"
+    "x-generation-date": "2026-11-15T14:14:04.285Z"
   },
   "x-strapi-config": {
     "plugins": [
@@ -8643,6 +8643,9 @@
                           "external_id": {
                             "type": "string"
                           },
+                          "seo": {
+                            "$ref": "#/components/schemas/SharedSeoComponent"
+                          },
                           "createdAt": {
                             "type": "string",
                             "format": "date-time"
@@ -9397,6 +9400,9 @@
                         "items": {
                           "$ref": "#/components/schemas/CatalogSizeNoteComponent"
                         }
+                      },
+                      "seo": {
+                        "$ref": "#/components/schemas/SharedSeoComponent"
                       },
                       "createdAt": {
                         "type": "string",
@@ -10464,6 +10470,414 @@
           "meta": {
             "type": "object"
           }
+        }
+      },
+      "SharedOpenGraphComponent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "ogTitle": {
+            "type": "string"
+          },
+          "ogDescription": {
+            "type": "string"
+          },
+          "ogImage": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "documentId": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "alternativeText": {
+                "type": "string"
+              },
+              "caption": {
+                "type": "string"
+              },
+              "focalPoint": {},
+              "width": {
+                "type": "integer"
+              },
+              "height": {
+                "type": "integer"
+              },
+              "formats": {},
+              "hash": {
+                "type": "string"
+              },
+              "ext": {
+                "type": "string"
+              },
+              "mime": {
+                "type": "string"
+              },
+              "size": {
+                "type": "number",
+                "format": "float"
+              },
+              "url": {
+                "type": "string"
+              },
+              "previewUrl": {
+                "type": "string"
+              },
+              "provider": {
+                "type": "string"
+              },
+              "provider_metadata": {},
+              "related": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "number"
+                        }
+                      ]
+                    },
+                    "documentId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "folder": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  },
+                  "documentId": {
+                    "type": "string"
+                  }
+                }
+              },
+              "folderPath": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "publishedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "createdBy": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  },
+                  "documentId": {
+                    "type": "string"
+                  }
+                }
+              },
+              "updatedBy": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  },
+                  "documentId": {
+                    "type": "string"
+                  }
+                }
+              },
+              "locale": {
+                "type": "string"
+              },
+              "localizations": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "number"
+                        }
+                      ]
+                    },
+                    "documentId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "ogUrl": {
+            "type": "string"
+          },
+          "ogType": {
+            "type": "string"
+          }
+        }
+      },
+      "SharedSeoComponent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "metaTitle": {
+            "type": "string"
+          },
+          "metaDescription": {
+            "type": "string"
+          },
+          "metaImage": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "documentId": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "alternativeText": {
+                "type": "string"
+              },
+              "caption": {
+                "type": "string"
+              },
+              "focalPoint": {},
+              "width": {
+                "type": "integer"
+              },
+              "height": {
+                "type": "integer"
+              },
+              "formats": {},
+              "hash": {
+                "type": "string"
+              },
+              "ext": {
+                "type": "string"
+              },
+              "mime": {
+                "type": "string"
+              },
+              "size": {
+                "type": "number",
+                "format": "float"
+              },
+              "url": {
+                "type": "string"
+              },
+              "previewUrl": {
+                "type": "string"
+              },
+              "provider": {
+                "type": "string"
+              },
+              "provider_metadata": {},
+              "related": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "number"
+                        }
+                      ]
+                    },
+                    "documentId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "folder": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  },
+                  "documentId": {
+                    "type": "string"
+                  }
+                }
+              },
+              "folderPath": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "publishedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "createdBy": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  },
+                  "documentId": {
+                    "type": "string"
+                  }
+                }
+              },
+              "updatedBy": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  },
+                  "documentId": {
+                    "type": "string"
+                  }
+                }
+              },
+              "locale": {
+                "type": "string"
+              },
+              "localizations": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "number"
+                        }
+                      ]
+                    },
+                    "documentId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "openGraph": {
+            "$ref": "#/components/schemas/SharedOpenGraphComponent"
+          },
+          "keywords": {
+            "type": "string"
+          },
+          "metaRobots": {
+            "type": "string"
+          },
+          "metaViewport": {
+            "type": "string"
+          },
+          "canonicalURL": {
+            "type": "string"
+          },
+          "structuredData": {}
         }
       },
       "CatalogSizeRuleComponent": {
@@ -12390,6 +12804,9 @@
                     "external_id": {
                       "type": "string"
                     },
+                    "seo": {
+                      "$ref": "#/components/schemas/SharedSeoComponent"
+                    },
                     "createdAt": {
                       "type": "string",
                       "format": "date-time"
@@ -14061,6 +14478,9 @@
                     "$ref": "#/components/schemas/CatalogSizeNoteComponent"
                   }
                 },
+                "seo": {
+                  "$ref": "#/components/schemas/SharedSeoComponent"
+                },
                 "createdAt": {
                   "type": "string",
                   "format": "date-time"
@@ -14317,6 +14737,9 @@
               },
               "external_id": {
                 "type": "string"
+              },
+              "seo": {
+                "$ref": "#/components/schemas/SharedSeoComponent"
               },
               "locale": {
                 "type": "string"
@@ -17666,6 +18089,9 @@
                           "$ref": "#/components/schemas/CatalogSizeNoteComponent"
                         }
                       },
+                      "seo": {
+                        "$ref": "#/components/schemas/SharedSeoComponent"
+                      },
                       "createdAt": {
                         "type": "string",
                         "format": "date-time"
@@ -17764,6 +18190,9 @@
                 },
                 "external_id": {
                   "type": "string"
+                },
+                "seo": {
+                  "$ref": "#/components/schemas/SharedSeoComponent"
                 },
                 "createdAt": {
                   "type": "string",
@@ -17905,6 +18334,9 @@
           },
           "external_id": {
             "type": "string"
+          },
+          "seo": {
+            "$ref": "#/components/schemas/SharedSeoComponent"
           },
           "createdAt": {
             "type": "string",
@@ -19886,6 +20318,9 @@
                                     "external_id": {
                                       "type": "string"
                                     },
+                                    "seo": {
+                                      "$ref": "#/components/schemas/SharedSeoComponent"
+                                    },
                                     "createdAt": {
                                       "type": "string",
                                       "format": "date-time"
@@ -20640,6 +21075,9 @@
                                   "items": {
                                     "$ref": "#/components/schemas/CatalogSizeNoteComponent"
                                   }
+                                },
+                                "seo": {
+                                  "$ref": "#/components/schemas/SharedSeoComponent"
                                 },
                                 "createdAt": {
                                   "type": "string",
@@ -23565,6 +24003,9 @@
                                     "external_id": {
                                       "type": "string"
                                     },
+                                    "seo": {
+                                      "$ref": "#/components/schemas/SharedSeoComponent"
+                                    },
                                     "createdAt": {
                                       "type": "string",
                                       "format": "date-time"
@@ -24319,6 +24760,9 @@
                                   "items": {
                                     "$ref": "#/components/schemas/CatalogSizeNoteComponent"
                                   }
+                                },
+                                "seo": {
+                                  "$ref": "#/components/schemas/SharedSeoComponent"
                                 },
                                 "createdAt": {
                                   "type": "string",
@@ -26811,6 +27255,9 @@
                           "external_id": {
                             "type": "string"
                           },
+                          "seo": {
+                            "$ref": "#/components/schemas/SharedSeoComponent"
+                          },
                           "createdAt": {
                             "type": "string",
                             "format": "date-time"
@@ -27565,6 +28012,9 @@
                         "items": {
                           "$ref": "#/components/schemas/CatalogSizeNoteComponent"
                         }
+                      },
+                      "seo": {
+                        "$ref": "#/components/schemas/SharedSeoComponent"
                       },
                       "createdAt": {
                         "type": "string",
@@ -30092,6 +30542,9 @@
                               "external_id": {
                                 "type": "string"
                               },
+                              "seo": {
+                                "$ref": "#/components/schemas/SharedSeoComponent"
+                              },
                               "createdAt": {
                                 "type": "string",
                                 "format": "date-time"
@@ -31762,6 +32215,9 @@
                             "items": {
                               "$ref": "#/components/schemas/CatalogSizeNoteComponent"
                             }
+                          },
+                          "seo": {
+                            "$ref": "#/components/schemas/SharedSeoComponent"
                           },
                           "createdAt": {
                             "type": "string",
@@ -35184,6 +35640,9 @@
                                     "$ref": "#/components/schemas/CatalogSizeNoteComponent"
                                   }
                                 },
+                                "seo": {
+                                  "$ref": "#/components/schemas/SharedSeoComponent"
+                                },
                                 "createdAt": {
                                   "type": "string",
                                   "format": "date-time"
@@ -35282,6 +35741,9 @@
                           },
                           "external_id": {
                             "type": "string"
+                          },
+                          "seo": {
+                            "$ref": "#/components/schemas/SharedSeoComponent"
                           },
                           "createdAt": {
                             "type": "string",
@@ -35683,6 +36145,9 @@
                   "$ref": "#/components/schemas/ShopsLocationComponent"
                 }
               },
+              "seo": {
+                "$ref": "#/components/schemas/SharedSeoComponent"
+              },
               "locale": {
                 "type": "string"
               },
@@ -35786,6 +36251,9 @@
               "$ref": "#/components/schemas/ShopsLocationComponent"
             }
           },
+          "seo": {
+            "$ref": "#/components/schemas/SharedSeoComponent"
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time"
@@ -35885,6 +36353,9 @@
                   "items": {
                     "$ref": "#/components/schemas/ShopsLocationComponent"
                   }
+                },
+                "seo": {
+                  "$ref": "#/components/schemas/SharedSeoComponent"
                 },
                 "createdAt": {
                   "type": "string",
@@ -36786,6 +37257,9 @@
                 "items": {
                   "$ref": "#/components/schemas/CatalogSizeNoteComponent"
                 }
+              },
+              "seo": {
+                "$ref": "#/components/schemas/SharedSeoComponent"
               },
               "locale": {
                 "type": "string"
@@ -39975,6 +40449,9 @@
                         "$ref": "#/components/schemas/CatalogSizeNoteComponent"
                       }
                     },
+                    "seo": {
+                      "$ref": "#/components/schemas/SharedSeoComponent"
+                    },
                     "createdAt": {
                       "type": "string",
                       "format": "date-time"
@@ -40073,6 +40550,9 @@
               },
               "external_id": {
                 "type": "string"
+              },
+              "seo": {
+                "$ref": "#/components/schemas/SharedSeoComponent"
               },
               "createdAt": {
                 "type": "string",
@@ -40432,6 +40912,9 @@
             "items": {
               "$ref": "#/components/schemas/CatalogSizeNoteComponent"
             }
+          },
+          "seo": {
+            "$ref": "#/components/schemas/SharedSeoComponent"
           },
           "createdAt": {
             "type": "string",
@@ -42245,6 +42728,9 @@
                     "external_id": {
                       "type": "string"
                     },
+                    "seo": {
+                      "$ref": "#/components/schemas/SharedSeoComponent"
+                    },
                     "createdAt": {
                       "type": "string",
                       "format": "date-time"
@@ -43915,6 +44401,9 @@
                   "items": {
                     "$ref": "#/components/schemas/CatalogSizeNoteComponent"
                   }
+                },
+                "seo": {
+                  "$ref": "#/components/schemas/SharedSeoComponent"
                 },
                 "createdAt": {
                   "type": "string",

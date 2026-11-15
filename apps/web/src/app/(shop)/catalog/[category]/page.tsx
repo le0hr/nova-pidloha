@@ -12,6 +12,51 @@ import Pagination from "@/components/catalog/Pagination";
 import Breadcrumb from "@/components/layout/shop/Breadcrumps";
 import { categoryHref } from "@/lib/catalog/categories";
 import { notFound, redirect } from "next/navigation";
+import type { Metadata } from "next";
+import JsonLd from "@/components/seo/JsonLd";
+import { pageNumber, type CatalogParams } from "@/lib/catalog/state";
+import { SEO_FIELDS, breadcrumbLd, clip, cmsStructuredData, fetchSeo, mediaUrlOrUndefined, pageMetadata, plainText } from "@/lib/seo";
+
+type CatalogPageProps = {
+  params: Promise<{ category: string }>;
+  searchParams: Promise<CatalogParams>;
+};
+
+const categorySeo = (slug: string) => fetchSeo(
+  `query CategorySeo($slug: String!) { categories(status: PUBLISHED, filters: {slug: {eq: $slug}}) { ${SEO_FIELDS} } }`,
+  { slug }, data => data.categories?.[0]?.seo,
+);
+
+/** Filters and sorting only reshuffle the category: such URLs are not indexed, the canonical is the clean page. */
+const isFiltered = (query: CatalogParams) => Object.entries(query).some(([key, value]) => key !== "page" && value !== undefined && value !== "");
+
+export async function generateMetadata({ params, searchParams }: CatalogPageProps): Promise<Metadata> {
+  const { category } = await params;
+  const query = await searchParams;
+  const [context, seo] = await Promise.all([getCatalogContext(category), categorySeo(category)]);
+  if (!context) return { title: "Категорію не знайдено", robots: { index: false } };
+  const { current, categories, scope } = context;
+  const page = pageNumber(query.page);
+  const count = categories.filter(item => scope.includes(item.slug)).reduce((sum, item) => sum + (item.productCount ?? 0), 0);
+  const subcategories = categories.filter(item => item.parent?.documentId === current.documentId).map(item => item.name);
+  const about = plainText(current.description);
+  const metadata = pageMetadata({
+    title: `${current.name} — купити в Черкасах, ціни`,
+    description: about
+      ? clip(about, 160)
+      : [`${current.name} у Черкасах${count ? `: ${count} товарів у каталозі` : ""}`,
+        subcategories.length ? clip(subcategories.join(", "), 70) : "",
+        "Актуальні ціни, консультація у виставкових залах, доставка по Україні"].filter(Boolean).join(". "),
+    path: `${categoryHref(current.slug)}${page > 1 ? `?page=${page}` : ""}`,
+    image: mediaUrlOrUndefined(current.image?.url),
+    robots: isFiltered(query) ? { index: false, follow: true } : undefined,
+  }, seo);
+  if (page > 1) metadata.title = `${String(metadata.title)} — сторінка ${page}`;
+  // A filtered page points to the clean category, not to itself.
+  if (isFiltered(query)) metadata.alternates = { canonical: categoryHref(current.slug) };
+  return metadata;
+}
+
 export default async function CatalogPage({
     params,
     searchParams,
@@ -25,6 +70,7 @@ export default async function CatalogPage({
   }) {
   const {category } = await params;
   const query = await searchParams;
+  const seo = await categorySeo(category);
 
   const context = await getCatalogContext(category);
   if (!context) notFound();
@@ -40,7 +86,15 @@ export default async function CatalogPage({
   return (
     <FilterDrawerProvider key={`${category}:${JSON.stringify(query)}`} filterGroups={filters}>
       <div className="catalog-page flex min-h-screen flex-col bg-white font-['Outfit',sans-serif]">
-        
+        <JsonLd data={[
+          breadcrumbLd([
+            { name: "Головна", path: "/" },
+            ...ancestors.map(item => ({ name: item.name, path: categoryHref(item.slug) })),
+            { name: current.name },
+          ]),
+          ...cmsStructuredData(seo),
+        ]} />
+
         <Breadcrumb items={[
           { label: "Головна", href: "/" },
           ...ancestors.map(item => ({ label: item.name, href: categoryHref(item.slug) })),
@@ -94,6 +148,14 @@ export default async function CatalogPage({
               <Pagination lastPage={pagination.pageCount}/>
             </div>
           </div>
+          {/* Category text from the CMS (Category → description): unique content for search, only on the clean first page. */}
+          {current.description && pagination.page === 1 && !isFiltered(query) && (
+            <section className="catalog-seo-text max-w-[860px] text-[15px] leading-[1.6] text-[#555] pb-10">
+              {String(current.description).split(/\n\s*\n/).map(plainText).filter(Boolean).map((paragraph, index) => (
+                <p key={index} className="mb-3">{paragraph}</p>
+              ))}
+            </section>
+          )}
         </div>
       </div>
     </FilterDrawerProvider> 

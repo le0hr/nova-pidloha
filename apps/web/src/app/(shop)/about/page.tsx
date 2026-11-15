@@ -6,8 +6,9 @@ import HomeIcon from "@/components/home/HomeIcon";
 import Stores from "@/components/home/Stores";
 
 export const metadata: Metadata = {
-  title: "Про нас — Нова Підлога та Двері",
+  title: "Про нас",
   description: "Підлога та двері для вашого дому. Знайомтеся з нашим підходом та завітайте до виставкових залів Нова Підлога у Черкасах.",
+  alternates: { canonical: "/about" },
 };
 const materials = [
   { title: "Підлога, яку відчуваєш", text: "Текстура дерева, приємний дотик, правильний відтінок. Ламінат, SPC та вініл для вашого ритму життя.", image: "laminate", href: "/catalog/pidloha", link: "Обрати підлогу" },

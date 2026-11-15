@@ -1,18 +1,21 @@
 "use client"
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 
+const navClass = "flex items-start border border-[#E0E0E0] px-4 py-2 text-[#1A1A1A] font-['Outfit'] text-[13px] font-normal leading-normal";
+
+/** Real links (not buttons), so search engines can walk every catalog page. */
 export default function Pagination({
         lastPage=8,
     }: {
         lastPage: number;
     }) {
-    const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
     const currentPage = Number(searchParams.get("page")) || 1;
-    const onPageChange = (page: number) => {
+    const pageHref = (page: number) => {
         const params = new URLSearchParams(searchParams.toString());
 
         if (page === 1) {
@@ -21,7 +24,7 @@ export default function Pagination({
             params.set("page", String(page));
         }
 
-        router.push(`${pathname}?${params.toString()}`);
+        return params.size ? `${pathname}?${params.toString()}` : pathname;
     };
 
     const getPages = () => {
@@ -44,16 +47,13 @@ export default function Pagination({
     if (lastPage <= 1) return null;
     return(
 
-        <div className="flex items-center justify-between self-stretch border-t border-[#E0E0E0] py-4">
+        <nav aria-label="Сторінки каталогу" className="flex items-center justify-between self-stretch border-t border-[#E0E0E0] py-4">
             {/* Previous */}
-            <button
-                type="button"
-                disabled={currentPage === 1}
-                onClick={() => onPageChange(currentPage - 1)}
-                className="flex items-start border border-[#E0E0E0] px-4 py-2 text-[#1A1A1A] font-['Outfit'] text-[13px] font-normal leading-normal disabled:cursor-not-allowed disabled:opacity-40"
-            >
-                Назад
-            </button>
+            {currentPage === 1 ? (
+                <span aria-disabled="true" className={`${navClass} cursor-not-allowed opacity-40`}>Назад</span>
+            ) : (
+                <Link href={pageHref(currentPage - 1)} rel="prev" className={navClass}>Назад</Link>
+            )}
 
             {/* Pages */}
             <div className="flex items-center gap-2">
@@ -72,10 +72,10 @@ export default function Pagination({
                 const isActive = page === currentPage;
 
                 return (
-                    <button
+                    <Link
                     key={page}
-                    type="button"
-                    onClick={() => onPageChange(page)}
+                    href={pageHref(page)}
+                    aria-current={isActive ? "page" : undefined}
                     className={`flex min-w-8 items-start justify-center px-3 py-2 font-['Outfit'] text-[13px] leading-normal ${
                         isActive
                         ? "bg-[#E53935] font-bold text-white"
@@ -83,21 +83,18 @@ export default function Pagination({
                     }`}
                     >
                     {page}
-                    </button>
+                    </Link>
                 );
                 })}
             </div>
 
             {/* Next */}
-            <button
-                type="button"
-                disabled={currentPage === lastPage}
-                onClick={() => onPageChange(currentPage + 1)}
-                className="flex items-start border border-[#E0E0E0] px-4 py-2 text-[#1A1A1A] font-['Outfit'] text-[13px] font-normal leading-normal disabled:cursor-not-allowed disabled:opacity-40"
-            >
-                Вперед
-            </button>
-        </div>
+            {currentPage >= lastPage ? (
+                <span aria-disabled="true" className={`${navClass} cursor-not-allowed opacity-40`}>Вперед</span>
+            ) : (
+                <Link href={pageHref(currentPage + 1)} rel="next" className={navClass}>Вперед</Link>
+            )}
+        </nav>
     )
     
 }

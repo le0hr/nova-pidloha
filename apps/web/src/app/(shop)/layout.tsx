@@ -11,7 +11,8 @@ export default async function ShopLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const categories = await getCategories();
+  // The menu needs no category texts (they are long SEO copy): keep them out of every page's client payload.
+  const categories = (await getCategories()).map(category => ({ ...category, description: undefined }));
   return (
     <div className="min-h-screen bg-[#fdfdfd]">
       <Header categories={categories} />

@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { normalizeAddon, type RawAddon } from '@/lib/catalog/addons';
 import { graphqlFetch } from '@/lib/client';
 import type { ProductReturnData, ProductVariation } from '@/types/product';
@@ -20,6 +21,9 @@ const PRODUCT_QUERY = `
         additionalCost
       }
       shortDescription
+      sku
+      updatedAt
+      image { url }
       characteristics {
         name
         value
@@ -70,6 +74,9 @@ type ProductGraphQLItem = {
   addons?: RawAddon[] | null;
   name: string;
   shortDescription: string | null;
+  sku?: string | null;
+  updatedAt?: string | null;
+  image?: { url?: string | null } | null;
   characteristics: ProductReturnData["characteristics"] | null;
   category: {name: string, slug: string} | null;
   size_rules?: SizeRule[] | null;
@@ -88,7 +95,8 @@ type ProductQueryResponse = {
   products: ProductGraphQLItem[];
 };
 
-export async function getProductBySlug(slug: string): Promise<ProductReturnData> {
+/** Cached per request: generateMetadata and the page share one fetch. Null when no such product. */
+export const getProductBySlug = cache(async (slug: string): Promise<ProductReturnData | null> => {
   const data = await graphqlFetch<ProductQueryResponse>(
     PRODUCT_QUERY,
     { slug, variationStart: 0, addonStart: 0 },
@@ -98,6 +106,7 @@ export async function getProductBySlug(slug: string): Promise<ProductReturnData>
     }
   );
   const product = data.products[0];
+  if (!product) return null;
   const variations = [...product.product_variations];
   // Advance by the returned count so a lower CMS limit cannot truncate the result.
   let batch = product.product_variations;
@@ -136,6 +145,10 @@ export async function getProductBySlug(slug: string): Promise<ProductReturnData>
     characteristics: product.characteristics ?? [],
     name: product.name,
     slug,
+    sku: product.sku ?? undefined,
+    brand: product.brand?.name ?? undefined,
+    updatedAt: product.updatedAt ?? undefined,
+    image: product.image?.url ? `${process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337"}${product.image.url}` : undefined,
     category: product.category,
     // Product rules override the brand's (see sizing.ts).
     sizeRules: product.size_rules?.length ? product.size_rules : product.brand?.size_rules ?? [],
@@ -149,4 +162,4 @@ export async function getProductBySlug(slug: string): Promise<ProductReturnData>
         : "",
     })),
   };
-}
+});

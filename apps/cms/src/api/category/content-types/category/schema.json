@@ -60,6 +60,11 @@
     "external_id": {
       "type": "string",
       "unique": true
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
     }
   }
 }

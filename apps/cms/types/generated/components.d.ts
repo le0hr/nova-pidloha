@@ -119,6 +119,53 @@ export interface HomeHeroSlide extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedOpenGraph extends Struct.ComponentSchema {
+  collectionName: 'components_shared_open_graphs';
+  info: {
+    displayName: 'openGraph';
+    icon: 'project-diagram';
+  };
+  attributes: {
+    ogDescription: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 200;
+      }>;
+    ogImage: Schema.Attribute.Media<'images'>;
+    ogTitle: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 70;
+      }>;
+    ogType: Schema.Attribute.String;
+    ogUrl: Schema.Attribute.String;
+  };
+}
+
+export interface SharedSeo extends Struct.ComponentSchema {
+  collectionName: 'components_shared_seos';
+  info: {
+    description: '\u0420\u0443\u0447\u043D\u0456 SEO-\u043F\u0440\u0430\u0432\u043A\u0438. \u041F\u043E\u0440\u043E\u0436\u043D\u0456 \u043F\u043E\u043B\u044F \u0441\u0430\u0439\u0442 \u0437\u0430\u043F\u043E\u0432\u043D\u044E\u0454 \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u043D\u043E \u0437 \u043D\u0430\u0437\u0432\u0438, \u0446\u0456\u043D\u0438 \u0439 \u0445\u0430\u0440\u0430\u043A\u0442\u0435\u0440\u0438\u0441\u0442\u0438\u043A.';
+    displayName: 'seo';
+    icon: 'search';
+  };
+  attributes: {
+    canonicalURL: Schema.Attribute.String;
+    keywords: Schema.Attribute.Text;
+    metaDescription: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 160;
+      }>;
+    metaImage: Schema.Attribute.Media<'images'>;
+    metaRobots: Schema.Attribute.String;
+    metaTitle: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 60;
+      }>;
+    metaViewport: Schema.Attribute.String;
+    openGraph: Schema.Attribute.Component<'shared.open-graph', false>;
+    structuredData: Schema.Attribute.JSON;
+  };
+}
+
 export interface ShopsAdresses extends Struct.ComponentSchema {
   collectionName: 'components_shops_adresses';
   info: {
@@ -172,6 +219,8 @@ declare module '@strapi/strapi' {
       'door-config.door-interior': DoorConfigDoorInterior;
       'home.hero-map': HomeHeroMap;
       'home.hero-slide': HomeHeroSlide;
+      'shared.open-graph': SharedOpenGraph;
+      'shared.seo': SharedSeo;
       'shops.adresses': ShopsAdresses;
       'shops.location': ShopsLocation;
     }

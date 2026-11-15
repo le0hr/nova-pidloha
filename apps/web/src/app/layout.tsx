@@ -1,13 +1,21 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { SITE_NAME, indexable, siteUrl } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: {
-    default: "Назва магазину",
-    template: "%s | Назва магазину",
-  },
-  description: "Опис магазину за замовчуванням",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    metadataBase: new URL(siteUrl()),
+    applicationName: SITE_NAME,
+    title: {
+      default: `${SITE_NAME} — підлога та двері у Черкасах`,
+      template: `%s | ${SITE_NAME}`,
+    },
+    description: "Ламінат, SPC, вінілова підлога та міжкімнатні двері у Черкасах. Каталог, конфігуратор дверей, доставка по Україні.",
+    openGraph: { siteName: SITE_NAME, locale: "uk_UA", type: "website" },
+    robots: indexable() ? { index: true, follow: true } : { index: false, follow: false },
+    formatDetection: { telephone: false },
+  };
+}
 
 export default function RootLayout({
   children,
