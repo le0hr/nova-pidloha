@@ -1,7 +1,9 @@
+import json
 """Compute a complete dependency-ordered plan without uploading or writing."""
 
 import logging
 from decimal import Decimal
+from pathlib import PurePosixPath
 from typing import Any
 
 from app.models.catalog import Catalog
@@ -18,6 +20,13 @@ from app.strapi.mapping import (
 )
 
 
+def same_asset_name(remote: object, wanted: str) -> bool:
+    """CMS converts JPEG/PNG uploads to WebP and renames the file (catalog-<sha>.jpg -> catalog-<sha>.webp).
+    The content hash in the stem identifies the asset, so the extension is ignored."""
+    if not isinstance(remote, str):
+        return False
+    return remote == wanted or PurePosixPath(remote).stem == PurePosixPath(wanted).stem
+
 def comparable(value: Any, key: str = "") -> Any:
     if key in {"price", "price_delta", "additionalCost"} and value is not None:
         return Decimal(str(value))
@@ -26,7 +35,8 @@ def comparable(value: Any, key: str = "") -> Any:
     if isinstance(value, list):
         items = [comparable(v) for v in value]
         # Owned collections are sets; Excel row/column order must not trigger updates.
-        return sorted(items, key=str)
+        # Sort by canonical JSON: Postgres jsonb returns object keys in its own order, str() would differ.
+        return sorted(items, key=lambda item: json.dumps(item, sort_keys=True, default=str, ensure_ascii=False))
     return value
 
 
@@ -68,7 +78,7 @@ def build_plan(
             if (
                 item.get("url") == payload.get("url")
                 if "url" in payload
-                else item.get("name") == payload["name"]
+                else same_asset_name(item.get("name"), payload["name"])
             )
         ]
         if len(matches) > 1:

@@ -39,6 +39,11 @@
     "external_id": {
       "type": "string",
       "unique": true
+    },
+    "size_rules": {
+      "type": "component",
+      "repeatable": true,
+      "component": "catalog.size-rule"
     }
   }
 }

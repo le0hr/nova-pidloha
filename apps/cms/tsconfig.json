@@ -34,6 +34,10 @@
     ".tmp/",
     ".strapi/",
 
+    // TEMP: unused checkout module depends on domain.ts from the payment branch.
+    // Remove this exclusion when merging payment logic; see README.md.
+    "src/checkout/catalog.ts",
+
     // Do not include admin files in the server compilation
     "src/admin/",
     // Do not include test files

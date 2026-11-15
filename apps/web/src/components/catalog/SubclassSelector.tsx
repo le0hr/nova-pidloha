@@ -1,34 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
-import { categoryAncestors, categoryHref, type Category } from "@/lib/catalog/categories";
-import { mediaUrl } from "@/lib/client";
-
-function categoryImage(category: Category, categories: Category[]): string {
-  if (category.image?.url) return mediaUrl(category.image.url);
-  const name = `${category.name} ${category.slug}`.toLowerCase();
-  if (/spc|спс/.test(name)) return "/images/home/spc.png";
-  if (/вініл|vinyl|vinil/.test(name)) return "/images/home/vinyl.png";
-  if (/ламінат|laminat/.test(name)) return "/images/home/laminate.png";
-  const path = [...categoryAncestors(categories, category), category]
-    .map(item => `${item.name} ${item.slug}`).join(" ").toLowerCase();
-  if (/двер|dver|doors|mizhkimnat|vhidni/.test(path)) return "/images/home/doors.png";
-  if (/підлог|pidloh|floor/.test(path)) return "/images/home/laminate.png";
-  return "/images/home/hero.png";
-}
+import { categoryHref, categoryImage, categoryRoot, flatSubcategories, type Category } from "@/lib/catalog/categories";
 
 export default function SubclassSelector({ categories, current }: { categories: Category[]; current: Category }) {
-  const children = categories.filter(item => item.parent?.documentId === current.documentId);
-  const parent = categories.find(item => item.documentId === current.parent?.documentId);
-  const root = children.length ? current : parent;
-  if (!root) return null;
-  const subclasses = children.length ? children : categories.filter(item => item.parent?.documentId === root.documentId);
+  // One flat row of every subcategory of the class, largest (more general) first.
+  const root = categoryRoot(categories, current);
+  const subclasses = flatSubcategories(categories, root);
   if (!subclasses.length) return null;
 
   return (
     <nav aria-label={`Підкатегорії: ${root.name}`} className="min-w-0 border-b border-[#e0e0e0] pb-5 md:pb-6">
-      <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+      <div className="mb-3">
         <h2 className="text-sm font-semibold text-[#1a1a1a]">Оберіть категорію</h2>
-        {root.documentId !== current.documentId && <Link href={categoryHref(root.slug)} className="text-xs font-semibold text-[#e53935] hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e53935]">Усі товари: {root.name} <span aria-hidden="true">↗</span></Link>}
       </div>
       <div className="flex snap-x snap-proximity gap-3 overflow-x-auto pb-2 md:gap-4">
         {[root, ...subclasses].map((category, index) => {

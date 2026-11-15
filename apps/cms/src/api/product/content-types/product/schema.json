@@ -92,6 +92,16 @@
       "allowedTypes": [
         "images"
       ]
+    },
+    "size_rules": {
+      "type": "component",
+      "repeatable": true,
+      "component": "catalog.size-rule"
+    },
+    "size_notes": {
+      "type": "component",
+      "repeatable": true,
+      "component": "catalog.size-note"
     }
   }
 }

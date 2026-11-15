@@ -22,6 +22,34 @@ type FilterGroup = {
 
 const VISIBLE_VALUES = 4;
 
+function productsWord(count: number): string {
+  const last = count % 10, lastTwo = count % 100;
+  if (last === 1 && lastTwo !== 11) return "товар";
+  if (last >= 2 && last <= 4 && (lastTwo < 12 || lastTwo > 14)) return "товари";
+  return "товарів";
+}
+
+/**
+ * Floating "Знайдено N товарів · Застосувати" next to the option the user just changed:
+ * to the right of the filter panel on desktop, over the end of the row in the mobile drawer.
+ */
+function PreviewBar({ total, onApply }: { total: number | null; onApply: () => void }) {
+  return (
+    <div role="status" aria-live="polite"
+      className="absolute right-0 top-1/2 z-40 flex -translate-y-1/2 items-center gap-3 whitespace-nowrap bg-[#1A1A1A] py-1.5 pl-3 pr-1.5 font-outfit text-xs text-white shadow-lg animate-fade-up
+        xl:left-[calc(100%+30px)] xl:right-auto
+        xl:before:absolute xl:before:-left-1.5 xl:before:top-1/2 xl:before:size-3 xl:before:-translate-y-1/2 xl:before:rotate-45 xl:before:bg-[#1A1A1A] xl:before:content-['']">
+      <span className="relative">
+        {total === null ? "Шукаю…" : total === 0 ? "Нічого не знайдено" : `Знайдено ${total} ${productsWord(total)}`}
+      </span>
+      <button type="button" onClick={onApply} disabled={total === 0}
+        className="relative shrink-0 bg-[#E53935] px-3 py-1.5 font-bold transition-opacity hover:opacity-90 disabled:opacity-40">
+        Застосувати
+      </button>
+    </div>
+  );
+}
+
 function FilterOptions({ group, renderOption }: {
   group: FilterGroup;
   renderOption: (option: FilterValue) => React.ReactNode;
@@ -51,7 +79,7 @@ function FilterOptions({ group, renderOption }: {
                 tabIndex={0}
                 role="region"
                 aria-label={`Інші значення: ${group.name}`}
-                className={`${layout} max-h-48 overflow-y-auto overscroll-contain border-l border-[#E0E0E0] py-1 pl-3 pr-2`}
+                className={`${layout} border-l border-[#E0E0E0] py-1 pl-3 pr-2`}
               >
                 {values.slice(VISIBLE_VALUES).map(renderOption)}
               </div>
@@ -71,8 +99,11 @@ export default function Filters() {
     setColor,
     setPrice,
     resetFilters,
-    applyFilters
+    applyFilters,
+    preview,
   } = useFilterDrawer();
+  const previewAt = (anchor: string) =>
+    preview?.anchor === anchor ? <PreviewBar total={preview.total} onApply={applyFilters} /> : null;
 
   
   const getOptionId = (opt: FilterValue): string => {
@@ -111,8 +142,8 @@ export default function Filters() {
                 ).includes(optionId);
 
                 return (
+                  <div key={optionId} className="relative flex min-w-0">
                   <label
-                    key={optionId}
                     className="flex min-w-0 cursor-pointer items-center gap-2"
                     onClick={() => toggleCheckbox(group.slug, optionId)}
                   >
@@ -145,6 +176,8 @@ export default function Filters() {
                       {opt.name}
                     </span>
                   </label>
+                  {previewAt(`${group.slug}:${optionId}`)}
+                  </div>
                 );
               }} />
           )}
@@ -156,8 +189,8 @@ export default function Filters() {
                 const isSelected = selected[group.slug] === optionId;
 
                 return (
+                  <div key={optionId} className="relative flex min-w-0">
                   <button
-                    key={optionId}
                     type="button"
                     onClick={() => setColor(group.slug, optionId)}
                     className={`flex max-w-full min-w-0 items-center gap-1 p-1 border
@@ -185,6 +218,8 @@ export default function Filters() {
                       {opt.name}
                     </span>
                   </button>
+                  {previewAt(`${group.slug}:${optionId}`)}
+                  </div>
                 );
               }} />
           )}
@@ -228,6 +263,7 @@ export default function Filters() {
               </div>
 
               <div className="relative mt-3 h-1.5 w-full rounded-full bg-[#E0E0E0]">
+                {previewAt(group.slug)}
                 {(() => {
                   const [from, to] = (selected[group.slug] as [
                     number,

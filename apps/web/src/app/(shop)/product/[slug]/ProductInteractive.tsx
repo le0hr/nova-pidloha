@@ -8,10 +8,13 @@ import ProductGallery from "@/components/product/ProductGallery";
 import VariationSelector from "@/components/product/DoorVariationSelector";
 import type { VariationState } from "@/types/product";
 import TableVariationSelector from "@/components/product/TableVariationSelector";
-import { extraFields, attributeValue, visibleExtraFields } from "@/lib/catalog/variations";
+import { extraFields, attributeValue, visibleExtraFields, galleryLooks, lookImage } from "@/lib/catalog/variations";
 import FloorConfigurator from "@/components/product/FloorConfigurator";
 import type { ProductVariation } from "@/types/product";
 import { ProductReturnData } from "@/types/product";
+import { boardSize, packArea, packsFor } from "@/lib/catalog/floor";
+import { allowedValues, nearestStandard, rulesFor, sizeKeys, sizeOf, sizePercent, sizedPrice, snapSize, standardFromCharacteristics,
+  standardSizes, variationForSize, type Size } from "@/lib/catalog/sizing";
 
 const NO_ACCENT = "Без скла";
 
@@ -49,27 +52,55 @@ function buildOptions(variations: ProductVariation[], selection: VariationState)
 export default function DynamicField({ product }: { product: ProductReturnData }) {
   const variations = product.variations;
   const [addonSelection, setAddonSelection] = useState<Record<string, string>>({});
-  const category = product.category.slug;
+  const category = product.category?.slug ?? "";
 
   const isFloor = category === "pidloha" || category.startsWith("pidloha-");
   const isMizhkimnatni = !isFloor;
+  // Hardware (locks, handles, hinges) uses the same template with colour only: no size step.
+  const isHardware = category === "furnitura" || category.startsWith("furnitura-");
 
-  const [selection, setSelection] = useState<VariationState>(() => toState(variations[0]));
+  // Doors with sized variations (width/height in the supplier file): standard sizes are variations.
+  const keys = useMemo(() => sizeKeys(variations), [variations]);
+  const hasSizes = Boolean(keys.width || keys.height);
+  const withSize = (state: VariationState, variation: ProductVariation): VariationState => {
+    if (!hasSizes || state.sizeMode === "custom") return state;
+    const size = sizeOf(variation, keys);
+    return { ...state, width: size.width ?? state.width, height: size.height ?? state.height };
+  };
+
+  // Doors priced the same in every size: standard sizes from the characteristics.
+  const isDoor = !isFloor && !isHardware;
+  const fallbackStandard = useMemo(() => standardFromCharacteristics(product.characteristics), [product.characteristics]);
+  const [selection, setSelection] = useState<VariationState>(() => {
+    const state = toState(variations[0]);
+    if (hasSizes) return withSize(state, variations[0]);
+    const widths = fallbackStandard.width;
+    return { ...state, width: widths.includes(800) ? 800 : widths[0], height: fallbackStandard.height[0] };
+  });
   const [selectedSlug, setSelectedSlug] = useState(variations[0].slug);
   const selectedVariation = variations.find((variation) => variation.slug === selectedSlug) ?? variations[0];
   const addons = selectedVariation.addons ?? product.addons ?? [];
   const chosenAddons = selectedAddons(addons, addonSelection);
-  const activeIndex = Math.max(0, variations.indexOf(selectedVariation));
+  // One gallery photo per look; another edge/size/side keeps the photo of the same colour.
+  const gallery = galleryLooks(variations, selectedVariation);
   const options = useMemo(() => buildOptions(variations, selection), [variations, selection]);
   const productName = product.name;
   const additionalCount = visibleExtraFields(variations, selectedVariation).length;
   const hasExtraAttributes = additionalCount > 0;
   const baseCount = Object.values(options).filter((values) => values.length > 0).length;
+  // Lowest price per colour of the current decor (sizes and glass vary the price on their own).
+  const colorPrices = new Map<string, number>();
+  for (const row of variations) {
+    if ((row.decor?.name ?? "") !== selection.decor) continue;
+    const color = row.decor_color?.name ?? "";
+    colorPrices.set(color, Math.min(colorPrices.get(color) ?? Infinity, Number(row.price)));
+  }
+  const colorNote = new Set(colorPrices.values()).size > 1 ? undefined : "(не впливає на ціну)";
 
   const selectVariation = (variation: ProductVariation) => {
     if (variation.slug !== selectedSlug) setAddonSelection({});
     setSelectedSlug(variation.slug);
-    setSelection((current) => toState(variation, current));
+    setSelection((current) => withSize(toState(variation, current), variation));
   };
 
   const updateSelection = (partial: Partial<VariationState>) => {
@@ -80,36 +111,84 @@ export default function DynamicField({ product }: { product: ProductReturnData }
       return state.decor === requested.decor &&
         (Object.hasOwn(partial, "decor") || state.decor_color === requested.decor_color);
     });
-    const fields = extraFields(variations);
+    // Keep side, size and other choices when the decor/colour/glass changes, if such a row exists.
+    const fields = [...extraFields(variations).map((field) => field.key), ...[keys.width, keys.height].filter((key): key is string => !!key)];
     const next = candidates.find((row) => row.slug === selectedSlug) ??
-      candidates.find((row) => fields.every((field) =>
+      candidates.find((row) => fields.every((key) => attributeValue(row, key) === attributeValue(selectedVariation, key))) ??
+      candidates.find((row) => extraFields(variations).every((field) =>
         attributeValue(row, field.key) === attributeValue(selectedVariation, field.key))) ??
       candidates[0] ?? selectedVariation;
     if (next.slug !== selectedSlug) setAddonSelection({});
     setSelectedSlug(next.slug);
-    setSelection(toState(next, requested));
+    setSelection(withSize(toState(next, requested), next));
   };
 
-  const [floorQtyM2, setFloorQtyM2] = useState(4.334);
+  // Size: standard values (variations or characteristics); non-standard only where the CMS has rules for it.
+  const standard = hasSizes ? standardSizes(variations, selectedVariation) : null;
+  const standards = {
+    width: standard ? (keys.width ? standard.widths : []) : fallbackStandard.width,
+    height: standard ? (keys.height ? standard.heights : []) : fallbackStandard.height,
+  };
+  const rules = {
+    width: isDoor ? rulesFor(product.sizeRules, "width", selection.decor, selection.decor_color) : [],
+    height: isDoor ? rulesFor(product.sizeRules, "height", selection.decor, selection.decor_color) : [],
+  };
+  const allowed = { width: allowedValues(standards.width, rules.width), height: allowedValues(standards.height, rules.height) };
+  // Another decor may allow fewer sizes: the chosen size is always shown and priced rounded to what is allowed now.
+  const chosenSize: Size = { width: snapSize(selection.width, allowed.width), height: snapSize(selection.height, allowed.height) };
+  const percent = (standards.width.length ? sizePercent(chosenSize.width, standards.width, rules.width) : 0) +
+    (standards.height.length ? sizePercent(chosenSize.height, standards.height, rules.height) : 0);
+  const isCustomSize = percent > 0 || (["width", "height"] as const).some((dimension) =>
+    standards[dimension].length > 0 && !standards[dimension].includes(chosenSize[dimension]));
+  const pricedVariation = percent ? { ...selectedVariation, price: sizedPrice(selectedVariation.price, 1 + percent / 100) } : selectedVariation;
+  const pickSize = (next: Partial<Size>) => {
+    const wanted = { ...chosenSize, ...next };
+    let custom = isCustomSize;
+    if (hasSizes) {
+      // The price is that of the nearest standard size.
+      const base = { width: keys.width ? nearestStandard(wanted.width, standards.width) : undefined,
+        height: keys.height ? nearestStandard(wanted.height, standards.height) : undefined };
+      const row = variationForSize(variations, selectedVariation, base);
+      const rowSize = sizeOf(row, keys);
+      custom = (rowSize.width !== undefined && rowSize.width !== wanted.width) || (rowSize.height !== undefined && rowSize.height !== wanted.height);
+      if (row.slug !== selectedSlug) setAddonSelection({});
+      setSelectedSlug(row.slug);
+    }
+    setSelection((current) => ({ ...current, ...wanted, sizeMode: custom ? "custom" : "standard" }));
+  };
+  const sizes = isDoor && (standards.width.length || standards.height.length) ? {
+    widths: standards.width,
+    heights: standards.height,
+    value: chosenSize,
+    rules,
+    allowed,
+    percent,
+    custom: isCustomSize,
+    notes: product.sizeNotes.filter((note) => chosenSize[note.dimension] === note.value).map((note) => note.text),
+    onPick: pickSize,
+  } : undefined;
+  // Cart: the chosen size when both are known (sized variations keep their own width/height otherwise).
+  const cartSize = sizes && standards.width.length && standards.height.length ? { ...chosenSize, custom: isCustomSize, percent } : undefined;
+
+  // Floor: quantity in m², sold by whole packs (pack area comes from the variation data).
+  const floorPackArea = packArea(selectedVariation);
+  const PACK_AREA = floorPackArea ?? 1;
+  const [floorQtyM2, setFloorQtyM2] = useState(() => 2 * PACK_AREA);
   const [floorUnit, setFloorUnit] = useState<"m2" | "pack">("m2");
-
-  const PACK_AREA = 2.167; 
-  const STOCK_M2 = 342;
-  const PRICE_PER_M2 = selectedVariation?.price ?? 589;
-  const OLD_PRICE_PER_M2 = 720;
-  const DISCOUNT = Math.round(((OLD_PRICE_PER_M2 - PRICE_PER_M2) / OLD_PRICE_PER_M2) * 100);
-
-  const packsApprox = Math.ceil(floorQtyM2 / PACK_AREA);
-  const totalPrice = Math.round(floorQtyM2 * PRICE_PER_M2);
+  const STOCK_M2 = 0;
+  const PRICE_PER_M2 = selectedVariation.price;
+  const packsApprox = packsFor(floorQtyM2, PACK_AREA);
+  const packPrice = Math.round(PRICE_PER_M2 * PACK_AREA * 100) / 100;
+  const totalPrice = Math.round(packsApprox * packPrice);
 
   return (
     <div className="product-detail-layout grid grid-cols-1 gap-8 lg:grid-cols-2 md:gap-10 lg:gap-12 items-start">
       <div className="product-detail-media min-w-0 w-full animate-slide-left" style={{ animationDelay: "0.18s" }}>
         <ProductGallery
           edgeBadge={undefined}
-          variations={variations}
-          activeIndex={activeIndex}
-          onSelectVariation={selectVariation}
+          variations={gallery.items}
+          activeIndex={gallery.activeIndex}
+          onSelectVariation={(item) => selectVariation(gallery.select(item))}
         />
       </div>
 
@@ -118,10 +197,10 @@ export default function DynamicField({ product }: { product: ProductReturnData }
         {isMizhkimnatni && (
           <div className="flex flex-col gap-6">
             <VariationSelector value={selection} onChange={updateSelection} options={options}
-              additionalCount={additionalCount}
+              additionalCount={additionalCount} sizes={sizes} colorNote={colorNote}
               beforeDimensions={hasExtraAttributes ? (
                 <TableVariationSelector variations={variations} selected={selectedVariation} onSelect={selectVariation}
-                  startStep={baseCount + 1} total={baseCount + additionalCount + 1} />
+                  startStep={baseCount + 1} total={baseCount + additionalCount + (sizes ? 1 : 0)} />
               ) : null}
             />
           </div>
@@ -140,17 +219,13 @@ export default function DynamicField({ product }: { product: ProductReturnData }
             packArea={PACK_AREA}
             stockM2={STOCK_M2}
             pricePerM2={PRICE_PER_M2}
-            oldPricePerM2={OLD_PRICE_PER_M2}
-            discount={DISCOUNT}
+            oldPricePerM2={0}
+            discount={0}
+            byPack={floorPackArea !== null}
+            boardSize={boardSize(selectedVariation)}
             totalPrice={totalPrice}
             packsApprox={packsApprox}
           />
-        )}
-
-        {isFloor && hasExtraAttributes && (
-          <div className="mt-6">
-            <TableVariationSelector variations={variations} selected={selectedVariation} onSelect={selectVariation} />
-          </div>
         )}
 
         <div className="mt-6 md:mt-8">
@@ -158,9 +233,12 @@ export default function DynamicField({ product }: { product: ProductReturnData }
         </div>
         <div className="mt-6 md:mt-8">
           <AddToCartButton
-            variation={selectedVariation}
+            variation={{ ...pricedVariation, image: lookImage(variations, selectedVariation) }}
             productName={productName}
+            oldPriceSeed={product.slug}
             addons={chosenAddons}
+            size={cartSize}
+            pack={isFloor ? { area: floorPackArea, qty: packsApprox } : undefined}
           />
         </div>
       </div>

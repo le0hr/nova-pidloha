@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useId, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 
-import { categoryHref, categoryScope, type Category } from "@/lib/catalog/categories";
+import { categoryHref, categoryScope, flatSubcategories, type Category } from "@/lib/catalog/categories";
 
 function CategorySection({ label, active, className, children }: {
   label: string;
@@ -49,22 +49,19 @@ export default function Navigation({ categories, mobile = false, onNavigate }: {
     { label: "Про нас", href: "/about", active: pathname === "/about" },
   ];
 
-  const renderBranches = (parentId: string, ancestors = new Set<string>()): React.ReactNode => {
-    const seen = new Set([...ancestors, parentId]);
-    const children = categories.filter(category => category.parent?.documentId === parentId && !seen.has(category.documentId));
-    if (!children.length) return null;
+  // Every subcategory of a class as one flat list, largest (more general) first.
+  const renderSubcategories = (root: Category): React.ReactNode => {
+    const items = flatSubcategories(categories, root);
+    if (!items.length) return null;
     return (
-      <ul className="ml-3 pl-3">
-        {children.map((category, index) => (
-          <li key={category.documentId} className="relative min-w-0 pb-1 last:pb-0">
-            <span aria-hidden="true" className={`absolute -left-3 top-0 w-px bg-[#e53935]/60 ${index === children.length - 1 ? "h-[22px]" : "bottom-0"}`} />
-            <span aria-hidden="true" className="absolute -left-3 top-[22px] h-px w-3 bg-[#e53935]/60" />
+      <ul className="flex flex-col gap-1">
+        {items.map(category => (
+          <li key={category.documentId} className="min-w-0">
             <Link href={categoryHref(category.slug)} onClick={onNavigate}
               aria-current={pathname === categoryHref(category.slug) ? "page" : undefined}
               className="flex min-h-11 min-w-0 items-center border border-transparent px-2 py-2 text-sm [overflow-wrap:anywhere] text-[#1a1a1a] transition-colors duration-150 ease-out motion-reduce:transition-none hover:border-[#e53935]/30 hover:bg-[#fff5f5] hover:text-[#e53935] aria-[current=page]:border-[#e53935]/30 aria-[current=page]:bg-[#fff5f5] aria-[current=page]:text-[#e53935] focus-visible:outline-2 focus-visible:outline-[#e53935]">
               {category.name}
             </Link>
-            {renderBranches(category.documentId, seen)}
           </li>
         ))}
       </ul>
@@ -81,7 +78,7 @@ export default function Navigation({ categories, mobile = false, onNavigate }: {
           <CategorySection key={`${link.href}:${pathname}`} label={link.label} active={link.active} className={linkClass}>
             <div className="px-4 pb-2 pt-2">
               <Link href={link.href} onClick={onNavigate} aria-current={pathname === link.href ? "page" : undefined} className="mb-2 flex min-h-11 items-center justify-center border border-[#e53935]/50 bg-white px-3 text-sm font-semibold text-[#e53935] transition-colors duration-150 ease-out motion-reduce:transition-none hover:border-[#e53935] hover:bg-[#fff5f5] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e53935]">Усі товари</Link>
-              {root && renderBranches(root.documentId)}
+              {root && renderSubcategories(root)}
             </div>
           </CategorySection>
         ) : <Link key={link.href} href={link.href} onClick={onNavigate} aria-current={link.active ? "page" : undefined} className={linkClass}>{link.label}</Link>;

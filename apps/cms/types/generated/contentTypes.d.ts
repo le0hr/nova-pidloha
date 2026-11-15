@@ -506,6 +506,7 @@ export interface ApiBrandBrand extends Struct.CollectionTypeSchema {
     name: Schema.Attribute.String;
     products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
+    size_rules: Schema.Attribute.Component<'catalog.size-rule', true>;
     slug: Schema.Attribute.UID;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1015,6 +1016,8 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     >;
     publishedAt: Schema.Attribute.DateTime;
     shortDescription: Schema.Attribute.String;
+    size_notes: Schema.Attribute.Component<'catalog.size-note', true>;
+    size_rules: Schema.Attribute.Component<'catalog.size-rule', true>;
     sku: Schema.Attribute.String;
     slug: Schema.Attribute.UID;
     updatedAt: Schema.Attribute.DateTime;

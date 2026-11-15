@@ -54,10 +54,17 @@ test('category loader follows CMS pagination and uses published categories', asy
   const pages = [];
   const load = loader({'@/lib/client': {graphqlFetch: async (query, variables) => {
     assert.match(query, /status: PUBLISHED/);
+    if (query.includes('CategoryCounts')) {
+      // one aliased count per category, active products only
+      assert.match(query, /active: \{eq: true\}/);
+      return Object.fromEntries(Object.keys(variables).map((key, index) => [`c${key.slice(2)}`, {pageInfo: {total: index + 5}}]));
+    }
     pages.push(variables.page);
     return {categories: variables.page === 1 ? categories.slice(0, 2) : categories.slice(2), categories_connection: {pageInfo: {pageCount: 2}}};
   }}});
   const {getCategories} = load(src('lib/services/category.service.ts'));
-  assert.equal((await getCategories()).length, 3);
+  const loaded = await getCategories();
+  assert.equal(loaded.length, 3);
   assert.deepEqual(pages, [1, 2]);
+  assert.deepEqual(loaded.map(c => c.productCount), [5, 6, 7]);
 });

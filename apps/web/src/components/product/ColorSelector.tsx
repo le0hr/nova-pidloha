@@ -6,7 +6,8 @@ export default function ColorSelector({
     setValue,
     step,
     total = 4,
-    label = "Колір"
+    label = "Колір",
+    note
 }: {
   decor_colors: string[];
   value: { decor_color: string };
@@ -14,13 +15,14 @@ export default function ColorSelector({
   step: number;
   total?: number;
   label?: string;
+  note?: string;
 }) {
     return(
         <div className="flex flex-col gap-2.5">
                 <StepHeader
                   label={`Крок ${step}: ${label}`}
                   step={`${step}/${total}`}
-                  note="(не впливає на ціну)"
+                  note={note}
                 />
                 <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
                   {decor_colors.map((color) => {

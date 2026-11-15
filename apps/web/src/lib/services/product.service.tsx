@@ -1,6 +1,7 @@
 import { normalizeAddon, type RawAddon } from '@/lib/catalog/addons';
 import { graphqlFetch } from '@/lib/client';
 import type { ProductReturnData, ProductVariation } from '@/types/product';
+import type { SizeNote, SizeRule } from '@/lib/catalog/sizing';
 
 const PRODUCT_QUERY = `
   query GetProduct($slug: String!, $variationStart: Int!, $addonStart: Int!) {
@@ -25,6 +26,12 @@ const PRODUCT_QUERY = `
         unit
       }
       name
+      size_rules { dimension min max step percent decors }
+      size_notes { dimension value text }
+      brand {
+        name
+        size_rules { dimension min max step percent decors }
+      }
       category{
         name
         slug
@@ -64,7 +71,10 @@ type ProductGraphQLItem = {
   name: string;
   shortDescription: string | null;
   characteristics: ProductReturnData["characteristics"] | null;
-  category: {name: string, slug: string};
+  category: {name: string, slug: string} | null;
+  size_rules?: SizeRule[] | null;
+  size_notes?: SizeNote[] | null;
+  brand?: { name: string; size_rules?: SizeRule[] | null } | null;
   product_variations: Array<
     Omit<ProductVariation, "image" | "price" | "addons"> & {
       addons?: RawAddon[] | null;
@@ -125,7 +135,11 @@ export async function getProductBySlug(slug: string): Promise<ProductReturnData>
     description: product.shortDescription ?? "",
     characteristics: product.characteristics ?? [],
     name: product.name,
+    slug,
     category: product.category,
+    // Product rules override the brand's (see sizing.ts).
+    sizeRules: product.size_rules?.length ? product.size_rules : product.brand?.size_rules ?? [],
+    sizeNotes: product.size_notes ?? [],
     variations: variations.filter((variation) => variation.active !== false).map(({ image, price, addons, ...variation }) => ({
       ...variation,
       addons: (addons ?? []).map(normalizeAddon),

@@ -202,10 +202,11 @@ select {
   padding-block: var(--page-vertical-gutter);
 }
 
-/* Use the width remaining beside filters, rather than forcing four columns. */
+/* Use the width remaining beside filters, but at most four columns:
+ * the page size (24) divides evenly into 2, 3 or 4, so the last row is always full. */
 @media (min-width: 768px) {
   .catalog-grid {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(max(min(100%, 200px), calc((100% - 3 * 1rem) / 4)), 1fr));
   }
 }
 
@@ -547,3 +548,6 @@ html { scroll-padding-top: 80px; }
     --product-sticky-top: calc(clamp(84px, 5.25vw, 102px) + 20px);
   }
 }
+
+/* Floor cards: square photo instead of the tall door height (beats h-[420px] and the wide-screen clamp). */
+.catalog-card-image.catalog-card-square { height: auto; aspect-ratio: 1 / 1; }
