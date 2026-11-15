@@ -783,6 +783,8 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
       Schema.Attribute.DefaultTo<'cart'>;
     comment: Schema.Attribute.Text;
     companyName: Schema.Attribute.String;
+    confirmedAt: Schema.Attribute.DateTime;
+    confirmedBy: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -896,6 +898,7 @@ export interface ApiPaymentAttemptPaymentAttempt
     providerStatus: Schema.Attribute.String;
     publicKey: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    reminderSentAt: Schema.Attribute.DateTime;
     status: Schema.Attribute.Enumeration<
       ['pending', 'held', 'paid', 'failed', 'reversed', 'refunded', 'test']
     > &

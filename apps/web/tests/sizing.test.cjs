@@ -30,23 +30,42 @@ assert.deepEqual(std.heights, [2000]);
 assert.equal(sizing.variationForSize(rows, rows[1], { width: 900 }).slug, 'n900');
 assert.equal(sizing.variationForSize(rows, rows[3], { width: 800 }).slug, 'n800r', 'keeps the side');
 
-// one-off surcharge: +15% other width, +20% other height, both multiply; standard size: no surcharge
-const base = { width: 800, height: 2000 };
-assert.equal(sizing.sizeSurcharge(base, { width: 800, height: 2000 }), 1);
-assert.equal(sizing.sizedPrice(2500, sizing.sizeSurcharge(base, { width: 650, height: 2000 })), 2875);
-assert.equal(sizing.sizedPrice(2500, sizing.sizeSurcharge(base, { width: 800, height: 2100 })), 3000);
-assert.equal(sizing.sizedPrice(2500, sizing.sizeSurcharge(base, { width: 1000, height: 2200 })), 3450);
+// non-standard sizes come from CMS rules: rounded up to the step, standard values free, width + height add up
+const rules = [
+  { dimension: 'height', min: 1700, max: 1990, step: 10, percent: 15 },
+  { dimension: 'height', min: 2010, max: 2200, step: 10, percent: 20, decors: 'Білий' },
+  { dimension: 'width', min: 450, max: 850, step: 50, percent: 10 },
+];
+const h = sizing.rulesFor(rules, 'height', 'Екошпон', 'Нордік');
+assert.equal(h.length, 1, 'the 2010–2200 range is only for the listed colour');
+assert.equal(sizing.rulesFor(rules, 'height', 'Екошпон', 'білий').length, 2);
+const allowedH = sizing.allowedValues([2000], h);
+assert.equal(sizing.snapSize(1934, allowedH), 1940);
+assert.equal(sizing.snapSize(2100, allowedH), 2000, 'above every range: the largest allowed');
+assert.equal(sizing.sizePercent(2000, [2000], h), 0);
+assert.equal(sizing.sizePercent(1940, [2000], h), 15);
+const w = sizing.rulesFor(rules, 'width', '', '');
+assert.equal(sizing.snapSize(730, sizing.allowedValues([600, 700, 800, 900], w)), 750);
+assert.equal(sizing.sizePercent(750, [600, 700, 800, 900], w) + sizing.sizePercent(1940, [2000], h), 25);
+assert.equal(sizing.sizePercent(800, [600, 700, 800, 900], w), 0, 'standard width inside a range stays free');
+assert.equal(sizing.sizePercent(900, [600, 700, 800, 900], [{ dimension: 'width', min: 900, max: 900, step: 50, percent: 10 }]), 10, 'a single-value rule is a priced option');
+assert.equal(sizing.sizedPrice(2500, 1.25), 3125);
+assert.equal(sizing.nearestStandard(750, [600, 700, 800, 900]), 800, 'ties go to the larger size');
+assert.deepEqual(sizing.standardFromCharacteristics([{ name: 'Стандартна ширина полотна', value: '400, 600, 700 мм' }]),
+  { width: [400, 600, 700], height: [2000] });
 // products without sizes in the file keep the old behaviour (no keys, no surcharge)
 assert.deepEqual(sizing.sizeKeys([{ ...rows[0], attribute_definitions: [], catalog_attributes: {} }]), { width: undefined, height: undefined });
 
-// cart: custom size is a separate line with the size and the surcharged price
-const custom = configuredItem({ ...rows[1], price: 2875 }, 'Гранд Lux-1', [], { width: 650, height: 2000 });
+// cart: the size is on the line; a non-standard one is a separate line with its surcharge
+const custom = configuredItem({ ...rows[1], price: 2875 }, 'Гранд Lux-1', [], { width: 650, height: 2000, custom: true, percent: 15 });
+const standardLine = configuredItem(rows[1], 'Гранд Lux-1', [], { width: 800, height: 2000 });
 const plain = configuredItem(rows[1], 'Гранд Lux-1', []);
-assert.notEqual(custom.id, plain.id);
-assert.deepEqual(custom.size, { width: 650, height: 2000 });
+assert.notEqual(custom.id, standardLine.id);
+assert.deepEqual(custom.size, { width: 650, height: 2000, custom: true, percent: 15 });
 assert.equal(custom.price, 2875);
-assert.ok(custom.mods.includes('Нестандартний розмір: 650×2000 мм'));
-assert.ok(!custom.mods.some(mod => /^Ширина/.test(mod)), 'no misleading standard width next to the custom size');
+assert.ok(custom.mods.includes('Нестандартний розмір: 650×2000 мм (+15%)'));
+assert.ok(!custom.mods.some(mod => /^Ширина/.test(mod)), 'no misleading standard width next to the chosen size');
+assert.ok(standardLine.mods.includes('Розмір: 800×2000 мм'));
 assert.ok(plain.mods.includes('Ширина, мм: 800'));
 assert.equal(plain.size, undefined);
-console.log('PASS: standard sizes from variations, custom-size surcharge, cart line');
+console.log('PASS: standard sizes from variations, CMS size rules, cart line');

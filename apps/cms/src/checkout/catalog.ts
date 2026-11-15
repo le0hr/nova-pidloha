@@ -1,4 +1,5 @@
 import { ensure, Item, money } from './domain';
+import { packArea, sizePercent } from './sizing';
 
 export async function snapshot(strapi: any, input: any): Promise<Item[]> {
   ensure(Array.isArray(input) && input.length > 0 && input.length <= 100, 'Кошик порожній або завеликий');
@@ -11,7 +12,8 @@ export async function snapshot(strapi: any, input: any): Promise<Item[]> {
     ensure(typeof slug === 'string' && slug.length <= 500, 'Некоректний товар');
     const variation = await strapi.documents('api::product-variation.product-variation').findFirst({
       status: 'published', filters: { slug, active: { $ne: false } },
-      populate: { addons: true, architrave_types: true, products: { populate: { addons: true } }, decor: true, decor_color: true, decor_glass: true },
+      populate: { addons: true, architrave_types: true, decor: true, decor_color: true, decor_glass: true,
+        products: { populate: { addons: true, size_rules: true, characteristics: true, brand: { populate: { size_rules: true } } } } },
     });
     ensure(variation, 'Варіант товару більше недоступний');
     const product = variation.products?.find((p: any) => p.active !== false && p.publishedAt);
@@ -25,11 +27,25 @@ export async function snapshot(strapi: any, input: any): Promise<Item[]> {
       if (addon.group) { ensure(!groups.has(addon.group), 'Оберіть одне доповнення з групи'); groups.add(addon.group); }
       return { id: addon.documentId, name: addon.name, price: money(addon.additionalCost ?? addon.price ?? 0) };
     });
-    const unit = money(variation.price) + addons.reduce((sum: number, a: any) => sum + a.price, 0);
-    ensure(unit > 0, 'Ціну товару потрібно уточнити');
-    const mods = Object.entries(variation.catalog_attributes || {}).map(([key, value]) => `${key}: ${String(value)}`);
+    // Same rules as the product page: floor = price per m² × pack area; door = standard price + size surcharge.
+    const area = packArea(variation);
+    const hasSize = !area && line.size && typeof line.size === 'object';
+    const percent = hasSize ? sizePercent(product, variation, line.size) : 0;
+    const base = area ? Math.round(Number(variation.price) * area * 100)
+      : percent ? Math.round(Number(variation.price) * (1 + percent / 100)) * 100
+      : money(variation.price);
+    ensure(Number.isFinite(base) && base > 0, 'Ціну товару потрібно уточнити');
+    const unit = base + addons.reduce((sum: number, a: any) => sum + a.price, 0);
+    const labels = new Map<string, string>((variation.attribute_definitions || []).map((d: any) => [d.key, d.display_name]));
+    const mods = Object.entries(variation.catalog_attributes || {})
+      .filter(([key]) => !(hasSize && /^(ширина|висота)/i.test(labels.get(key) || key)))
+      .map(([key, value]) => `${(labels.get(key) || key).replace(/\s*\([^)]*\)\s*$/, '')}: ${String(value)}`);
     for (const key of ['decor', 'decor_color', 'decor_glass']) if (variation[key]?.name) mods.push(variation[key].name);
-    result.push({ id: line.id, variationSlug: variation.slug, name: product.name, sku: variation.sku || product.sku || '', productId: product.documentId, variationId: variation.documentId, qty: line.qty, unit, addons, mods });
+    const size = hasSize ? { width: Number(line.size.width), height: Number(line.size.height), percent } : undefined;
+    if (size) mods.push(percent ? `Нестандартний розмір: ${size.width}×${size.height} мм (+${percent}%)` : `Розмір: ${size.width}×${size.height} мм`);
+    if (area) mods.push(`Упаковка: ${area} м² (${Number(variation.price).toLocaleString('uk-UA')} грн/м²)`);
+    result.push({ id: line.id, variationSlug: variation.slug, name: product.name, sku: variation.sku || product.sku || '', productId: product.documentId, variationId: variation.documentId, qty: line.qty, unit, addons, mods,
+      ...(size ? { size } : {}), ...(area ? { packArea: area } : {}) });
   }
   ensure(result.reduce((s, i) => s + i.unit * i.qty, 0) <= 1000000000, 'Сума замовлення завелика');
   return result;

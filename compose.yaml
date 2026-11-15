@@ -61,6 +61,9 @@ services:
       LIQPAY_PUBLIC_KEY: ${LIQPAY_PUBLIC_KEY:-}
       LIQPAY_PRIVATE_KEY: ${LIQPAY_PRIVATE_KEY:-}
       LIQPAY_TEST_MODE: ${LIQPAY_TEST_MODE:-true}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      TELEGRAM_MANAGER_IDS: ${TELEGRAM_MANAGER_IDS:-}
     volumes:
       - uploads:/app/public/uploads
     networks:

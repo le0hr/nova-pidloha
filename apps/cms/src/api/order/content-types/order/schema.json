@@ -147,6 +147,12 @@
     "totalAmount": {
       "type": "decimal",
       "default": 0
+    },
+    "confirmedAt": {
+      "type": "datetime"
+    },
+    "confirmedBy": {
+      "type": "string"
     }
   }
 }

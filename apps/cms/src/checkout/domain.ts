@@ -14,7 +14,9 @@ export function money(value: unknown): number {
   ensure(Number.isFinite(amount) && Math.abs(amount) <= 10000000, 'Некоректна ціна');
   return Math.round(amount * 100);
 }
-export type Item = { id: string; variationSlug: string; name: string; qty: number; unit: number; addons: {id: string; name: string; price: number}[]; mods: string[]; sku?: string; productId?: string; variationId?: string };
+export type Item = { id: string; variationSlug: string; name: string; qty: number; unit: number; addons: {id: string; name: string; price: number}[]; mods: string[]; sku?: string; productId?: string; variationId?: string;
+  /** Chosen door size (percent = non-standard surcharge) and floor pack area, m². */
+  size?: { width: number; height: number; percent: number }; packArea?: number };
 export function text(value: unknown, max = 200) {
   ensure(typeof value === 'string' && value.length <= max, 'Некоректне текстове поле');
   return value.trim();

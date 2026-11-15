@@ -7,6 +7,8 @@ process.env.DATABASE_FILENAME = `.tmp/checkout-test-${randomBytes(6).toString('h
 process.env.DATABASE_URL = '';
 process.env.NODE_ENV = 'test';
 process.env.STRAPI_TELEMETRY_DISABLED = 'true';
+// Never message the real manager chat from tests (apps/cms/.env may hold a live bot).
+for (const key of ['TELEGRAM_BOT_TOKEN','TELEGRAM_CHAT_ID','TELEGRAM_MANAGER_IDS','TELEGRAM_WEBHOOK_SECRET']) process.env[key] = '';
 process.env.LIQPAY_PUBLIC_KEY = 'sandbox_checkout_test';
 process.env.LIQPAY_PRIVATE_KEY = 'test-private-key-not-a-real-secret';
 process.env.LIQPAY_TEST_MODE = 'true';
@@ -125,7 +127,103 @@ async function run() {
     const payment = await app.db.query(orders.PAYMENT).findOne({where:{providerOrderId:request.order_id}});
     assert.ok(payment.heldAt && payment.holdReviewAt); assert.equal(payment.events.length,3);
     assert.equal(domain.paymentState('sandbox',true),'test'); assert.equal(domain.paymentState('sandbox',false),'pending');
-    console.log('PASS checkout integration: persisted steps, CMS layout, authoritative totals, private sessions, card hold, duplicate submits/callbacks, invalid signatures/amounts, monotonic states, COD and invoice.');
+
+    // --- floor: price per m² × pack area; doors: size rules from the CMS -------------------------------------------
+    const floor = await app.documents('api::product.product').create({data:{name:'Ламінат', slug:'test-floor', active:true}, status:'published'});
+    const floorRow = await app.documents('api::product-variation.product-variation').create({data:{slug:'test-floor-oak', price:'500', active:true,
+      products:[floor.documentId], catalog_attributes:{'Площа в пачці, м2':'2,13'}}, status:'published'});
+    const sized = await app.documents('api::product.product').create({data:{name:'Двері розмір', slug:'test-door-size', active:true,
+      size_rules:[{dimension:'height', min:1700, max:1990, step:10, percent:15}]}, status:'published'});
+    const sizedRow = await app.documents('api::product-variation.product-variation').create({data:{slug:'test-door-size-white', price:'1000', active:true,
+      products:[sized.documentId]}, status:'published'});
+    const sizeToken = randomBytes(32).toString('hex');
+    const sizeBody = {step:'cart', items:[
+      {id:'floor', variationSlug:floorRow.slug, qty:3, price:1},
+      {id:'door-std', variationSlug:sizedRow.slug, qty:1, price:1, size:{width:800, height:2000}},
+      {id:'door-low', variationSlug:sizedRow.slug, qty:1, price:1, size:{width:800, height:1950, custom:true, percent:15}},
+    ]};
+    const sizeDraft = await orders.save(app, sizeToken, sizeBody);
+    const lines = (await orders.find(app, sizeToken)).items;
+    assert.equal(lines[0].unit, 106500, 'floor pack = 500 ₴/m² × 2.13 m²'); assert.equal(lines[0].packArea, 2.13);
+    assert.equal(lines[1].unit, 100000, 'standard size costs the standard price');
+    assert.equal(lines[2].unit, 115000, 'non-standard height +15%');
+    assert.deepEqual(lines[2].size, {width:800, height:1950, percent:15});
+    assert.ok(lines[2].mods.includes('Нестандартний розмір: 800×1950 мм (+15%)')); assert.ok(lines[1].mods.includes('Розмір: 800×2000 мм'));
+    assert.equal(sizeDraft.totalMinor, 3 * 106500 + 100000 + 115000);
+    await assert.rejects(orders.save(app, sizeToken, {step:'cart', items:[{id:'x', variationSlug:sizedRow.slug, qty:1, size:{width:800, height:1955}}]}), /розмір/i, 'off the 10 mm step');
+    await assert.rejects(orders.save(app, sizeToken, {step:'cart', items:[{id:'x', variationSlug:sizedRow.slug, qty:1, size:{width:750, height:2000}}]}), /розмір/i, 'no width rule');
+
+    // --- manager confirmation: card hold is captured first, COD is just confirmed ------------------------------------
+    const holdToken = randomBytes(32).toString('hex');
+    const holdDraft = await orders.save(app, holdToken, body);
+    const holdSubmit = await orders.submit(app, holdToken, holdDraft.totalMinor);
+    const holdId = JSON.parse(Buffer.from(holdSubmit.checkout.data,'base64').toString()).order_id;
+    await orders.applyPayment(app, {...payload, order_id:holdId, amount:holdDraft.totalMinor / 100, status:'hold_wait'});
+    const holdOrder = await orders.find(app, holdToken);
+    assert.equal(holdOrder.paymentStatus, 'held');
+    const realFetch = global.fetch;
+    try {
+      global.fetch = async () => ({ok:true, json:async()=>({status:'error', err_description:'hold expired'})});
+      await assert.rejects(orders.confirmOrder(app, holdOrder.number, 'Менеджер'), /не списав/);
+      assert.equal((await orders.find(app, holdToken)).orderStatus, 'awaiting_confirmation', 'failed capture leaves the order waiting');
+      let sent;
+      global.fetch = async (url, init) => { if (String(url).includes('liqpay')) sent = Object.fromEntries(new URLSearchParams(init.body)); return {ok:true, json:async()=>({ok:true, status:'success'})}; };
+      await orders.confirmOrder(app, holdOrder.number, 'Менеджер');
+      assert.equal(JSON.parse(Buffer.from(sent.data,'base64').toString()).action, 'hold_completion');
+    } finally { global.fetch = realFetch; }
+    const confirmed = await orders.find(app, holdToken);
+    assert.equal(confirmed.orderStatus, 'confirmed'); assert.equal(confirmed.paymentStatus, 'paid'); assert.equal(confirmed.confirmedBy, 'Менеджер');
+    assert.equal((await app.db.query(orders.PAYMENT).findOne({where:{providerOrderId:holdId}})).status, 'paid');
+    await assert.rejects(orders.confirmOrder(app, holdOrder.number, 'Менеджер'), /вже підтверджено/);
+    await assert.rejects(orders.cancelOrder(app, holdOrder.number, 'Менеджер'), /вже підтверджено/);
+    // cancel: the card hold is released at LiqPay first; a COD order is just cancelled
+    const cancelToken = randomBytes(32).toString('hex');
+    const cancelDraft = await orders.save(app, cancelToken, body);
+    const cancelSubmit = await orders.submit(app, cancelToken, cancelDraft.totalMinor);
+    const cancelId = JSON.parse(Buffer.from(cancelSubmit.checkout.data,'base64').toString()).order_id;
+    await assert.rejects(orders.cancelOrder(app, (await orders.find(app, cancelToken)).number, 'Менеджер'), /оплата ще в процесі/);
+    await orders.applyPayment(app, {...payload, order_id:cancelId, amount:cancelDraft.totalMinor / 100, status:'hold_wait'});
+    try {
+      let released;
+      global.fetch = async (url, init) => { if (String(url).includes('liqpay')) released = Object.fromEntries(new URLSearchParams(init.body)); return {ok:true, json:async()=>({ok:true, status:'reversed'})}; };
+      await orders.cancelOrder(app, (await orders.find(app, cancelToken)).number, 'Менеджер');
+      assert.equal(JSON.parse(Buffer.from(released.data,'base64').toString()).action, 'refund');
+    } finally { global.fetch = realFetch; }
+    const cancelled = await orders.find(app, cancelToken);
+    assert.equal(cancelled.orderStatus, 'cancelled'); assert.equal(cancelled.paymentStatus, 'reversed');
+    assert.equal((await app.db.query(orders.PAYMENT).findOne({where:{providerOrderId:cancelId}})).status, 'reversed');
+    await assert.rejects(orders.confirmOrder(app, cancelled.number, 'Менеджер'), /не очікує/);
+    const codCancelToken = randomBytes(32).toString('hex');
+    const codCancelDraft = await orders.save(app, codCancelToken, {...body, payment:'cod'});
+    await orders.submit(app, codCancelToken, codCancelDraft.totalMinor);
+    await orders.cancelOrder(app, (await orders.find(app, codCancelToken)).number, 'Менеджер');
+    assert.equal((await orders.find(app, codCancelToken)).orderStatus, 'cancelled');
+    const codToken = randomBytes(32).toString('hex');
+    const codDraft = await orders.save(app, codToken, {...body, payment:'cod'});
+    await orders.submit(app, codToken, codDraft.totalMinor);
+    await orders.confirmOrder(app, (await orders.find(app, codToken)).number, 'Менеджер');
+    assert.equal((await orders.find(app, codToken)).orderStatus, 'confirmed');
+
+    // --- Telegram: a message per reached stage with what is known, HTML escaped, button only when confirmable --------
+    const messages = [];
+    process.env.TELEGRAM_BOT_TOKEN = 'test-token'; process.env.TELEGRAM_CHAT_ID = '42';
+    try {
+      global.fetch = async (url, init) => { if (String(url).includes('api.telegram.org')) messages.push(JSON.parse(init.body)); return {ok:true, json:async()=>({ok:true, result:{}})}; };
+      const tgToken = randomBytes(32).toString('hex');
+      const tgBody = {...body, step:'cart', payment:'cod', comment:'<b>дзвонити</b>'};
+      await orders.save(app, tgToken, tgBody);
+      await orders.save(app, tgToken, {...tgBody, step:'contacts'});
+      await orders.save(app, tgToken, {...tgBody, step:'contacts'});
+      await orders.save(app, tgToken, {...tgBody, step:'confirmation'});
+      const tgDraft = await orders.save(app, tgToken, {...tgBody, step:'confirmation'});
+      await orders.submit(app, tgToken, tgDraft.totalMinor);
+      await new Promise(resolve => setTimeout(resolve, 50));
+      assert.deepEqual(messages.map(m => m.text.split('\n')[0]), ['<b>👤 Залишив контакти</b>', '<b>📝 На сторінці підтвердження</b>', '<b>✅ Замовлення оформлено</b>'], 'cart is silent, repeats are silent');
+      assert.equal(messages[0].chat_id, '42'); assert.match(messages[0].text, /\+380671234567/); assert.match(messages[0].text, /&lt;b&gt;дзвонити/);
+      assert.equal(messages[0].reply_markup, undefined); assert.match(messages[2].reply_markup.inline_keyboard[0][0].callback_data, /^confirm:NP-/);
+      assert.match(messages[2].reply_markup.inline_keyboard[1][0].callback_data, /^cancel:NP-/);
+    } finally { global.fetch = realFetch; delete process.env.TELEGRAM_BOT_TOKEN; delete process.env.TELEGRAM_CHAT_ID; }
+    console.log('PASS checkout integration: persisted steps, CMS layout, authoritative totals, private sessions, card hold, duplicate submits/callbacks, invalid signatures/amounts, monotonic states, COD and invoice, floor packs, door size rules, manager confirmation with hold capture, cancel with hold release, Telegram stages.');
   } finally { await app.destroy(); }
 }
 run().catch(error=>{console.error(error); process.exitCode=1;});

@@ -48,3 +48,33 @@ export async function status(attempt: any) {
   ensure(response.ok, 'LiqPay тимчасово недоступний', 502);
   return response.json();
 }
+/**
+ * Two-step payment, step 2: capture the held amount (LiqPay action hold_completion). Called only when the manager
+ * confirms the order. The caller treats anything except status "success" (or "sandbox" in test mode) as not captured.
+ */
+export async function complete(attempt: any) {
+  const config = settings();
+  ensure(attempt.publicKey === config.publicKey && attempt.testMode === config.testMode, 'Ключ платежу змінився', 409);
+  const response = await fetch('https://www.liqpay.ua/api/request', {
+    method: 'POST', body: new URLSearchParams(signed({ version: 7, public_key: config.publicKey, action: 'hold_completion',
+      order_id: attempt.providerOrderId, amount: (attempt.amountMinor / 100).toFixed(2) }, config.privateKey)),
+    signal: AbortSignal.timeout(20000),
+  });
+  ensure(response.ok, 'LiqPay тимчасово недоступний', 502);
+  return response.json();
+}
+/**
+ * Release a hold that will not be captured (order cancelled): LiqPay action refund on the held payment.
+ * The caller treats only status "reversed" / "success" (or "sandbox" in test mode) as released.
+ */
+export async function release(attempt: any) {
+  const config = settings();
+  ensure(attempt.publicKey === config.publicKey && attempt.testMode === config.testMode, 'Ключ платежу змінився', 409);
+  const response = await fetch('https://www.liqpay.ua/api/request', {
+    method: 'POST', body: new URLSearchParams(signed({ version: 7, public_key: config.publicKey, action: 'refund',
+      order_id: attempt.providerOrderId, amount: (attempt.amountMinor / 100).toFixed(2) }, config.privateKey)),
+    signal: AbortSignal.timeout(20000),
+  });
+  ensure(response.ok, 'LiqPay тимчасово недоступний', 502);
+  return response.json();
+}

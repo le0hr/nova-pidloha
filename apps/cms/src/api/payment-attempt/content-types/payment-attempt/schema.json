@@ -88,6 +88,9 @@
     "amount": {
       "type": "decimal",
       "default": 0
+    },
+    "reminderSentAt": {
+      "type": "datetime"
     }
   }
 }
