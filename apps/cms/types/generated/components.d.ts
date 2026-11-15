@@ -12,6 +12,49 @@ export interface CatalogCharacteristic extends Struct.ComponentSchema {
   };
 }
 
+export interface CatalogSizeNote extends Struct.ComponentSchema {
+  collectionName: 'components_catalog_size_notes';
+  info: {
+    description: '\u041F\u043E\u043A\u0430\u0437\u0443\u0454\u0442\u044C\u0441\u044F \u043D\u0430 \u0441\u0430\u0439\u0442\u0456, \u043A\u043E\u043B\u0438 \u0432\u0438\u0431\u0440\u0430\u043D\u043E \u0446\u0435\u0439 \u0440\u043E\u0437\u043C\u0456\u0440 (\u043D\u0430\u043F\u0440. \u0448\u0438\u0440\u0438\u043D\u0430 400: \u00AB\u0432\u0438\u0433\u043E\u0442\u043E\u0432\u043B\u044F\u0454\u0442\u044C\u0441\u044F \u0433\u043B\u0443\u0445\u0438\u043C\u00BB)';
+    displayName: '\u041F\u0440\u0438\u043C\u0456\u0442\u043A\u0430 \u0434\u043E \u0440\u043E\u0437\u043C\u0456\u0440\u0443';
+  };
+  attributes: {
+    dimension: Schema.Attribute.Enumeration<['width', 'height']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'width'>;
+    text: Schema.Attribute.Text & Schema.Attribute.Required;
+    value: Schema.Attribute.Integer & Schema.Attribute.Required;
+  };
+}
+
+export interface CatalogSizeRule extends Struct.ComponentSchema {
+  collectionName: 'components_catalog_size_rules';
+  info: {
+    description: '\u0414\u0456\u0430\u043F\u0430\u0437\u043E\u043D \u043D\u0435\u0441\u0442\u0430\u043D\u0434\u0430\u0440\u0442\u043D\u043E\u0433\u043E \u0440\u043E\u0437\u043C\u0456\u0440\u0443: \u0432\u0456\u0434 min \u0434\u043E max \u0437 \u043A\u0440\u043E\u043A\u043E\u043C step, \u043D\u0430\u0446\u0456\u043D\u043A\u0430 percent % \u0434\u043E \u0446\u0456\u043D\u0438 \u0441\u0442\u0430\u043D\u0434\u0430\u0440\u0442\u043D\u043E\u0433\u043E \u0440\u043E\u0437\u043C\u0456\u0440\u0443. decors: \u043B\u0438\u0448\u0435 \u0434\u043B\u044F \u0446\u0438\u0445 \u0434\u0435\u043A\u043E\u0440\u0456\u0432 \u0430\u0431\u043E \u043A\u043E\u043B\u044C\u043E\u0440\u0456\u0432 (\u043D\u0430\u0437\u0432\u0438 \u0447\u0435\u0440\u0435\u0437 \u043A\u043E\u043C\u0443), \u043F\u043E\u0440\u043E\u0436\u043D\u044C\u043E = \u0434\u043B\u044F \u0432\u0441\u0456\u0445';
+    displayName: '\u041D\u0435\u0441\u0442\u0430\u043D\u0434\u0430\u0440\u0442\u043D\u0438\u0439 \u0440\u043E\u0437\u043C\u0456\u0440';
+  };
+  attributes: {
+    decors: Schema.Attribute.Text;
+    dimension: Schema.Attribute.Enumeration<['height', 'width']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'height'>;
+    max: Schema.Attribute.Integer & Schema.Attribute.Required;
+    min: Schema.Attribute.Integer & Schema.Attribute.Required;
+    percent: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<15>;
+    step: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<10>;
+  };
+}
+
 export interface DoorConfigDoorInterior extends Struct.ComponentSchema {
   collectionName: 'components_door_config_door_interiors';
   info: {
@@ -124,6 +167,8 @@ declare module '@strapi/strapi' {
   export namespace Public {
     export interface ComponentSchemas {
       'catalog.characteristic': CatalogCharacteristic;
+      'catalog.size-note': CatalogSizeNote;
+      'catalog.size-rule': CatalogSizeRule;
       'door-config.door-interior': DoorConfigDoorInterior;
       'home.hero-map': HomeHeroMap;
       'home.hero-slide': HomeHeroSlide;

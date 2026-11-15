@@ -1,0 +1,40 @@
+{
+  "collectionName": "components_catalog_size_rules",
+  "info": {
+    "displayName": "Нестандартний розмір",
+    "description": "Діапазон нестандартного розміру: від min до max з кроком step, націнка percent % до ціни стандартного розміру. decors: лише для цих декорів або кольорів (назви через кому), порожньо = для всіх"
+  },
+  "attributes": {
+    "dimension": {
+      "type": "enumeration",
+      "enum": [
+        "height",
+        "width"
+      ],
+      "required": true,
+      "default": "height"
+    },
+    "min": {
+      "type": "integer",
+      "required": true
+    },
+    "max": {
+      "type": "integer",
+      "required": true
+    },
+    "step": {
+      "type": "integer",
+      "required": true,
+      "default": 10,
+      "min": 1
+    },
+    "percent": {
+      "type": "decimal",
+      "required": true,
+      "default": 15
+    },
+    "decors": {
+      "type": "text"
+    }
+  }
+}

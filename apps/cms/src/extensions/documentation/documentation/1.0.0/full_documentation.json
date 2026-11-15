@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "2026-11-10T21:36:08.420Z"
+    "x-generation-date": "2026-11-15T01:51:48.719Z"
   },
   "x-strapi-config": {
     "plugins": [
@@ -8941,6 +8941,12 @@
                           "external_id": {
                             "type": "string"
                           },
+                          "size_rules": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                            }
+                          },
                           "createdAt": {
                             "type": "string",
                             "format": "date-time"
@@ -9378,6 +9384,18 @@
                               }
                             }
                           }
+                        }
+                      },
+                      "size_rules": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                        }
+                      },
+                      "size_notes": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/CatalogSizeNoteComponent"
                         }
                       },
                       "createdAt": {
@@ -10448,6 +10466,44 @@
           }
         }
       },
+      "CatalogSizeRuleComponent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "dimension": {
+            "type": "string",
+            "enum": [
+              "height",
+              "width"
+            ]
+          },
+          "min": {
+            "type": "integer"
+          },
+          "max": {
+            "type": "integer"
+          },
+          "step": {
+            "type": "integer"
+          },
+          "percent": {
+            "type": "number",
+            "format": "float"
+          },
+          "decors": {
+            "type": "string"
+          }
+        }
+      },
       "CatalogCharacteristicComponent": {
         "type": "object",
         "properties": {
@@ -10468,6 +10524,34 @@
             "type": "string"
           },
           "unit": {
+            "type": "string"
+          }
+        }
+      },
+      "CatalogSizeNoteComponent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "dimension": {
+            "type": "string",
+            "enum": [
+              "width",
+              "height"
+            ]
+          },
+          "value": {
+            "type": "integer"
+          },
+          "text": {
             "type": "string"
           }
         }
@@ -10520,6 +10604,12 @@
               },
               "external_id": {
                 "type": "string"
+              },
+              "size_rules": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                }
               },
               "locale": {
                 "type": "string"
@@ -12598,6 +12688,12 @@
                     "external_id": {
                       "type": "string"
                     },
+                    "size_rules": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                      }
+                    },
                     "createdAt": {
                       "type": "string",
                       "format": "date-time"
@@ -13953,6 +14049,18 @@
                     }
                   }
                 },
+                "size_rules": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                  }
+                },
+                "size_notes": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CatalogSizeNoteComponent"
+                  }
+                },
                 "createdAt": {
                   "type": "string",
                   "format": "date-time"
@@ -14030,6 +14138,12 @@
           },
           "external_id": {
             "type": "string"
+          },
+          "size_rules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+            }
           },
           "createdAt": {
             "type": "string",
@@ -15927,6 +16041,12 @@
                           "external_id": {
                             "type": "string"
                           },
+                          "size_rules": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                            }
+                          },
                           "createdAt": {
                             "type": "string",
                             "format": "date-time"
@@ -17532,6 +17652,18 @@
                               }
                             }
                           }
+                        }
+                      },
+                      "size_rules": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                        }
+                      },
+                      "size_notes": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/CatalogSizeNoteComponent"
                         }
                       },
                       "createdAt": {
@@ -20052,6 +20184,12 @@
                                     "external_id": {
                                       "type": "string"
                                     },
+                                    "size_rules": {
+                                      "type": "array",
+                                      "items": {
+                                        "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                                      }
+                                    },
                                     "createdAt": {
                                       "type": "string",
                                       "format": "date-time"
@@ -20489,6 +20627,18 @@
                                         }
                                       }
                                     }
+                                  }
+                                },
+                                "size_rules": {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                                  }
+                                },
+                                "size_notes": {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/components/schemas/CatalogSizeNoteComponent"
                                   }
                                 },
                                 "createdAt": {
@@ -23713,6 +23863,12 @@
                                     "external_id": {
                                       "type": "string"
                                     },
+                                    "size_rules": {
+                                      "type": "array",
+                                      "items": {
+                                        "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                                      }
+                                    },
                                     "createdAt": {
                                       "type": "string",
                                       "format": "date-time"
@@ -24150,6 +24306,18 @@
                                         }
                                       }
                                     }
+                                  }
+                                },
+                                "size_rules": {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                                  }
+                                },
+                                "size_notes": {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/components/schemas/CatalogSizeNoteComponent"
                                   }
                                 },
                                 "createdAt": {
@@ -26941,6 +27109,12 @@
                           "external_id": {
                             "type": "string"
                           },
+                          "size_rules": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                            }
+                          },
                           "createdAt": {
                             "type": "string",
                             "format": "date-time"
@@ -27378,6 +27552,18 @@
                               }
                             }
                           }
+                        }
+                      },
+                      "size_rules": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                        }
+                      },
+                      "size_notes": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/CatalogSizeNoteComponent"
                         }
                       },
                       "createdAt": {
@@ -30204,6 +30390,12 @@
                               "external_id": {
                                 "type": "string"
                               },
+                              "size_rules": {
+                                "type": "array",
+                                "items": {
+                                  "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                                }
+                              },
                               "createdAt": {
                                 "type": "string",
                                 "format": "date-time"
@@ -31557,6 +31749,18 @@
                                   }
                                 }
                               }
+                            }
+                          },
+                          "size_rules": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                            }
+                          },
+                          "size_notes": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/CatalogSizeNoteComponent"
                             }
                           },
                           "createdAt": {
@@ -33607,6 +33811,12 @@
                                     "external_id": {
                                       "type": "string"
                                     },
+                                    "size_rules": {
+                                      "type": "array",
+                                      "items": {
+                                        "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                                      }
+                                    },
                                     "createdAt": {
                                       "type": "string",
                                       "format": "date-time"
@@ -34960,6 +35170,18 @@
                                         }
                                       }
                                     }
+                                  }
+                                },
+                                "size_rules": {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                                  }
+                                },
+                                "size_notes": {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/components/schemas/CatalogSizeNoteComponent"
                                   }
                                 },
                                 "createdAt": {
@@ -36553,6 +36775,18 @@
                 ],
                 "example": "string or id"
               },
+              "size_rules": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                }
+              },
+              "size_notes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CatalogSizeNoteComponent"
+                }
+              },
               "locale": {
                 "type": "string"
               },
@@ -38115,6 +38349,12 @@
                         },
                         "external_id": {
                           "type": "string"
+                        },
+                        "size_rules": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                          }
                         },
                         "createdAt": {
                           "type": "string",
@@ -39723,6 +39963,18 @@
                         }
                       }
                     },
+                    "size_rules": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                      }
+                    },
+                    "size_notes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CatalogSizeNoteComponent"
+                      }
+                    },
                     "createdAt": {
                       "type": "string",
                       "format": "date-time"
@@ -40167,6 +40419,18 @@
                   }
                 }
               }
+            }
+          },
+          "size_rules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+            }
+          },
+          "size_notes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogSizeNoteComponent"
             }
           },
           "createdAt": {
@@ -42279,6 +42543,12 @@
                     "external_id": {
                       "type": "string"
                     },
+                    "size_rules": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                      }
+                    },
                     "createdAt": {
                       "type": "string",
                       "format": "date-time"
@@ -43632,6 +43902,18 @@
                         }
                       }
                     }
+                  }
+                },
+                "size_rules": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CatalogSizeRuleComponent"
+                  }
+                },
+                "size_notes": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CatalogSizeNoteComponent"
                   }
                 },
                 "createdAt": {

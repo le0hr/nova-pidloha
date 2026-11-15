@@ -13,7 +13,8 @@ import FloorConfigurator from "@/components/product/FloorConfigurator";
 import type { ProductVariation } from "@/types/product";
 import { ProductReturnData } from "@/types/product";
 import { boardSize, packArea, packsFor } from "@/lib/catalog/floor";
-import { sizeKeys, sizeOf, sizeSurcharge, sizedPrice, standardSizes, variationForSize } from "@/lib/catalog/sizing";
+import { allowedValues, nearestStandard, rulesFor, sizeKeys, sizeOf, sizePercent, sizedPrice, snapSize, standardFromCharacteristics,
+  standardSizes, variationForSize, type Size } from "@/lib/catalog/sizing";
 
 const NO_ACCENT = "Без скла";
 
@@ -67,7 +68,15 @@ export default function DynamicField({ product }: { product: ProductReturnData }
     return { ...state, width: size.width ?? state.width, height: size.height ?? state.height };
   };
 
-  const [selection, setSelection] = useState<VariationState>(() => withSize(toState(variations[0]), variations[0]));
+  // Doors priced the same in every size: standard sizes from the characteristics.
+  const isDoor = !isFloor && !isHardware;
+  const fallbackStandard = useMemo(() => standardFromCharacteristics(product.characteristics), [product.characteristics]);
+  const [selection, setSelection] = useState<VariationState>(() => {
+    const state = toState(variations[0]);
+    if (hasSizes) return withSize(state, variations[0]);
+    const widths = fallbackStandard.width;
+    return { ...state, width: widths.includes(800) ? 800 : widths[0], height: fallbackStandard.height[0] };
+  });
   const [selectedSlug, setSelectedSlug] = useState(variations[0].slug);
   const selectedVariation = variations.find((variation) => variation.slug === selectedSlug) ?? variations[0];
   const addons = selectedVariation.addons ?? product.addons ?? [];
@@ -114,18 +123,52 @@ export default function DynamicField({ product }: { product: ProductReturnData }
     setSelection(withSize(toState(next, requested), next));
   };
 
-  // Standard sizes for the current choice, and the custom-size price (+15% width, +20% height).
+  // Size: standard values (variations or characteristics); non-standard only where the CMS has rules for it.
   const standard = hasSizes ? standardSizes(variations, selectedVariation) : null;
-  const standardSize = sizeOf(selectedVariation, keys);
-  const customSize = hasSizes && selection.sizeMode === "custom" ? { width: selection.width, height: selection.height } : null;
-  const multiplier = customSize ? sizeSurcharge(standardSize, customSize) : 1;
-  const pricedVariation = multiplier === 1 ? selectedVariation : { ...selectedVariation, price: sizedPrice(selectedVariation.price, multiplier) };
-  const sizes = standard ? {
-    widths: standard.widths,
-    heights: standard.heights,
-    current: standardSize,
-    onPick: (size: { width?: number; height?: number }) => selectVariation(variationForSize(variations, selectedVariation, size)),
+  const standards = {
+    width: standard ? (keys.width ? standard.widths : []) : fallbackStandard.width,
+    height: standard ? (keys.height ? standard.heights : []) : fallbackStandard.height,
+  };
+  const rules = {
+    width: isDoor ? rulesFor(product.sizeRules, "width", selection.decor, selection.decor_color) : [],
+    height: isDoor ? rulesFor(product.sizeRules, "height", selection.decor, selection.decor_color) : [],
+  };
+  const allowed = { width: allowedValues(standards.width, rules.width), height: allowedValues(standards.height, rules.height) };
+  // Another decor may allow fewer sizes: the chosen size is always shown and priced rounded to what is allowed now.
+  const chosenSize: Size = { width: snapSize(selection.width, allowed.width), height: snapSize(selection.height, allowed.height) };
+  const percent = (standards.width.length ? sizePercent(chosenSize.width, standards.width, rules.width) : 0) +
+    (standards.height.length ? sizePercent(chosenSize.height, standards.height, rules.height) : 0);
+  const isCustomSize = percent > 0 || (["width", "height"] as const).some((dimension) =>
+    standards[dimension].length > 0 && !standards[dimension].includes(chosenSize[dimension]));
+  const pricedVariation = percent ? { ...selectedVariation, price: sizedPrice(selectedVariation.price, 1 + percent / 100) } : selectedVariation;
+  const pickSize = (next: Partial<Size>) => {
+    const wanted = { ...chosenSize, ...next };
+    let custom = isCustomSize;
+    if (hasSizes) {
+      // The price is that of the nearest standard size.
+      const base = { width: keys.width ? nearestStandard(wanted.width, standards.width) : undefined,
+        height: keys.height ? nearestStandard(wanted.height, standards.height) : undefined };
+      const row = variationForSize(variations, selectedVariation, base);
+      const rowSize = sizeOf(row, keys);
+      custom = (rowSize.width !== undefined && rowSize.width !== wanted.width) || (rowSize.height !== undefined && rowSize.height !== wanted.height);
+      if (row.slug !== selectedSlug) setAddonSelection({});
+      setSelectedSlug(row.slug);
+    }
+    setSelection((current) => ({ ...current, ...wanted, sizeMode: custom ? "custom" : "standard" }));
+  };
+  const sizes = isDoor && (standards.width.length || standards.height.length) ? {
+    widths: standards.width,
+    heights: standards.height,
+    value: chosenSize,
+    rules,
+    allowed,
+    percent,
+    custom: isCustomSize,
+    notes: product.sizeNotes.filter((note) => chosenSize[note.dimension] === note.value).map((note) => note.text),
+    onPick: pickSize,
   } : undefined;
+  // Cart: the chosen size when both are known (sized variations keep their own width/height otherwise).
+  const cartSize = sizes && standards.width.length && standards.height.length ? { ...chosenSize, custom: isCustomSize, percent } : undefined;
 
   // Floor: quantity in m², sold by whole packs (pack area comes from the variation data).
   const floorPackArea = packArea(selectedVariation);
@@ -154,10 +197,10 @@ export default function DynamicField({ product }: { product: ProductReturnData }
         {isMizhkimnatni && (
           <div className="flex flex-col gap-6">
             <VariationSelector value={selection} onChange={updateSelection} options={options}
-              additionalCount={additionalCount} sizes={sizes} showSize={!isHardware} colorNote={colorNote}
+              additionalCount={additionalCount} sizes={sizes} colorNote={colorNote}
               beforeDimensions={hasExtraAttributes ? (
                 <TableVariationSelector variations={variations} selected={selectedVariation} onSelect={selectVariation}
-                  startStep={baseCount + 1} total={baseCount + additionalCount + (isHardware ? 0 : 1)} />
+                  startStep={baseCount + 1} total={baseCount + additionalCount + (sizes ? 1 : 0)} />
               ) : null}
             />
           </div>
@@ -194,7 +237,7 @@ export default function DynamicField({ product }: { product: ProductReturnData }
             productName={productName}
             oldPriceSeed={product.slug}
             addons={chosenAddons}
-            size={multiplier === 1 ? undefined : customSize ?? undefined}
+            size={cartSize}
             pack={isFloor ? { area: floorPackArea, qty: packsApprox } : undefined}
           />
         </div>

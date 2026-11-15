@@ -1,34 +1,64 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
+import type { ReactNode } from "react";
 import DoorDecorSelector from "./DoorDecorSelector";
 import { StepHeader } from "./StepHeader";
 import ColorSelector from "./ColorSelector";
 import AccentSelector from "./AccentSelector";
 import { VariationState } from "@/types/product";
-import { SIZE_SURCHARGE, type Size } from "@/lib/catalog/sizing";
+import { describeRules, snapSize, type Dimension, type Size, type SizeRule } from "@/lib/catalog/sizing";
 
-/** Standard sizes from the supplier file (each its own variation and price). */
+/** Door size: standard values as buttons; a typed-in value where the CMS has non-standard rules for that dimension. */
 export interface SizeOptions {
   widths: number[];
   heights: number[];
-  current: Partial<Size>;
+  value: Size;
+  rules: Record<Dimension, SizeRule[]>;
+  allowed: Record<Dimension, number[]>;
+  /** Surcharge of the chosen size, % (width and height added up). */
+  percent: number;
+  custom: boolean;
+  /** Catalog notes for the chosen size. */
+  notes: string[];
   onPick: (size: Partial<Size>) => void;
 }
-
-/** Custom (non-standard) sizes are switched off for now; the pricing rule stays in lib/catalog/sizing.ts. */
-export const CUSTOM_SIZES_ENABLED = false;
 
 const chip = (active: boolean) => `min-h-9 px-3 font-['Outfit',sans-serif] text-[13px] transition-colors ${
   active ? "bg-white outline outline-1 outline-[#e53935] font-semibold text-[#e53935]" : "bg-[#f5f5f5] text-[#1a1a1a] hover:bg-[#eee]"}`;
 
+/** Typed size: rounded up to the allowed step when the field is left (or Enter is pressed). */
+function SizeInput({ label, value, allowed, onCommit }: { label: string; value: number; allowed: number[]; onCommit: (value: number) => void }) {
+  const [draft, setDraft] = useState<string | null>(null);
+  const commit = () => {
+    if (draft === null) return;
+    const typed = parseInt(draft, 10);
+    setDraft(null);
+    if (Number.isFinite(typed) && typed > 0) onCommit(snapSize(typed, allowed));
+  };
+  return (
+    <label className="flex-1 flex flex-col gap-1">
+      <span className="font-['Outfit',sans-serif] text-[12px] text-[#9e9e9e]">{label}</span>
+      <input
+        type="number"
+        inputMode="numeric"
+        min={allowed[0]}
+        max={allowed[allowed.length - 1]}
+        value={draft ?? String(value)}
+        onChange={(event) => setDraft(event.target.value)}
+        onBlur={commit}
+        onKeyDown={(event) => { if (event.key === "Enter") event.currentTarget.blur(); }}
+        className="w-full border border-[#e0e0e0] bg-white px-3 py-2 font-['Outfit',sans-serif] text-[13px] text-[#1a1a1a] outline-none focus:border-[#bbb]"
+      />
+    </label>
+  );
+}
+
 interface Props {
   beforeDimensions?: ReactNode;
-  /** When the product has sized variations: pick a standard size or enter a custom one (+surcharge). */
+  /** Door size step; hardware and other non-sized goods have none. */
   sizes?: SizeOptions;
   additionalCount?: number;
-  /** Doors pick a size; hardware and other non-sized goods skip the step. */
-  showSize?: boolean;
   /** Note next to the colour step; omitted when colours are priced differently. */
   colorNote?: string;
   value: VariationState;
@@ -42,16 +72,17 @@ interface Props {
 
 
 
-export default function VariationSelector({ value, onChange, options, beforeDimensions, additionalCount = 0, sizes, showSize = true, colorNote }: Props) {
+export default function VariationSelector({ value, onChange, options, beforeDimensions, additionalCount = 0, sizes, colorNote }: Props) {
   const setValue = (partial: Partial<VariationState>) => onChange(partial);
 
-  const [custom, setCustom] = useState(value.sizeMode === "custom");
-  const isNonStandard = sizes
-    ? value.sizeMode === "custom" && (value.width !== sizes.current.width || value.height !== sizes.current.height)
-    : value.width !== 750 || value.height !== 2050;
-
   const baseCount = Object.values(options).filter((values) => values.length > 0).length;
-  const total = baseCount + additionalCount + (showSize ? 1 : 0);
+  const total = baseCount + additionalCount + (sizes ? 1 : 0);
+
+  const dimensions = sizes ? ([
+    { key: "width", label: "Ширина, мм", standards: sizes.widths },
+    { key: "height", label: "Висота, мм", standards: sizes.heights },
+  ] as const).filter((dimension) => dimension.standards.length > 0 || sizes.rules[dimension.key].length > 0) : [];
+  const typed = dimensions.filter((dimension) => sizes!.rules[dimension.key].length > 0);
 
   return (
     <div className="flex flex-col gap-5 w-full">
@@ -60,109 +91,55 @@ export default function VariationSelector({ value, onChange, options, beforeDime
       {options.decor_glass.length > 0 && <AccentSelector accents={options.decor_glass} value={value} setValue={setValue} step={baseCount} total={total} />}
       {beforeDimensions}
 
-      {/* Крок 4: Розмір */}
-      {showSize && <div className="flex flex-col gap-2.5">
+      {sizes && <div className="flex flex-col gap-2.5">
         <StepHeader label={`Крок ${total}: Розмір`} step={`${total}/${total}`} />
 
-        <div className="flex gap-1 w-fit">
-          <button
-            type="button"
-            onClick={() => {
-              setCustom(false);
-              setValue(sizes
-                ? { sizeMode: "standard", width: sizes.current.width ?? value.width, height: sizes.current.height ?? value.height }
-                : { sizeMode: "standard", width: 750, height: 2050 });
-            }}
-            className={`px-4 h-9 font-['Outfit',sans-serif] text-[13px] transition-colors ${
-              !custom
-                ? "bg-white outline outline-1 outline-[#e0e0e0] font-semibold text-[#1a1a1a]"
-                : "bg-[#f5f5f5] text-[#9e9e9e]"
-            }`}
-          >
-            Стандарт
-          </button>
-          {CUSTOM_SIZES_ENABLED && <button
-            type="button"
-            onClick={() => {
-              setCustom(true);
-              setValue({ sizeMode: "custom" });
-            }}
-            className={`px-4 h-9 font-['Outfit',sans-serif] text-[13px] transition-colors ${
-              custom
-                ? "bg-white outline outline-1 outline-[#e0e0e0] font-semibold text-[#1a1a1a]"
-                : "bg-[#f5f5f5] text-[#9e9e9e]"
-            }`}
-          >
-            Нестандарт
-          </button>}
-        </div>
+        {/* Standard sizes only */}
+        {dimensions.filter((dimension) => !sizes.rules[dimension.key].length).map((dimension) => (
+          <div key={dimension.key} className="flex flex-col gap-1">
+            <span className="font-['Outfit',sans-serif] text-[12px] text-[#9e9e9e]">{dimension.label}</span>
+            <div className="flex flex-wrap gap-1.5">
+              {dimension.standards.map((size) => (
+                <button key={size} type="button" aria-pressed={sizes.value[dimension.key] === size}
+                  onClick={() => sizes.onPick({ [dimension.key]: size })} className={chip(sizes.value[dimension.key] === size)}>{size}</button>
+              ))}
+            </div>
+          </div>
+        ))}
 
-        {sizes && !custom && (
-          <div className="flex flex-col gap-2">
-            {sizes.widths.length > 0 && (
-              <div className="flex flex-col gap-1">
-                <span className="font-['Outfit',sans-serif] text-[12px] text-[#9e9e9e]">Ширина, мм</span>
-                <div className="flex flex-wrap gap-1.5">
-                  {sizes.widths.map((width) => (
-                    <button key={width} type="button" aria-pressed={sizes.current.width === width}
-                      onClick={() => sizes.onPick({ width })} className={chip(sizes.current.width === width)}>{width}</button>
-                  ))}
-                </div>
-              </div>
-            )}
-            {sizes.heights.length > 0 && (
-              <div className="flex flex-col gap-1">
-                <span className="font-['Outfit',sans-serif] text-[12px] text-[#9e9e9e]">Висота, мм</span>
-                <div className="flex flex-wrap gap-1.5">
-                  {sizes.heights.map((height) => (
-                    <button key={height} type="button" aria-pressed={sizes.current.height === height}
-                      onClick={() => sizes.onPick({ height })} className={chip(sizes.current.height === height)}>{height}</button>
-                  ))}
-                </div>
-              </div>
-            )}
+        {/* Any size within the rules, rounded up to the step */}
+        {typed.length > 0 && <div className="flex flex-col gap-1.5">
+          <div className="flex gap-3">
+            {typed.map((dimension) => (
+              <SizeInput key={dimension.key} label={dimension.label} value={sizes.value[dimension.key]} allowed={sizes.allowed[dimension.key]}
+                onCommit={(size) => sizes.onPick({ [dimension.key]: size })} />
+            ))}
           </div>
-        )}
-
-        {(!sizes || custom) && <div className="flex gap-3">
-          <div className="flex-1 flex flex-col gap-1">
-            <label className="font-['Outfit',sans-serif] text-[12px] text-[#9e9e9e]">
-              Ширина, мм
-            </label>
-            <input
-              type="number"
-              value={value.width}
-              onChange={(e) =>
-                setValue({ width: parseInt(e.target.value) || 0 })
-              }
-              className="w-full border border-[#e0e0e0] bg-white px-3 py-2 font-['Outfit',sans-serif] text-[13px] text-[#1a1a1a] outline-none focus:border-[#bbb]"
-            />
-          </div>
-          <div className="flex-1 flex flex-col gap-1">
-            <label className="font-['Outfit',sans-serif] text-[12px] text-[#9e9e9e]">
-              Висота, мм
-            </label>
-            <input
-              type="number"
-              value={value.height}
-              onChange={(e) =>
-                setValue({ height: parseInt(e.target.value) || 0 })
-              }
-              className="w-full border border-[#e0e0e0] bg-white px-3 py-2 font-['Outfit',sans-serif] text-[13px] text-[#1a1a1a] outline-none focus:border-[#bbb]"
-            />
-          </div>
+          {typed.map((dimension) => (
+            <span key={dimension.key} className="font-['Outfit',sans-serif] text-[12px] text-[#9e9e9e]">
+              {dimension.key === "width" ? "Ширина" : "Висота"}: {describeRules(dimension.standards, sizes.rules[dimension.key])}
+            </span>
+          ))}
         </div>}
 
-        {CUSTOM_SIZES_ENABLED && (custom || isNonStandard) && (
+        {sizes.notes.map((note) => (
+          <div key={note} className="flex items-start gap-2 border-l-[3px] border-[#9e9e9e] bg-[#f5f5f5] px-3 py-2">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="mt-px shrink-0">
+              <circle cx="7" cy="7" r="6" stroke="#757575" strokeWidth="1.5" />
+              <path d="M7 6.5v3.5M7 4v.25" stroke="#757575" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            <span className="font-['Outfit',sans-serif] text-[12px] text-[#555]">{note}</span>
+          </div>
+        ))}
+
+        {sizes.custom && (
           <div className="flex items-center gap-2 border-l-[3px] border-[#e67e22] bg-[#fef5ed] px-3 py-2">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0">
               <circle cx="7" cy="7" r="6" stroke="#E67E22" strokeWidth="1.5" />
               <path d="M7 4.5v3M7 9.5v.25" stroke="#E67E22" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
             <span className="font-['Outfit',sans-serif] text-[12px] font-medium text-[#e67e22]">
-              {sizes
-                ? `Нестандартний розмір: ширина +${SIZE_SURCHARGE.width * 100}%, висота +${SIZE_SURCHARGE.height * 100}% до ціни стандартного розміру`
-                : "Нестандартний розмір: націнка +15–20%"}
+              {sizes.percent ? `Нестандартний розмір: +${sizes.percent}% до ціни стандартного` : "Нестандартний розмір без націнки"}
             </span>
           </div>
         )}

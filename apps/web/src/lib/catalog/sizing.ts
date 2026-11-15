@@ -2,14 +2,24 @@ import type { ProductVariation } from "@/types/product";
 import { attributeValue, tableFields } from "./variations";
 
 /**
- * Door sizes that come from the supplier file are variations with their own price.
- * Any other (non-standard) size costs the chosen standard variation plus a one-off surcharge:
- * +15% for a different width, +20% for a different height (both: +15% and +20%).
- * Keep in sync with server-side checkout pricing.
+ * Door sizes. Standard sizes come from the supplier file (variations with their own price) or, for doors priced the
+ * same in every width, from the "Стандартна ширина/висота полотна" characteristics.
+ * A non-standard size is allowed only where the CMS has size rules (product rules override the brand's): the value
+ * is rounded up to the rule's step and the price of the nearest standard size gets the rule's surcharge.
+ * Width and height surcharges add up. Keep in sync with server-side checkout pricing if one is added.
  */
-export const SIZE_SURCHARGE = { width: 0.15, height: 0.2 } as const;
-
 export type Size = { width: number; height: number };
+export type Dimension = keyof Size;
+
+export interface SizeRule {
+  dimension: Dimension;
+  min: number;
+  max: number;
+  step: number;
+  percent: number;
+  /** Only for these decors or colours (comma-separated names); empty = all of them. */
+  decors?: string | null;
+}
 
 const label = (value: string) => value.trim().toLocaleLowerCase("uk");
 export const isWidthLabel = (value: string) => label(value).startsWith("ширина");
@@ -32,12 +42,11 @@ export function sizeOf(variation: ProductVariation, keys: { width?: string; heig
   return { width: read(keys.width), height: read(keys.height) };
 }
 
-/** Price multiplier for a custom size compared with the standard variation it is based on. */
-export function sizeSurcharge(standard: Partial<Size>, chosen: Size): number {
-  let multiplier = 1;
-  if (standard.width !== undefined && chosen.width !== standard.width) multiplier *= 1 + SIZE_SURCHARGE.width;
-  if (standard.height !== undefined && chosen.height !== standard.height) multiplier *= 1 + SIZE_SURCHARGE.height;
-  return multiplier;
+/** Catalog note shown when this size is chosen (e.g. width 400: made without glass). */
+export interface SizeNote {
+  dimension: Dimension;
+  value: number;
+  text: string;
 }
 
 export const sizedPrice = (price: number, multiplier: number) => Math.round(price * multiplier);
@@ -75,4 +84,69 @@ export function variationForSize(variations: ProductVariation[], selected: Produ
     return s.width === want.width && s.height === want.height;
   });
   return exact ?? rows.find((row) => sizeOf(row, keys).width === want.width) ?? selected;
+}
+
+/** Interior doors without size data in the catalog. */
+const DEFAULT_STANDARD: Record<Dimension, number[]> = { width: [600, 700, 800, 900], height: [2000] };
+
+/** Standard sizes from the "Стандартна ширина/висота полотна" characteristics (defaults when missing). */
+export function standardFromCharacteristics(characteristics: { name: string; value: string }[]): Record<Dimension, number[]> {
+  const read = (prefix: string) => sorted(characteristics
+    .filter((item) => label(item.name).startsWith(prefix))
+    .flatMap((item) => item.value.match(/\d{3,4}/g)?.map(Number) ?? []));
+  const width = read("стандартна ширина");
+  const height = read("стандартна висота");
+  return { width: width.length ? width : DEFAULT_STANDARD.width, height: height.length ? height : DEFAULT_STANDARD.height };
+}
+
+const normalized = (value: string) => value.trim().toLocaleLowerCase("uk").replace(/\s+/g, " ");
+
+/** Rules of one dimension that apply to the chosen decor and colour ("лише в декорах …" lists either). */
+export function rulesFor(rules: SizeRule[], dimension: Dimension, decor: string, color: string): SizeRule[] {
+  return rules.filter((rule) => {
+    if (rule.dimension !== dimension) return false;
+    const only = (rule.decors ?? "").split(",").map(normalized).filter(Boolean);
+    return !only.length || only.includes(normalized(decor)) || only.includes(normalized(color));
+  });
+}
+
+const grid = (rule: SizeRule) => {
+  const step = Math.max(1, rule.step || 1);
+  const values: number[] = [];
+  for (let value = rule.min; value < rule.max; value += step) values.push(value);
+  return [...values, rule.max];
+};
+
+/** Every value a customer may get: standard sizes and each rule's steps. */
+export const allowedValues = (standards: number[], rules: SizeRule[]) => sorted([...standards, ...rules.flatMap(grid)]);
+
+/** Rounds up to the next allowed value (the largest one when the value is above every range). */
+export function snapSize(value: number, allowed: number[]): number {
+  if (!allowed.length) return value;
+  return allowed.find((candidate) => candidate >= value) ?? allowed[allowed.length - 1];
+}
+
+/**
+ * Surcharge in percent for one dimension. A single-value rule (min = max, e.g. width 900: +10%) is a priced option and
+ * wins over the standard list; otherwise standard sizes are free and a value on a range's grid takes its surcharge.
+ */
+export function sizePercent(value: number, standards: number[], rules: SizeRule[]): number {
+  const single = rules.find((rule) => rule.min === rule.max && rule.min === value);
+  if (single) return Number(single.percent) || 0;
+  if (standards.includes(value)) return 0;
+  const range = rules.find((rule) => grid(rule).includes(value));
+  return Number(range?.percent) || 0;
+}
+
+/** The standard value the price is based on: the nearest one (the larger on a tie). */
+export function nearestStandard(value: number, standards: number[]): number | undefined {
+  return standards.reduce<number | undefined>((best, candidate) =>
+    best === undefined || Math.abs(candidate - value) < Math.abs(best - value) ||
+      (Math.abs(candidate - value) === Math.abs(best - value) && candidate > best) ? candidate : best, undefined);
+}
+
+export function describeRules(standards: number[], rules: SizeRule[]): string {
+  const parts = rules.map((rule) => (rule.min === rule.max ? `${rule.min} мм` : `${rule.min}–${rule.max} мм, крок ${rule.step} мм`) +
+    (Number(rule.percent) ? `: +${Number(rule.percent)}%` : ": без націнки"));
+  return [standards.length ? `стандарт ${standards.join(", ")} мм` : "", ...parts].filter(Boolean).join("; ");
 }

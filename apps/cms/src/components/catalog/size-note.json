@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_catalog_size_notes",
+  "info": {
+    "displayName": "Примітка до розміру",
+    "description": "Показується на сайті, коли вибрано цей розмір (напр. ширина 400: «виготовляється глухим»)"
+  },
+  "attributes": {
+    "dimension": {
+      "type": "enumeration",
+      "enum": ["width", "height"],
+      "required": true,
+      "default": "width"
+    },
+    "value": {
+      "type": "integer",
+      "required": true
+    },
+    "text": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

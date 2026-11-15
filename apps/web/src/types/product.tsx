@@ -1,3 +1,5 @@
+import type { SizeNote, SizeRule } from "@/lib/catalog/sizing";
+
 export interface ProductAddon {
   id: string;
   name: string;
@@ -31,6 +33,10 @@ export interface ProductReturnData {
     unit: string | null;
   }[];
   category: {name: string, slug: string} | null;
+  /** Non-standard size rules (product's own, else the brand's); empty = standard sizes only. */
+  sizeRules: SizeRule[];
+  /** Catalog notes per size (width 400: "made solid"…). */
+  sizeNotes: SizeNote[];
   variations: ProductVariation[];
 }
 

@@ -10,8 +10,8 @@ interface AddToCartButtonProps {
   variation: ProductVariation;
   productName: string;
   addons?: ProductAddon[];
-  /** Non-standard size; `variation.price` already includes its surcharge. */
-  size?: { width: number; height: number };
+  /** Chosen door size; for a non-standard one `variation.price` already includes its surcharge. */
+  size?: { width: number; height: number; custom?: boolean; percent?: number };
   inStock?: boolean;
   leadDays?: number;
   /** Floor: price per pack of `area` m² (null = per piece), `qty` packs at once. */
