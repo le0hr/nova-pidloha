@@ -4,6 +4,5 @@
 /backups/
 /deploy/rendered/
 
-# Local Google OAuth credentials
-/apps/supplier/credentials.json
-/apps/supplier/token.json
+# Local Claude Code settings
+.claude/settings.local.json
