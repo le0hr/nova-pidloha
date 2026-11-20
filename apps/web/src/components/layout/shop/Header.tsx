@@ -21,15 +21,22 @@ function Brand({ onNavigate }: { onNavigate?: () => void }) {
 function SearchToggle({ open, onClick }: { open: boolean; onClick: () => void }) {
   return <button type="button" onClick={onClick} aria-label={open ? "Закрити пошук" : "Пошук по каталогу"} aria-expanded={open} aria-controls="site-search"
     className={`flex size-11 shrink-0 items-center justify-center transition-colors duration-150 hover:text-[#e53935] focus-visible:outline-2 focus-visible:outline-[#e53935] ${open ? "text-[#e53935]" : "text-[#1a1a1a]"}`}>
-    {open
-      ? <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
-      : <svg width="21" height="21" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.8" /><path d="m14 14 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>}
+    {/* Both icons stay in place and cross-fade with a quarter turn: no jump between the magnifier and the cross. */}
+    <span className="search-toggle-icon relative size-[21px]" data-open={open}>
+      <svg className="search-toggle-close" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+      <svg className="search-toggle-open" width="21" height="21" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.8" /><path d="m14 14 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+    </span>
   </button>;
 }
 
 export default function Header({ categories }: { categories: Category[] }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  // The panel grows smoothly; once open, the suggestions may overflow it (they hang below the header).
+  const [searchSettled, setSearchSettled] = useState(false);
+  const searchPanel = useRef<HTMLDivElement>(null);
+  const toggleSearch = () => { setSearchSettled(false); setSearchOpen(value => !value); };
+  const closeSearch = () => { setSearchSettled(false); setSearchOpen(false); };
   const dialog = useRef<HTMLDialogElement>(null);
   const closeMenu = () => dialog.current?.close();
 
@@ -49,6 +56,13 @@ export default function Header({ categories }: { categories: Category[] }) {
     };
   }, [menuOpen]);
 
+  useEffect(() => {
+    if (!searchOpen) return;
+    const frame = requestAnimationFrame(() => searchPanel.current?.querySelector("input")?.focus({ preventScroll: true }));
+    const timer = setTimeout(() => setSearchSettled(true), 340);
+    return () => { cancelAnimationFrame(frame); clearTimeout(timer); };
+  }, [searchOpen]);
+
   return (
     <header className="sticky top-0 z-40 w-full shrink-0 border-b border-[#e0e0e0] bg-white/95 shadow-[0_2px_12px_#00000005] backdrop-blur-md">
       <div className="content-container flex h-16 items-center justify-between gap-2 px-4 lg:hidden">
@@ -58,7 +72,7 @@ export default function Header({ categories }: { categories: Category[] }) {
         </button>
         <Brand />
         <div className="flex shrink-0 items-center">
-          <SearchToggle open={searchOpen} onClick={() => setSearchOpen(value => !value)} />
+          <SearchToggle open={searchOpen} onClick={toggleSearch} />
           <CartButton />
         </div>
       </div>
@@ -67,18 +81,20 @@ export default function Header({ categories }: { categories: Category[] }) {
           <Brand />
           <Navigation categories={categories} />
           <div className="flex shrink-0 items-center gap-2">
-            <SearchToggle open={searchOpen} onClick={() => setSearchOpen(value => !value)} />
+            <SearchToggle open={searchOpen} onClick={toggleSearch} />
             <CartButton />
           </div>
         </div>
       </div>
-      {searchOpen && (
-        <div id="site-search" className="border-t border-[#e0e0e0] bg-white">
-          <div className="content-container page-gutter mx-auto max-w-[920px] !py-3 lg:!py-4">
-            <SearchBox autoFocus onNavigate={() => setSearchOpen(false)} />
+      <div id="site-search" ref={searchPanel} className="search-panel" data-state={searchOpen ? "open" : "closed"} inert={!searchOpen}>
+        <div className={`min-h-0 ${searchOpen && searchSettled ? "overflow-visible" : "overflow-hidden"}`}>
+          <div className="search-panel-body border-t border-[#e0e0e0] bg-white">
+            <div className="content-container page-gutter mx-auto max-w-[920px] !py-3 lg:!py-4">
+              <SearchBox onNavigate={closeSearch} />
+            </div>
           </div>
         </div>
-      )}
+      </div>
 
       <dialog ref={dialog} id="mobile-category-navigation" aria-labelledby="mobile-menu-title" onClose={() => setMenuOpen(false)}
         onClick={(event) => {

@@ -554,3 +554,29 @@ html { scroll-padding-top: 80px; }
 
 /* Floor cards: square photo instead of the tall door height (beats h-[420px] and the wide-screen clamp). */
 .catalog-card-image.catalog-card-square { height: auto; aspect-ratio: 1 / 1; }
+
+
+/* Header search: the panel grows (no jump of the page below), the icon cross-fades, suggestions ease in. */
+.search-panel { display: grid; grid-template-rows: 0fr; grid-template-columns: minmax(0, 1fr); }
+.search-panel[data-state="open"] { grid-template-rows: 1fr; }
+.search-panel[data-state="closed"] .search-panel-body { opacity: 0; transform: translateY(-6px); }
+.search-toggle-icon > svg { position: absolute; inset: 0; margin: auto; }
+.search-toggle-icon[data-open="true"] .search-toggle-open,
+.search-toggle-icon[data-open="false"] .search-toggle-close { opacity: 0; transform: rotate(-90deg) scale(0.6); }
+.search-progress { position: sticky; top: 0; z-index: 1; display: block; height: 2px; margin-bottom: -2px; overflow: hidden; opacity: 0; }
+.search-progress[data-active="true"] { opacity: 1; }
+.search-progress::after { content: ""; position: absolute; inset: 0; width: 40%; background: #e53935; }
+@keyframes search-progress { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+@keyframes search-drop { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+.search-thumb { opacity: 0; }
+.search-thumb[data-loaded] { opacity: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  .search-panel { transition: grid-template-rows 0.32s cubic-bezier(0.22, 1, 0.36, 1); }
+  .search-panel-body { transition: opacity 0.24s ease, transform 0.32s cubic-bezier(0.22, 1, 0.36, 1); }
+  .search-toggle-icon > svg { transition: opacity 0.2s ease, transform 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
+  .search-suggestions { animation: search-drop 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .search-suggestion { animation: search-drop 0.26s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .search-progress { transition: opacity 0.2s ease; }
+  .search-progress::after { animation: search-progress 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+  .search-thumb { transition: opacity 0.25s ease; }
+}

@@ -8,7 +8,10 @@ type PageInfo = { page: number; pageSize: number; pageCount: number; total: numb
 type Item = Omit<Parameters<typeof catalogProduct>[0], "product_variations"> & {
   category?: { slug: string | null; name?: string | null } | null;
   brand?: { name: string | null } | null;
-  product_variations: Parameters<typeof catalogProduct>[0]["product_variations"];
+  product_variations: (Parameters<typeof catalogProduct>[0]["product_variations"][number] & {
+    decor?: { name: string | null } | null;
+    decor_color?: { name: string | null } | null;
+  })[];
 };
 type Entry = { product: CatalogProduct; category?: string; name: string; text: string };
 
@@ -21,11 +24,14 @@ export function searchWords(query: string): string[] {
 }
 
 /**
- * Search runs in memory over a compact index of the visible catalog (a few hundred active products; name, brand,
- * category, short description; the first 4 variations only for the card photo and price), rebuilt at most every 5 minutes. Database "contains" filters across brand/category/variation joins took tens of seconds on SQLite
+ * Search runs in memory over a compact index of the visible catalog (name, brand, category, short description, and the
+ * decor/colour names of the variations, so "дуб сонома" finds the products in that colour), rebuilt every 5 minutes
+ * in the background: while a rebuild runs, searches use the previous index. Database "contains" filters across brand/category/variation joins took tens of seconds on SQLite
  * and ignore letter case only for Latin there; this is instant and identical on SQLite and PostgreSQL.
  */
-let index: { at: number; entries: Promise<Entry[]> } | null = null;
+type Index = { at: number; entries: Promise<Entry[]>; ready?: Entry[] };
+// On globalThis: the route handlers and the start-up warm-up (instrumentation.ts) are separate bundles.
+const store = globalThis as typeof globalThis & { __searchIndex?: Index | null };
 const TTL = 5 * 60 * 1000;
 
 async function buildIndex(): Promise<Entry[]> {
@@ -43,7 +49,9 @@ async function buildIndex(): Promise<Entry[]> {
         products(status: PUBLISHED, pagination: {page: $page, pageSize: 100}, sort: ["name:asc"],
           filters: {or: [{active: {eq: true}}, {active: {null: true}}]}) {
           name slug price shortDescription isNew image { url } category { slug name } brand { name }
-          product_variations(filters: {active: {ne: false}}, pagination: {start: 0, limit: 4}) { active price image { url } }
+          product_variations(filters: {active: {ne: false}}, pagination: {start: 0, limit: 100}) {
+            active price image { url } decor { name } decor_color { name }
+          }
         }
         products_connection(status: PUBLISHED, pagination: {page: $page, pageSize: 100},
           filters: {or: [{active: {eq: true}}, {active: {null: true}}]}) { pageInfo { pageCount } }
@@ -54,20 +62,36 @@ async function buildIndex(): Promise<Entry[]> {
   return items
     .filter(item => item.category?.slug && visible.has(item.category.slug))
     .map(item => ({
-      product: catalogProduct(item),
+      // The card needs only the first variations (photo, lowest price), the index needs every colour name.
+      product: catalogProduct({ ...item, product_variations: item.product_variations.slice(0, 4) }),
       category: item.category?.name ?? undefined,
       name: normalize(item.name),
-      text: normalize([item.name, item.brand?.name, path(item.category?.slug), item.shortDescription].filter(Boolean).join(" ")),
+      text: normalize([item.name, item.brand?.name, path(item.category?.slug), item.shortDescription,
+        ...new Set(item.product_variations.flatMap(variation => [variation.decor?.name, variation.decor_color?.name]))]
+        .filter(Boolean).join(" ")),
     }));
 }
 
 function getIndex(): Promise<Entry[]> {
+  const index = store.__searchIndex;
   if (!index || Date.now() - index.at > TTL) {
+    const previous = index?.ready;
     const entries = buildIndex();
-    index = { at: Date.now(), entries };
-    entries.catch(() => { index = null; }); // a failed build is retried on the next search
+    const current: Index = { at: Date.now(), entries, ready: previous };
+    store.__searchIndex = current;
+    entries.then(ready => { current.ready = ready; }, () => {
+      // A failed build is retried on the next search; the previous index keeps answering meanwhile.
+      if (store.__searchIndex === current) store.__searchIndex = previous ? { at: 0, entries: Promise.resolve(previous), ready: previous } : null;
+    });
   }
-  return index.entries;
+  // Stale while revalidating: an existing index answers at once.
+  const current = store.__searchIndex!;
+  return current.ready ? Promise.resolve(current.ready) : current.entries;
+}
+
+/** Builds the index in the background (called once after the server starts). */
+export function warmSearchIndex(): void {
+  getIndex().catch(() => undefined);
 }
 
 /** Every word must occur; products whose name holds the words (or starts with the first one) come first. */
