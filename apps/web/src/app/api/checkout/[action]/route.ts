@@ -11,6 +11,8 @@ async function proxy(request: NextRequest, context: {params: Promise<{action: st
     const expectedOrigin = new URL(process.env.WEB_PUBLIC_URL || request.url).origin;
     if (request.headers.get('origin') !== expectedOrigin) return NextResponse.json({error: 'Доступ заборонено'}, {status: 403});
   }
+  // Online checkout is switched off until payments are connected (see lib/site-contacts.ts).
+  if (process.env.CHECKOUT_ENABLED !== 'true') return NextResponse.json({error: 'Онлайн-оформлення скоро буде доступне. Замовте, будь ласка, за телефоном.'}, {status: 503});
   const secret = process.env.CHECKOUT_API_SECRET;
   if (!secret || secret.length < 32) return NextResponse.json({error: 'Оформлення замовлень ще не налаштовано.'}, {status: 503});
   let token = request.cookies.get(cookieName)?.value;

@@ -22,14 +22,18 @@ export default function ProductTabsClient({
   reviews: React.ReactNode;
   reviewsCount?: number;
 }) {
-  const [active, setActive] = useState<TabId>("characteristics");
+  // Empty tabs are not shown (many products have no description yet).
+  const present = (node: React.ReactNode) => node !== null && node !== undefined && node !== false && node !== "";
+  const tabs = TABS.filter(tab => present(tab.id === "description" ? description : characteristics));
+  const [active, setActive] = useState<TabId>(tabs.some(tab => tab.id === "characteristics") ? "characteristics" : "description");
+  if (!tabs.length) return null;
 
   return (
     <div className="w-full mt-12 md:mt-16">
       {/* Tabs */}
       <div className="border-b border-[#e5e5e5]">
         <nav className="flex gap-6 md:gap-8 overflow-x-auto">
-          {TABS.map((tab) => {
+          {tabs.map((tab) => {
             const isActive = active === tab.id;
             const label = tab.label;
 

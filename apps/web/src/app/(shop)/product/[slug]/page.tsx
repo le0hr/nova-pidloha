@@ -48,7 +48,8 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const [product, seo] = await Promise.all([getProductBySlug(slug), productSeo(slug)]);
   if (!product?.variations?.length) return { title: "Товар не знайдено", robots: { index: false } };
   return pageMetadata({
-    title: `${product.name} — купити в Черкасах`,
+    // Brand in the title: entrance doors of different factories share names ("Мега", "Порта").
+    title: `${product.name}${product.brand && !product.name.toLowerCase().includes(product.brand.toLowerCase()) ? ` ${product.brand}` : ""} — купити в Черкасах`,
     description: autoDescription(product),
     path: productPath(slug),
     image: images(product)[0],
@@ -127,22 +128,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
         {/* Main content */}
         <div className="page-gutter content-container">
-          {/* Desktop title */}
-          <div className="hidden md:block mb-[20px] animate-fade-up" style={{ animationDelay: "0.12s" }}>
-            <h1 className="font-['Outfit',sans-serif] font-bold text-[#1a1a1a] product-title">
+          {/* One h1 for every screen size (search engines expect a single main heading). */}
+          <div className="mb-4 md:mb-[20px] animate-fade-up" style={{ animationDelay: "0.12s" }}>
+            <h1 className="font-['Outfit',sans-serif] font-bold text-[#1a1a1a] text-[24px] md:text-[32px] product-title">
               {productName}
             </h1>
-            <p className="font-['Outfit',sans-serif] font-medium text-[#9e9e9e] product-category">
-              {categoryLabel}
-            </p>
-          </div>
-
-          {/* Mobile title */}
-          <div className="md:hidden mb-4 animate-fade-up" style={{ animationDelay: "0.14s" }}>
-            <h1 className="font-['Outfit',sans-serif] font-bold text-[#1a1a1a] text-[24px]">
-              {productName}
-            </h1>
-            <p className="font-['Outfit',sans-serif] font-normal text-[#9e9e9e] text-[13px]">
+            <p className="font-['Outfit',sans-serif] font-normal md:font-medium text-[#9e9e9e] text-[13px] md:text-[15px] product-category">
               {categoryLabel}
             </p>
           </div>
@@ -152,8 +143,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
           />
 
           <ProductTabsClient
-            description={<div className="whitespace-pre-line">{product.description}</div>}
-            characteristics={<CharacteristicsTable data={characteristics} />}
+            description={product.description ? <div className="whitespace-pre-line">{product.description}</div> : null}
+            characteristics={characteristics.length ? <CharacteristicsTable data={characteristics} /> : null}
             documents={null}
             reviews={null}
             reviewsCount={8}

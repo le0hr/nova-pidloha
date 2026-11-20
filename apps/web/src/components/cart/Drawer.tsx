@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import ItemOptions from "@/components/cart/ItemOptions";
 import { useCartStore } from '@/store/cart-store'
+import { CheckoutComingSoon, useCheckoutAvailability } from '@/components/checkout/CheckoutAvailability'
 interface Props {
   onGoToCart: () => void;
   onCheckout: () => void;
@@ -56,6 +57,7 @@ export default function CartDrawer({ onGoToCart, onCheckout }: Props) {
   const items = useCartStore((s) => s.items)
   const isOpen = useCartStore((s) => s.isOpen)
   const closeCart = useCartStore((s) => s.closeCart)
+  const checkout = useCheckoutAvailability()
   const removeItem = useCartStore((s) => s.removeItem)
   const updateQty = useCartStore((s) => s.updateQty)
   const totalPrice = useCartStore((s) => s.totalPrice())
@@ -219,14 +221,16 @@ export default function CartDrawer({ onGoToCart, onCheckout }: Props) {
               </span>
             </div>
 
-            <button 
-              onClick={() => {
-                closeCart()
-                onCheckout()
-              }}
-            className="w-full h-[48px] bg-[#e53935] hover:bg-[#c62828] font-['Inter',sans-serif] font-bold text-white text-[15px] transition-colors duration-200">
-              Оформити замовлення
-            </button>
+            {checkout.enabled ? (
+              <button
+                onClick={() => {
+                  closeCart()
+                  onCheckout()
+                }}
+              className="w-full h-[48px] bg-[#e53935] hover:bg-[#c62828] font-['Inter',sans-serif] font-bold text-white text-[15px] transition-colors duration-200">
+                Оформити замовлення
+              </button>
+            ) : <CheckoutComingSoon compact onNavigate={closeCart} />}
 
             <button
               onClick={() => {

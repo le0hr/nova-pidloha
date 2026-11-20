@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useCartStore } from "@/store/cart-store";
 import CartItem from "./CartItem";
 import { useRouter } from "next/navigation";
+import { CheckoutComingSoon, useCheckoutAvailability } from "@/components/checkout/CheckoutAvailability";
 export default function FilledCart() {
   const items = useCartStore((s) => s.items);
   const totalPrice = useCartStore((s) => s.totalPrice());
   const router = useRouter();
+  const checkout = useCheckoutAvailability();
   const totalQty = items.reduce((sum, item) => sum + item.qty, 0);
 
   return (
@@ -97,13 +99,15 @@ export default function FilledCart() {
             </span>
           </div>
 
-          <button
-            onClick={() => {router.push('/cart/checkout/contacts')}}
-            type="button"
-            className="mt-[8px] w-full bg-[#E53935] py-[14px] font-['Outfit',sans-serif] text-[15px] font-bold text-white transition-colors hover:bg-[#C62828]"
-          >
-            Оформити замовлення
-          </button>
+          {checkout.enabled ? (
+            <button
+              onClick={() => {router.push('/cart/checkout/contacts')}}
+              type="button"
+              className="mt-[8px] w-full bg-[#E53935] py-[14px] font-['Outfit',sans-serif] text-[15px] font-bold text-white transition-colors hover:bg-[#C62828]"
+            >
+              Оформити замовлення
+            </button>
+          ) : <div className="mt-[8px]"><CheckoutComingSoon /></div>}
         </div>
       </div>
     </div>

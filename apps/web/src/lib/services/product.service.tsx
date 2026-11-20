@@ -1,4 +1,8 @@
 import { cache } from 'react';
+import { plainText } from '@/lib/seo';
+
+const plainParagraphs = (markdown?: string | null) =>
+  String(markdown ?? '').split(/\n\s*\n/).map(plainText).filter(Boolean).join('\n\n');
 import { normalizeAddon, type RawAddon } from '@/lib/catalog/addons';
 import { graphqlFetch } from '@/lib/client';
 import type { ProductReturnData, ProductVariation } from '@/types/product';
@@ -21,6 +25,7 @@ const PRODUCT_QUERY = `
         additionalCost
       }
       shortDescription
+      description
       updatedAt
       image { url }
       characteristics {
@@ -73,6 +78,7 @@ type ProductGraphQLItem = {
   addons?: RawAddon[] | null;
   name: string;
   shortDescription: string | null;
+  description?: string | null;
   updatedAt?: string | null;
   image?: { url?: string | null } | null;
   characteristics: ProductReturnData["characteristics"] | null;
@@ -139,7 +145,8 @@ export const getProductBySlug = cache(async (slug: string): Promise<ProductRetur
 
   return {
     addons: (product.addons ?? []).map(normalizeAddon),
-    description: product.shortDescription ?? "",
+    // Short description first; the full (markdown) one, e.g. hardware texts, when there is no short one.
+    description: product.shortDescription?.trim() || plainParagraphs(product.description),
     characteristics: product.characteristics ?? [],
     name: product.name,
     slug,

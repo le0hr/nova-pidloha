@@ -96,6 +96,7 @@ services:
       STRAPI_URL: http://nova-cms:1337
       STRAPI_READ_TOKEN: ${STRAPI_READ_TOKEN:-}
       CHECKOUT_API_SECRET: ${CHECKOUT_API_SECRET:-}
+      CHECKOUT_ENABLED: ${CHECKOUT_ENABLED:-false}
       WEB_PUBLIC_URL: ${WEB_PUBLIC_URL:?Set WEB_PUBLIC_URL}
     networks:
       nova-internal:

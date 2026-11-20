@@ -16,9 +16,9 @@ export default function CartPage() {
         ]}
       />
 
-      <div className="flex flex-col self-stretch px-[80px] pb-[80px] pt-[24px]">
-        <div className="flex pb-[32px] items-baseline gap-[16px]">
-          <h1 className="font-['Outfit',sans-serif] text-[32px] font-bold leading-normal text-[#1A1A1A]">
+      <div className="content-container page-gutter flex flex-col self-stretch pb-[40px] pt-[16px] md:pb-[80px] md:pt-[24px]">
+        <div className="flex pb-[20px] md:pb-[32px] items-baseline gap-[16px]">
+          <h1 className="font-['Outfit',sans-serif] text-[24px] md:text-[32px] font-bold leading-normal text-[#1A1A1A]">
             Кошик
           </h1>
         </div>
