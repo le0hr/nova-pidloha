@@ -74,7 +74,6 @@ function productLd(product: ProductReturnData) {
     url,
     description: clip(autoDescription(product), 500),
     image: images(product).slice(0, 10),
-    ...(product.sku ? { sku: product.sku } : {}),
     ...(product.brand ? { brand: { "@type": "Brand", name: product.brand } } : {}),
     ...(product.category ? { category: product.category.name } : {}),
     ...(product.characteristics.length ? { additionalProperty: product.characteristics.slice(0, 20).map(({ name, value, unit }) => ({

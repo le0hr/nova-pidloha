@@ -44,7 +44,7 @@ export async function snapshot(strapi: any, input: any): Promise<Item[]> {
     const size = hasSize ? { width: Number(line.size.width), height: Number(line.size.height), percent } : undefined;
     if (size) mods.push(percent ? `Нестандартний розмір: ${size.width}×${size.height} мм (+${percent}%)` : `Розмір: ${size.width}×${size.height} мм`);
     if (area) mods.push(`Упаковка: ${area} м² (${Number(variation.price).toLocaleString('uk-UA')} грн/м²)`);
-    result.push({ id: line.id, variationSlug: variation.slug, name: product.name, sku: variation.sku || product.sku || '', productId: product.documentId, variationId: variation.documentId, qty: line.qty, unit, addons, mods,
+    result.push({ id: line.id, variationSlug: variation.slug, name: product.name, sku: variation.sku || '', productId: product.documentId, variationId: variation.documentId, qty: line.qty, unit, addons, mods,
       ...(size ? { size } : {}), ...(area ? { packArea: area } : {}) });
   }
   ensure(result.reduce((s, i) => s + i.unit * i.qty, 0) <= 1000000000, 'Сума замовлення завелика');

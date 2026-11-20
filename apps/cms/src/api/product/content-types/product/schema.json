@@ -26,12 +26,6 @@
     "price": {
       "type": "decimal"
     },
-    "oldPrice": {
-      "type": "decimal"
-    },
-    "sku": {
-      "type": "string"
-    },
     "category": {
       "type": "relation",
       "relation": "manyToOne",

@@ -26,7 +26,6 @@ export interface ProductReturnData {
   addons?: ProductAddon[];
   name: string
   slug: string;
-  sku?: string;
   brand?: string;
   updatedAt?: string;
   /** Main product photo (variations have their own). */

@@ -55,39 +55,6 @@ export interface CatalogSizeRule extends Struct.ComponentSchema {
   };
 }
 
-export interface DoorConfigDoorInterior extends Struct.ComponentSchema {
-  collectionName: 'components_door_config_door_interiors';
-  info: {
-    displayName: 'DoorInterior';
-  };
-  attributes: {
-    architrave_type: Schema.Attribute.Relation<
-      'oneToOne',
-      'api::architrave-type.architrave-type'
-    >;
-    decor: Schema.Attribute.Relation<'oneToOne', 'api::decor.decor'>;
-    decor_glass: Schema.Attribute.Relation<
-      'oneToOne',
-      'api::decor-glass.decor-glass'
-    >;
-  };
-}
-
-export interface HomeHeroMap extends Struct.ComponentSchema {
-  collectionName: 'components_home_hero_maps';
-  info: {
-    description: 'Permanent banner showing both configured shop locations. Edit its text and optional action button here.';
-    displayName: 'Permanent shop map';
-  };
-  attributes: {
-    buttonLabel: Schema.Attribute.String;
-    buttonUrl: Schema.Attribute.String;
-    description: Schema.Attribute.Text;
-    eyebrow: Schema.Attribute.String;
-    title: Schema.Attribute.String;
-  };
-}
-
 export interface HomeHeroSlide extends Struct.ComponentSchema {
   collectionName: 'components_home_hero_slides';
   info: {
@@ -166,17 +133,6 @@ export interface SharedSeo extends Struct.ComponentSchema {
   };
 }
 
-export interface ShopsAdresses extends Struct.ComponentSchema {
-  collectionName: 'components_shops_adresses';
-  info: {
-    displayName: 'adresses';
-  };
-  attributes: {
-    adress: Schema.Attribute.String;
-    Schedule: Schema.Attribute.Blocks;
-  };
-}
-
 export interface ShopsLocation extends Struct.ComponentSchema {
   collectionName: 'components_shops_locations';
   info: {
@@ -216,12 +172,9 @@ declare module '@strapi/strapi' {
       'catalog.characteristic': CatalogCharacteristic;
       'catalog.size-note': CatalogSizeNote;
       'catalog.size-rule': CatalogSizeRule;
-      'door-config.door-interior': DoorConfigDoorInterior;
-      'home.hero-map': HomeHeroMap;
       'home.hero-slide': HomeHeroSlide;
       'shared.open-graph': SharedOpenGraph;
       'shared.seo': SharedSeo;
-      'shops.adresses': ShopsAdresses;
       'shops.location': ShopsLocation;
     }
   }

@@ -18,6 +18,8 @@ COPY --from=build --chown=node:node /app/package.json /app/package-lock.json /ap
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
 COPY --from=build --chown=node:node /app/dist ./dist
 COPY --from=build --chown=node:node /app/public ./public
+# One-off maintenance scripts (scripts/*.js), run with: docker compose exec cms node scripts/<name>.js
+COPY --from=build --chown=node:node /app/scripts ./scripts
 RUN mkdir -p /app/database/migrations && chown -R node:node /app/database
 USER node
 EXPOSE 1337

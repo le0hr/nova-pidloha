@@ -2,6 +2,7 @@ import type { Core } from '@strapi/strapi';
 import { configureCheckoutAdmin } from './checkout/admin';
 import { cancelOrder, confirmOrder, reconcilePending, remindHolds } from './checkout/orders';
 import { startPolling } from './checkout/telegram';
+import { syncManagerRole } from './manager-role';
 
 let stopTelegram = () => {};
 
@@ -18,9 +19,13 @@ export default {
 
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
     await configureCheckoutAdmin(strapi);
-    strapi.cron.add({ checkoutPayments: { task: async () => { await reconcilePending(strapi); await remindHolds(strapi); }, options: { rule: '*/5 * * * *' } } });
+    await syncManagerRole(strapi);
+    // One-off maintenance scripts (STRAPI_SCRIPT=1, scripts/*.js) load Strapi next to the running CMS:
+    // no second payment cron and no second Telegram poller (one bot token can be polled only once).
+    const script = process.env.STRAPI_SCRIPT === '1';
+    if (!script) strapi.cron.add({ checkoutPayments: { task: async () => { await reconcilePending(strapi); await remindHolds(strapi); }, options: { rule: '*/5 * * * *' } } });
     // Manager buttons in Telegram: confirm (captures the card hold) / cancel (releases it). Not in tests: no token there.
-    if (process.env.NODE_ENV !== 'test') stopTelegram = startPolling(strapi, {
+    if (process.env.NODE_ENV !== 'test' && !script) stopTelegram = startPolling(strapi, {
       confirm: (number, who) => confirmOrder(strapi, number, who),
       cancel: (number, who) => cancelOrder(strapi, number, who),
     });

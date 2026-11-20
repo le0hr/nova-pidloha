@@ -494,15 +494,10 @@ export interface ApiBrandBrand extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    description: Schema.Attribute.String;
     external_id: Schema.Attribute.String & Schema.Attribute.Unique;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::brand.brand'> &
       Schema.Attribute.Private;
-    logo: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios',
-      true
-    >;
     name: Schema.Attribute.String;
     products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
@@ -571,8 +566,6 @@ export interface ApiDecorColorDecorColor extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     decor: Schema.Attribute.Relation<'manyToOne', 'api::decor.decor'>;
     external_id: Schema.Attribute.String & Schema.Attribute.Unique;
-    hex: Schema.Attribute.String;
-    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -743,13 +736,11 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    adresses: Schema.Attribute.Component<'shops.adresses', true>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     email: Schema.Attribute.Email;
     heroEnabled: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
-    heroMap: Schema.Attribute.Component<'home.hero-map', false>;
     heroSlides: Schema.Attribute.Component<'home.hero-slide', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -1013,7 +1004,6 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     name: Schema.Attribute.String;
-    oldPrice: Schema.Attribute.Decimal;
     price: Schema.Attribute.Decimal;
     product_variations: Schema.Attribute.Relation<
       'manyToMany',
@@ -1024,7 +1014,6 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     shortDescription: Schema.Attribute.String;
     size_notes: Schema.Attribute.Component<'catalog.size-note', true>;
     size_rules: Schema.Attribute.Component<'catalog.size-rule', true>;
-    sku: Schema.Attribute.String;
     slug: Schema.Attribute.UID;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

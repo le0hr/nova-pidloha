@@ -14,19 +14,6 @@
     "name": {
       "type": "string"
     },
-    "hex": {
-      "type": "string"
-    },
-    "image": {
-      "type": "media",
-      "multiple": false,
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos",
-        "audios"
-      ]
-    },
     "decor": {
       "type": "relation",
       "relation": "manyToOne",

@@ -17,19 +17,6 @@
     "slug": {
       "type": "uid"
     },
-    "logo": {
-      "type": "media",
-      "multiple": true,
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos",
-        "audios"
-      ]
-    },
-    "description": {
-      "type": "string"
-    },
     "products": {
       "type": "relation",
       "relation": "oneToMany",

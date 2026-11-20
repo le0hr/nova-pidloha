@@ -254,23 +254,36 @@ def desired_records(
         if f.target_type == "variation":
             variation_filters[f.target_external_id].append(value)
 
+    def addon_ref(brand: str | None, a: Any) -> dict[str, str]:
+        """One record per brand + group + name: the name already holds size, finish and colour, and one moulding
+        item is shared by every door of the brand (before, each variation got its own copy). A different price
+        under the same name keeps its own record instead of silently changing what the other doors cost."""
+        data = {
+            "name": a.name,
+            "group": a.group,
+            "price": str(a.price) if a.price is not None else None,
+            "additionalCost": str(a.price_delta) if a.price_delta is not None else None,
+        }
+        key = stable_id("addon", brand or "", a.group or "", a.name)
+        existing = records["architrave-types"].get(key)
+        if existing is not None and (existing["price"], existing["additionalCost"]) != (
+            data["price"],
+            data["additionalCost"],
+        ):
+            key = stable_id(
+                "addon", brand or "", a.group or "", a.name, data["price"] or "", data["additionalCost"] or ""
+            )
+        records["architrave-types"].setdefault(key, {"external_id": key, **data})
+        return reference("architrave-types", key)
+
+    brand_of = {p.external_id: p.brand for p in catalog.products}
     extras: dict[str, list[dict[str, str]]] = {}
     for p in sorted(catalog.products, key=lambda p: p.external_id):
         extras[p.external_id] = []
         for a in p.addons:
-            key = (
-                stable_id("addon", p.external_id, a.external_id)
-                if a.external_id
-                else stable_id("addon", p.external_id, a.group or "", a.name)
-            )
-            records["architrave-types"][key] = {
-                "external_id": key,
-                "name": a.name,
-                "group": a.group,
-                "price": str(a.price) if a.price is not None else None,
-                "additionalCost": str(a.price_delta) if a.price_delta is not None else None,
-            }
-            extras[p.external_id].append(reference("architrave-types", key))
+            ref = addon_ref(p.brand, a)
+            if ref not in extras[p.external_id]:
+                extras[p.external_id].append(ref)
         prices = [v.price for v in p.variations if v.active]
         price = p.price if p.price is not None else min(prices) if prices else None
         records["products"][p.external_id] = {
@@ -300,17 +313,9 @@ def desired_records(
     for v in sorted(catalog.variations, key=lambda v: v.external_id):
         variation_extras = list(extras[v.product_external_id])
         for a in v.addons:
-            key = stable_id(
-                "variation-addon", v.external_id, a.external_id or "", a.group or "", a.name
-            )
-            records["architrave-types"][key] = {
-                "external_id": key,
-                "name": a.name,
-                "group": a.group,
-                "price": str(a.price) if a.price is not None else None,
-                "additionalCost": str(a.price_delta) if a.price_delta is not None else None,
-            }
-            variation_extras.append(reference("architrave-types", key))
+            ref = addon_ref(brand_of.get(v.product_external_id), a)
+            if ref not in variation_extras:
+                variation_extras.append(ref)
         labels = {
             normalize(a.display_name): v.attributes.get(a.key) for a in v.attribute_definitions
         }

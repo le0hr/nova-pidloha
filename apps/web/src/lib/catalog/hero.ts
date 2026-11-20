@@ -23,7 +23,6 @@ export type RawHeroSlide = {
 export type HeroSettings = {
   heroEnabled?: boolean;
   heroSlides?: RawHeroSlide[] | null;
-  heroMap?: Partial<RawHeroSlide> | null;
 };
 const text = (value?: string | null) => value?.trim() || undefined;
 

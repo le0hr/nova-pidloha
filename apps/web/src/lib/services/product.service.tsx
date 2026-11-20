@@ -21,7 +21,6 @@ const PRODUCT_QUERY = `
         additionalCost
       }
       shortDescription
-      sku
       updatedAt
       image { url }
       characteristics {
@@ -74,7 +73,6 @@ type ProductGraphQLItem = {
   addons?: RawAddon[] | null;
   name: string;
   shortDescription: string | null;
-  sku?: string | null;
   updatedAt?: string | null;
   image?: { url?: string | null } | null;
   characteristics: ProductReturnData["characteristics"] | null;
@@ -145,7 +143,6 @@ export const getProductBySlug = cache(async (slug: string): Promise<ProductRetur
     characteristics: product.characteristics ?? [],
     name: product.name,
     slug,
-    sku: product.sku ?? undefined,
     brand: product.brand?.name ?? undefined,
     updatedAt: product.updatedAt ?? undefined,
     image: product.image?.url ? `${process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337"}${product.image.url}` : undefined,
