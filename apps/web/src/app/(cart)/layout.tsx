@@ -20,7 +20,7 @@ export default async function ShopLayout({
   return (
     <CheckoutAvailabilityProvider value={{ enabled: checkoutEnabled(), phone: contacts.phone }}>
       <div className="min-h-screen bg-[#fdfdfd]">
-        <Header />
+        <Header contacts={contacts} />
         <main className="min-h-[70vh]">{children}</main>
       </div>
     </CheckoutAvailabilityProvider>

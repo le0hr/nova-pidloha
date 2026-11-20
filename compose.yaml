@@ -97,6 +97,7 @@ services:
       STRAPI_READ_TOKEN: ${STRAPI_READ_TOKEN:-}
       CHECKOUT_API_SECRET: ${CHECKOUT_API_SECRET:-}
       CHECKOUT_ENABLED: ${CHECKOUT_ENABLED:-false}
+      GOOGLE_TAG_IDS: ${GOOGLE_TAG_IDS:-}
       WEB_PUBLIC_URL: ${WEB_PUBLIC_URL:?Set WEB_PUBLIC_URL}
     networks:
       nova-internal:

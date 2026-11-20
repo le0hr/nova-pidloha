@@ -1,0 +1,34 @@
+{
+  "collectionName": "components_home_promo_tickers",
+  "info": {
+    "displayName": "Плашка акції",
+    "description": "Червона бігуча плашка під банером головної. Вимкнено або порожній текст — плашки немає. Приклад: мітка «Акція», виділене «−25%», текст «на ламінат Kronospan», примітка «Тільки до кінця місяця»."
+  },
+  "options": {},
+  "attributes": {
+    "enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "label": {
+      "type": "string",
+      "default": "Акція",
+      "maxLength": 20
+    },
+    "highlight": {
+      "type": "string",
+      "maxLength": 20
+    },
+    "text": {
+      "type": "string",
+      "maxLength": 80
+    },
+    "note": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "url": {
+      "type": "string"
+    }
+  }
+}

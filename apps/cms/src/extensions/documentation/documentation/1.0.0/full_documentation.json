@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "2026-11-20T20:21:00.930Z"
+    "x-generation-date": "2026-11-20T21:17:18.740Z"
   },
   "x-strapi-config": {
     "plugins": [
@@ -32866,6 +32866,9 @@
                   "$ref": "#/components/schemas/HomeHeroSlideComponent"
                 }
               },
+              "promoTicker": {
+                "$ref": "#/components/schemas/HomePromoTickerComponent"
+              },
               "shopLocations": {
                 "type": "array",
                 "items": {
@@ -32963,6 +32966,9 @@
               "$ref": "#/components/schemas/HomeHeroSlideComponent"
             }
           },
+          "promoTicker": {
+            "$ref": "#/components/schemas/HomePromoTickerComponent"
+          },
           "shopLocations": {
             "type": "array",
             "items": {
@@ -33056,6 +33062,9 @@
                   "items": {
                     "$ref": "#/components/schemas/HomeHeroSlideComponent"
                   }
+                },
+                "promoTicker": {
+                  "$ref": "#/components/schemas/HomePromoTickerComponent"
                 },
                 "shopLocations": {
                   "type": "array",
@@ -33566,6 +33575,39 @@
               "center",
               "right"
             ]
+          }
+        }
+      },
+      "HomePromoTickerComponent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "label": {
+            "type": "string"
+          },
+          "highlight": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
           }
         }
       },

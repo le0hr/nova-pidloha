@@ -149,6 +149,20 @@ export async function getHomeCategories(): Promise<HomeCategory[]> {
   }
 }
 
+/** Promo ticker from CMS Global; null when switched off or not filled in (or the CMS is older than the field). */
+export async function getPromoTicker(): Promise<import("@/components/home/Promotion").PromoTicker | null> {
+  try {
+    const data = await graphqlFetch<{ global: { promoTicker: ({ enabled?: boolean | null } & Record<string, string | boolean | null | undefined>) | null } | null }>(`
+      query PromoTicker { global(status: PUBLISHED) { promoTicker { enabled label highlight text note url } } }`, undefined, { revalidate: 60 });
+    const promo = data.global?.promoTicker;
+    if (!promo?.enabled) return null;
+    const value = (key: string) => (typeof promo[key] === "string" ? (promo[key] as string).trim() : "") || undefined;
+    return { label: value("label"), highlight: value("highlight"), text: value("text"), note: value("note"), url: value("url") };
+  } catch {
+    return null;
+  }
+}
+
 export async function getHomeHero(): Promise<import("@/types/home").HeroSlide[]> {
   try {
     const data = await graphqlFetch<{ global: import("@/lib/catalog/hero").HeroSettings | null }>(`

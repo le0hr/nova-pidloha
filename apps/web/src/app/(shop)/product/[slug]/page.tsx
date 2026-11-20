@@ -5,6 +5,7 @@ import Breadcrumb from "@/components/layout/shop/Breadcrumps";
 import ProductTabsClient from "@/components/product/ProductTabs";
 import CharacteristicsTable from "@/components/product/CharacteristicsTable";
 import JsonLd from "@/components/seo/JsonLd";
+import ViewItem from "@/components/analytics/ViewItem";
 import { priceUnit } from "@/lib/catalog/floor";
 import { categoryHref } from "@/lib/catalog/categories";
 import {
@@ -109,6 +110,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
         ]),
         ...cmsStructuredData(seo),
       ]} />
+      <ViewItem item={{ item_id: product.slug, item_name: productName, item_brand: product.brand, item_category: product.category?.name,
+        price: prices(product).length ? Math.min(...prices(product)) : undefined }} />
       <main className="flex-1">
         <Breadcrumb
           items={[

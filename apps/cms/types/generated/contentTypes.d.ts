@@ -749,6 +749,7 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
     > &
       Schema.Attribute.Private;
     phone: Schema.Attribute.String;
+    promoTicker: Schema.Attribute.Component<'home.promo-ticker', false>;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     shopLocations: Schema.Attribute.Component<'shops.location', true>;

@@ -26,6 +26,11 @@
       "repeatable": true,
       "component": "home.hero-slide"
     },
+    "promoTicker": {
+      "type": "component",
+      "repeatable": false,
+      "component": "home.promo-ticker"
+    },
     "shopLocations": {
       "type": "component",
       "repeatable": true,

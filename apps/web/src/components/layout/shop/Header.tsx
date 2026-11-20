@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import CartButton from "../../cart/CartButton";
 import Navigation from "./Navigation";
+import SearchBox from "./SearchBox";
 import type { Category } from "@/lib/catalog/categories";
 
 function Brand({ onNavigate }: { onNavigate?: () => void }) {
@@ -17,8 +18,18 @@ function Brand({ onNavigate }: { onNavigate?: () => void }) {
   </Link>;
 }
 
+function SearchToggle({ open, onClick }: { open: boolean; onClick: () => void }) {
+  return <button type="button" onClick={onClick} aria-label={open ? "Закрити пошук" : "Пошук по каталогу"} aria-expanded={open} aria-controls="site-search"
+    className={`flex size-11 shrink-0 items-center justify-center transition-colors duration-150 hover:text-[#e53935] focus-visible:outline-2 focus-visible:outline-[#e53935] ${open ? "text-[#e53935]" : "text-[#1a1a1a]"}`}>
+    {open
+      ? <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+      : <svg width="21" height="21" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.8" /><path d="m14 14 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>}
+  </button>;
+}
+
 export default function Header({ categories }: { categories: Category[] }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const closeMenu = () => dialog.current?.close();
 
@@ -46,15 +57,28 @@ export default function Header({ categories }: { categories: Category[] }) {
           <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M3 6h16M3 11h12M3 16h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
         </button>
         <Brand />
-        <CartButton />
+        <div className="flex shrink-0 items-center">
+          <SearchToggle open={searchOpen} onClick={() => setSearchOpen(value => !value)} />
+          <CartButton />
+        </div>
       </div>
       <div className="desktop-header hidden h-[84px] items-center lg:flex">
         <div className="content-container page-gutter flex w-full items-center justify-between gap-6 !py-0">
           <Brand />
           <Navigation categories={categories} />
-          <CartButton />
+          <div className="flex shrink-0 items-center gap-2">
+            <SearchToggle open={searchOpen} onClick={() => setSearchOpen(value => !value)} />
+            <CartButton />
+          </div>
         </div>
       </div>
+      {searchOpen && (
+        <div id="site-search" className="border-t border-[#e0e0e0] bg-white">
+          <div className="content-container page-gutter mx-auto max-w-[920px] !py-3 lg:!py-4">
+            <SearchBox autoFocus onNavigate={() => setSearchOpen(false)} />
+          </div>
+        </div>
+      )}
 
       <dialog ref={dialog} id="mobile-category-navigation" aria-labelledby="mobile-menu-title" onClose={() => setMenuOpen(false)}
         onClick={(event) => {

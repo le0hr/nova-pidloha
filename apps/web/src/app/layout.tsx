@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { SITE_NAME, indexable, siteUrl } from "@/lib/seo";
+import GoogleTag from "@/components/analytics/GoogleTag";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -24,7 +25,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="uk">
-      <body>{children}</body>
+      <body>
+        {children}
+        <GoogleTag enabled={indexable()} />
+      </body>
     </html>
   );
 }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import ItemOptions from "@/components/cart/ItemOptions";
 import { useCartStore } from '@/store/cart-store'
+import { plural } from '@/lib/plural'
 import { CheckoutComingSoon, useCheckoutAvailability } from '@/components/checkout/CheckoutAvailability'
 interface Props {
   onGoToCart: () => void;
@@ -120,7 +121,7 @@ export default function CartDrawer({ onGoToCart, onCheckout }: Props) {
         {!isEmpty && (
           <div className="px-[24px] pt-[14px] pb-[8px] shrink-0">
             <span className="font-['Inter',sans-serif] font-normal text-[#9e9e9e] text-[13px]">
-              {totalQty} {totalQty === 1 ? 'товар' : 'товарів'} у кошику
+              {totalQty} {plural(totalQty, 'товар', 'товари', 'товарів')} у кошику
             </span>
           </div>
         )}
@@ -239,7 +240,7 @@ export default function CartDrawer({ onGoToCart, onCheckout }: Props) {
               }}
               className="w-full h-[44px] border border-[#1a1a1a] hover:bg-[#f7f7f7] font-['Inter',sans-serif] font-semibold text-[#1a1a1a] text-[14px] transition-colors duration-200"
             >
-              Перейти до корзини
+              Перейти до кошика
             </button>
           </div>
         )}
