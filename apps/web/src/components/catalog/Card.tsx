@@ -1,10 +1,8 @@
 import { CatalogProduct } from "@/types/catalog";
 import Link from "next/link";
 import CardImages from "./CardImages";
-import { displayDiscount, displayOldPrice } from "@/lib/catalog/floor";
 export default function Card({ product, index = 0 }: {product: CatalogProduct, index:number}) {
   const staggerDelay = `${0.06 + index * 0.07}s`;
-  const oldPrice = displayOldPrice(product.price, product.slug);
     return(
         <Link 
         href={`/product/${product.slug}`} 
@@ -13,14 +11,9 @@ export default function Card({ product, index = 0 }: {product: CatalogProduct, i
       style={{
         animation: `fade-up 0.42s cubic-bezier(0.22,1,0.36,1) ${staggerDelay} both`,
       }}>
-            {(product.isNew || oldPrice) && (
+            {product.isNew && (
               <span className="absolute left-3 top-3 z-10 flex flex-col items-start gap-1.5">
-                {product.isNew && (
-                  <span className="bg-[#1A1A1A] px-2 py-1 font-outfit text-xs font-bold uppercase tracking-wide text-white">New</span>
-                )}
-                {oldPrice && (
-                  <span className="bg-[#e53935] px-2 py-1 font-outfit text-xs font-bold text-white">-{displayDiscount(product.slug)}%</span>
-                )}
+                <span className="bg-[#1A1A1A] px-2 py-1 font-outfit text-xs font-bold uppercase tracking-wide text-white">New</span>
               </span>
             )}
             <CardImages images={product.images} alt={product.name}
@@ -37,9 +30,6 @@ export default function Card({ product, index = 0 }: {product: CatalogProduct, i
                         {product.price}
                         {product.unit && <span className="text-xs font-normal text-[#9E9E9E]"> /{product.unit}</span>}
                     </span>
-                    {oldPrice && <span className="font-outfit text-xs font-normal text-[#9E9E9E] line-through">
-                        {oldPrice}
-                    </span>}
                 </div>
             </div>
         </Link>

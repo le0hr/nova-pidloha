@@ -33,19 +33,3 @@ export function priceUnit(categorySlug: string | null | undefined): string | und
   const slug = categorySlug ?? "";
   return slug.startsWith("pidloha-") && slug !== "pidloha-pidlozhka" ? "м²" : undefined;
 }
-
-/**
- * Display-only crossed-out price: the current price is 5–30% below it. The percentage is derived from
- * the slug, so it is stable for a product (same on server and client, no hydration mismatch).
- */
-export function displayOldPrice(price: number, slug: string): number | null {
-  if (!(price > 0)) return null;
-  return Math.round(price / (1 - displayDiscount(slug) / 100));
-}
-
-/** The display discount in whole percent (5..30), stable for a slug. */
-export function displayDiscount(slug: string): number {
-  let hash = 0;
-  for (const char of slug) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
-  return 5 + (hash % 26);
-}

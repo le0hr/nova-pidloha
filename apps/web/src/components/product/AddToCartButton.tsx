@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useCartStore } from "@/store/cart-store";
 import { configuredItem } from "@/lib/catalog/configured-item";
 import ItemOptions from "@/components/cart/ItemOptions";
-import { displayOldPrice } from "@/lib/catalog/floor";
 import { ProductVariation, ProductAddon } from "@/types/product";
 import { trackAddToCart } from "@/lib/analytics";
 
@@ -17,8 +16,6 @@ interface AddToCartButtonProps {
   leadDays?: number;
   /** Floor: price per pack of `area` m² (null = per piece), `qty` packs at once. */
   pack?: { area: number | null; qty: number };
-  /** Product slug: the crossed-out price uses the same 5–30% as the catalog card. */
-  oldPriceSeed?: string;
 }
 
 export default function AddToCartButton({
@@ -28,7 +25,6 @@ export default function AddToCartButton({
   addons = [],
   size,
   pack,
-  oldPriceSeed,
 }: AddToCartButtonProps) {
   const [added, setAdded] = useState(false);
   // Only what the catalog says ("Наявність": склад / під замовлення); nothing when the supplier gives no data.
@@ -42,15 +38,6 @@ export default function AddToCartButton({
   const item = configuredItem(variation, productName, addons, size, pack?.area);
   const qty = pack?.qty ?? 1;
   const total = Math.round(item.price * qty * 100) / 100;
-
-  const oldPrice = variation.oldPrice && !pack
-    ? variation.oldPrice + total - variation.price
-    : oldPriceSeed ? displayOldPrice(total, oldPriceSeed) ?? undefined : undefined;
-
-  const discountPercent =
-    oldPrice && oldPrice > total
-      ? Math.round(((oldPrice - total) / oldPrice) * 100)
-      : null;
 
   const handleAdd = () => {
     setAdded(true);
@@ -72,25 +59,9 @@ export default function AddToCartButton({
       </div>}
 
       {/* Price row */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-baseline gap-[10px]">
-          <span className="font-['Outfit',sans-serif] font-bold text-[#e53935] text-[32px]">
-            ₴ {total.toLocaleString("uk-UA")}
-          </span>
-          {oldPrice && oldPrice > total && (
-            <span className="font-['Outfit',sans-serif] font-normal text-[#9e9e9e] text-[18px] line-through">
-              ₴ {oldPrice.toLocaleString("uk-UA")}
-            </span>
-          )}
-        </div>
-        {discountPercent !== null && (
-          <div className="bg-[#e53935] px-[12px] py-[6px] ">
-            <span className="font-['Outfit',sans-serif] font-bold text-white text-[13px]">
-              -{discountPercent}%
-            </span>
-          </div>
-        )}
-      </div>
+      <span className="font-['Outfit',sans-serif] font-bold text-[#e53935] text-[32px]">
+        ₴ {total.toLocaleString("uk-UA")}
+      </span>
 
       <div className="border-t border-[#e0e0e0]" />
 

@@ -2,6 +2,7 @@ import { StepHeader } from "./StepHeader";
 
 export default function ColorSelector({
     decor_colors,
+    images = {},
     value,
     setValue,
     step,
@@ -10,6 +11,8 @@ export default function ColorSelector({
     note
 }: {
   decor_colors: string[];
+  /** Colour name → swatch photo (a crop of the decor); without one the name is shown. */
+  images?: Record<string, string>;
   value: { decor_color: string };
   setValue: (value: { decor_color: string }) => void;
   step: number;
@@ -41,12 +44,16 @@ export default function ColorSelector({
                               : "outline outline-1 outline-[#e0e0e0] group-hover:outline-[#bbb]"
                           }`}
                         >
-                          {/* Placeholder — заміни на <img> коли будуть картинки */}
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="font-['Outfit',sans-serif] text-[10px] text-[#888] text-center px-1 leading-tight">
-                              {color}
-                            </span>
-                          </div>
+                          {images[color] ? (
+                            // eslint-disable-next-line @next/next/no-img-element -- small CMS crops, already sized
+                            <img src={images[color]} alt={color} loading="lazy" className="absolute inset-0 size-full object-cover" />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <span className="font-['Outfit',sans-serif] text-[10px] text-[#888] text-center px-1 leading-tight">
+                                {color}
+                              </span>
+                            </div>
+                          )}
                         </div>
                         <span
                           className={`w-full text-center font-['Outfit',sans-serif] product-option-btn truncate ${

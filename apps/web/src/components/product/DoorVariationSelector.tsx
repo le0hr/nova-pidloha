@@ -61,6 +61,8 @@ interface Props {
   additionalCount?: number;
   /** Note next to the colour step; omitted when colours are priced differently. */
   colorNote?: string;
+  /** Colour name → swatch photo. */
+  swatches?: Record<string, string>;
   value: VariationState;
   onChange: (value: Partial<VariationState>) => void;
   options: {
@@ -72,7 +74,7 @@ interface Props {
 
 
 
-export default function VariationSelector({ value, onChange, options, beforeDimensions, additionalCount = 0, sizes, colorNote }: Props) {
+export default function VariationSelector({ value, onChange, options, beforeDimensions, additionalCount = 0, sizes, colorNote, swatches }: Props) {
   const setValue = (partial: Partial<VariationState>) => onChange(partial);
 
   const baseCount = Object.values(options).filter((values) => values.length > 0).length;
@@ -87,7 +89,7 @@ export default function VariationSelector({ value, onChange, options, beforeDime
   return (
     <div className="flex flex-col gap-5 w-full">
       {options.decor.length > 0 && <DoorDecorSelector decors={options.decor} value={value} setValue={setValue} step={1} total={total} />}
-      {options.decor_color.length > 0 && <ColorSelector decor_colors={options.decor_color} value={value} setValue={setValue} step={Number(options.decor.length > 0) + 1} total={total} note={colorNote} />}
+      {options.decor_color.length > 0 && <ColorSelector decor_colors={options.decor_color} images={swatches} value={value} setValue={setValue} step={Number(options.decor.length > 0) + 1} total={total} note={colorNote} />}
       {options.decor_glass.length > 0 && <AccentSelector accents={options.decor_glass} value={value} setValue={setValue} step={baseCount} total={total} />}
       {beforeDimensions}
 

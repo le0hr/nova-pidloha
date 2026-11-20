@@ -566,6 +566,7 @@ export interface ApiDecorColorDecorColor extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     decor: Schema.Attribute.Relation<'manyToOne', 'api::decor.decor'>;
     external_id: Schema.Attribute.String & Schema.Attribute.Unique;
+    image: Schema.Attribute.Media<'images'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',

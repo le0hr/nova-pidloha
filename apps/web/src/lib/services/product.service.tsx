@@ -60,6 +60,7 @@ const PRODUCT_QUERY = `
         }
         decor_color {
           name
+          image { url }
         }
         decor_glass {
           name
@@ -87,7 +88,8 @@ type ProductGraphQLItem = {
   size_notes?: SizeNote[] | null;
   brand?: { name: string; size_rules?: SizeRule[] | null } | null;
   product_variations: Array<
-    Omit<ProductVariation, "image" | "price" | "addons"> & {
+    Omit<ProductVariation, "image" | "price" | "addons" | "decor_color"> & {
+      decor_color?: { name: string; image?: { url?: string | null } | null } | null;
       addons?: RawAddon[] | null;
       price: string | number;
       image?: { url?: string | null } | null;
@@ -157,8 +159,12 @@ export const getProductBySlug = cache(async (slug: string): Promise<ProductRetur
     // Product rules override the brand's (see sizing.ts).
     sizeRules: product.size_rules?.length ? product.size_rules : product.brand?.size_rules ?? [],
     sizeNotes: product.size_notes ?? [],
-    variations: variations.filter((variation) => variation.active !== false).map(({ image, price, addons, ...variation }) => ({
+    variations: variations.filter((variation) => variation.active !== false).map(({ image, price, addons, decor_color, ...variation }) => ({
       ...variation,
+      decor_color: decor_color ? {
+        name: decor_color.name,
+        image: decor_color.image?.url ? `${process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337"}${decor_color.image.url}` : null,
+      } : null,
       addons: (addons ?? []).map(normalizeAddon),
       price: Number(price) || 0,
       image: image?.url

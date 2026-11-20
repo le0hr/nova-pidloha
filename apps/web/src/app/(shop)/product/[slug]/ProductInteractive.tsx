@@ -84,6 +84,10 @@ export default function DynamicField({ product }: { product: ProductReturnData }
   // One gallery photo per look; another edge/size/side keeps the photo of the same colour.
   const gallery = galleryLooks(variations, selectedVariation);
   const options = useMemo(() => buildOptions(variations, selection), [variations, selection]);
+  // Swatch photo of every colour of the chosen decor.
+  const swatches = useMemo(() => Object.fromEntries(variations
+    .filter((variation) => (variation.decor?.name ?? "") === selection.decor && variation.decor_color?.image)
+    .map((variation) => [variation.decor_color!.name, variation.decor_color!.image!])), [variations, selection.decor]);
   const productName = product.name;
   const additionalCount = visibleExtraFields(variations, selectedVariation).length;
   const hasExtraAttributes = additionalCount > 0;
@@ -196,7 +200,7 @@ export default function DynamicField({ product }: { product: ProductReturnData }
       <div className="min-w-0 w-full flex flex-col animate-slide-right" style={{ animationDelay: "0.20s" }}>
         {isMizhkimnatni && (
           <div className="flex flex-col gap-6">
-            <VariationSelector value={selection} onChange={updateSelection} options={options}
+            <VariationSelector value={selection} onChange={updateSelection} options={options} swatches={swatches}
               additionalCount={additionalCount} sizes={sizes} colorNote={colorNote}
               beforeDimensions={hasExtraAttributes ? (
                 <TableVariationSelector variations={variations} selected={selectedVariation} onSelect={selectVariation}
@@ -211,6 +215,7 @@ export default function DynamicField({ product }: { product: ProductReturnData }
             variations={variations}
             value={selection}
             options={options}
+            swatches={swatches}
             onChange={updateSelection}
             qtyM2={floorQtyM2}
             onQtyChange={setFloorQtyM2}
@@ -219,8 +224,6 @@ export default function DynamicField({ product }: { product: ProductReturnData }
             packArea={PACK_AREA}
             stockM2={STOCK_M2}
             pricePerM2={PRICE_PER_M2}
-            oldPricePerM2={0}
-            discount={0}
             byPack={floorPackArea !== null}
             boardSize={boardSize(selectedVariation)}
             totalPrice={totalPrice}
@@ -235,7 +238,6 @@ export default function DynamicField({ product }: { product: ProductReturnData }
           <AddToCartButton
             variation={{ ...pricedVariation, image: lookImage(variations, selectedVariation) }}
             productName={productName}
-            oldPriceSeed={product.slug}
             addons={chosenAddons}
             size={cartSize}
             pack={isFloor ? { area: floorPackArea, qty: packsApprox } : undefined}

@@ -15,7 +15,7 @@
  * Bump ROLE_VERSION after changing the rules below or adding fields to these content types.
  */
 const ROLE_CODE = 'nova-manager';
-const ROLE_VERSION = 3;
+const ROLE_VERSION = 4;
 /** Importer keys: visible, never editable (editing one would make the next import create a duplicate). */
 const READ_ONLY = ['external_id'];
 

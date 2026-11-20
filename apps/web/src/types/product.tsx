@@ -10,13 +10,13 @@ export interface ProductAddon {
 export interface ProductVariation {
   addons?: ProductAddon[];
   active?: boolean;
-  oldPrice?: number;
   catalog_attributes?: Record<string, string | number | boolean> | null;
   attribute_definitions?: { key: string; display_name: string }[] | null;
   name: string;
   slug: string;
   decor: { name: string } | null;
-  decor_color: { name: string } | null;
+  /** `image`: swatch photo of the colour (a crop of the decor), absolute URL. */
+  decor_color: { name: string; image?: string | null } | null;
   decor_glass: { name: string } | null;
   price: number;
   image: string;

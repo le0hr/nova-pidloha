@@ -11,6 +11,8 @@ interface FloorConfiguratorProps {
     decor_color: string[];
     decor_glass: string[];
   };
+  /** Colour name → swatch photo. */
+  swatches?: Record<string, string>;
   value: VariationState;
   onChange: (value: Partial<VariationState>) => void;
   qtyM2: number;
@@ -20,8 +22,6 @@ interface FloorConfiguratorProps {
   packArea: number;
   stockM2: number;
   pricePerM2: number;
-  oldPricePerM2: number;
-  discount: number;
   totalPrice: number;
   packsApprox: number;
   /** False for items sold by piece/roll (no pack area): only a piece counter is shown. */
@@ -32,6 +32,7 @@ interface FloorConfiguratorProps {
 export default function FloorConfigurator({
   value,
   options,
+  swatches,
   onChange,
   qtyM2,
   onQtyChange,
@@ -40,8 +41,6 @@ export default function FloorConfigurator({
   packArea,
   stockM2,
   pricePerM2,
-  oldPricePerM2,
-  discount,
   totalPrice,
   packsApprox,
   byPack = true,
@@ -69,6 +68,7 @@ export default function FloorConfigurator({
       <div className="flex flex-col gap-3">
         <ColorSelector
           decor_colors={options.decor_color}
+          images={swatches}
           value={value}
           setValue={setValue}
           step={1}
