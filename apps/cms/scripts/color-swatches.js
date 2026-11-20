@@ -18,6 +18,10 @@
  *   --skip=FILE   colours that must get no swatch: external_id or documentId per line, # comments
  *                 (default scripts/color-swatches.skip.txt — crops that showed a logo, joints or the wrong part)
  *   --force       also replace existing swatches
+ *   --relaxed     second pass for colours still without a swatch: smaller door crops, the floor part of interior
+ *                 photos, and for skip-listed colours another photo than the rejected one. Review the preview!
+ *   --import=DIR  upload DIR/<external_id>.webp (reviewed crops, e.g. DIR = <preview>/swatches) and link them
+ *   --export=DIR  write every colour's swatch to DIR/<external_id>.webp (to move reviewed swatches to a server)
  */
 const fs = require('node:fs');
 const os = require('node:os');
@@ -29,6 +33,9 @@ const arg = (name) => process.argv.find((a) => a.startsWith(`--${name}=`))?.spli
 const APPLY = process.argv.includes('--apply');
 const FORCE = process.argv.includes('--force');
 const PREVIEW = arg('preview');
+const RELAXED = process.argv.includes('--relaxed');
+const IMPORT = arg('import');
+const EXPORT = arg('export');
 const SKIP_FILE = arg('skip') ?? path.join(__dirname, 'color-swatches.skip.txt');
 const SKIP = new Set(fs.existsSync(SKIP_FILE) ? fs.readFileSync(SKIP_FILE, 'utf8').split('\n').map((l) => l.replace(/#.*/, '').trim()).filter(Boolean) : []);
 const SWATCH_SIZE = 480;
@@ -65,7 +72,7 @@ const FLOOR_C = 26; // floor: farther than this from the floor colour is a forei
  * Returns { crop: {left, top, width, height}, rel } in source pixels, rel = swatch side / door width (doors) or
  * / short photo side (floors); or { kind } explaining why the photo gives no swatch.
  */
-async function analyse(input, { floor = false, edge = false } = {}) {
+async function analyse(input, { floor = false, edge = false, relaxed = false } = {}) {
   const meta = await sharp(input).metadata();
   const scale = Math.min(1, 320 / Math.max(meta.width, meta.height));
   const w = Math.max(1, Math.round(meta.width * scale)), h = Math.max(1, Math.round(meta.height * scale));
@@ -90,7 +97,7 @@ async function analyse(input, { floor = false, edge = false } = {}) {
     const ok = new Uint8Array(w * h);
     for (let i = 0; i < w * h; i++) ok[i] = dE(L[i], med) < FLOOR_C ? 1 : 0;
     const foreign = 1 - ok.reduce((a, b) => a + b, 0) / (w * h);
-    if (foreign > 0.03) return { kind: 'interior' };
+    if (foreign > 0.03) return relaxed ? floorOfInterior() : { kind: 'interior' };
     const grown = ok.slice(); // an object's soft edge is not floor either
     for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (!ok[y * w + x])
       for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) {
@@ -99,7 +106,24 @@ async function analyse(input, { floor = false, edge = false } = {}) {
       }
     const square = largestSquare(grown, w, h);
     const rel = square.side / Math.min(w, h);
-    return rel < 0.75 ? { kind: 'interior' } : { kind: 'scan', rel, crop: toCrop(square) };
+    if (rel >= 0.75) return { kind: 'scan', rel, crop: toCrop(square) };
+    return relaxed ? floorOfInterior() : { kind: 'interior' };
+  }
+
+  /** Relaxed: the floor of an interior photo — its colour from the lower part, the largest square of it there. */
+  function floorOfInterior() {
+    const from = Math.floor(h * 0.45), lower = L.slice(from * w);
+    const med = [0, 1, 2].map((c) => median(lower.map((v) => v[c])));
+    const ok = new Uint8Array(w * h);
+    for (let i = from * w; i < w * h; i++) ok[i] = dE(L[i], med) < FLOOR_C * 0.7 ? 1 : 0;
+    const grown = ok.slice();
+    for (let y = from; y < h; y++) for (let x = 0; x < w; x++) if (!ok[y * w + x])
+      for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) {
+        const yy = y + dy, xx = x + dx;
+        if (yy >= 0 && yy < h && xx >= 0 && xx < w) grown[yy * w + xx] = 0;
+      }
+    const square = largestSquare(grown, w, h);
+    return { kind: 'interior-floor', rel: square.side / Math.min(w, h), crop: toCrop(square, 0.03) };
   }
 
   // Background: a light flat photo border, flood-filled from the top and the sides (a door photo is often cut at the
@@ -181,19 +205,25 @@ async function analyse(input, { floor = false, edge = false } = {}) {
 }
 
 /** Best swatch of a colour from its variation photos, or null. */
-async function swatchFor(color, readFile) {
+async function swatchFor(color, readFile, relaxed = false) {
   const floor = color.category.startsWith('pidloha');
   const edge = !floor && !/vhidni/.test(color.category);
   const solid = (im) => !im.glass || (/^глухе/i.test(im.glass) && !/\+|сатин|скло|дзеркал/i.test(im.glass));
-  let best = null;
-  for (const im of [...color.images.filter(solid), ...color.images.filter((im) => !solid(im))]) {
+  const strictOk = (r) => r.crop.width >= 60 && r.rel >= (floor ? 0.75 : 0.15) && r.kind !== 'interior-floor';
+  const relaxedOk = (r) => r.crop.width >= 40 && r.rel >= (floor ? 0.3 : 0.07);
+  const candidates = [];
+  for (const im of color.images) {
     const input = await readFile(im.url).catch(() => null);
     if (!input) continue;
-    const result = await analyse(input, { floor, edge }).catch(() => null);
-    if (!result?.crop || result.crop.width < 60 || result.rel < (floor ? 0.75 : 0.15)) continue;
-    const score = result.rel + (solid(im) ? 10 : 0); // a solid door beats any glazed one
-    if (!best || score > best.score) best = { ...result, input, url: im.url, score };
+    const result = await analyse(input, { floor, edge, relaxed }).catch(() => null);
+    if (!result?.crop || !(strictOk(result) || (relaxed && relaxedOk(result)))) continue;
+    // A solid door beats any glazed one; a strict crop beats a relaxed one.
+    candidates.push({ ...result, input, url: im.url, strict: strictOk(result), score: result.rel + (solid(im) ? 10 : 0) + (strictOk(result) ? 100 : 0) });
   }
+  candidates.sort((a, b) => b.score - a.score);
+  // A skip-listed colour: its best strict crop was rejected on review, so never that photo again.
+  const rejected = color.skipped ? candidates.find((c) => c.strict)?.url : null;
+  const best = candidates.find((c) => c.url !== rejected);
   if (!best) return null;
   const buffer = await sharp(best.input).extract(best.crop)
     .resize(SWATCH_SIZE, SWATCH_SIZE, { fit: 'cover', withoutEnlargement: true }).webp({ quality: 82 }).toBuffer();
@@ -226,14 +256,17 @@ async function main(strapi) {
 
   const todo = [];
   for (const color of colors) {
-    if (SKIP.has(color.documentId) || SKIP.has(color.external_id) || (color.image && !FORCE)) continue;
+    const skipped = SKIP.has(color.documentId) || SKIP.has(color.external_id);
+    if ((skipped && !RELAXED) || (color.image && !FORCE)) continue;
     const variations = (color.product_variations ?? []).filter((v) => v.active !== false && v.image?.url);
     const category = variations.flatMap((v) => v.products ?? []).map((p) => p.category?.slug).find(Boolean) ?? '';
     if (!variations.length || category.startsWith('furnitura')) continue;
     const images = [];
     for (const v of variations) if (!images.some((im) => im.url === v.image.url)) images.push({ url: v.image.url, glass: v.decor_glass?.name ?? null });
-    todo.push({ documentId: color.documentId, name: color.name, category, images });
+    todo.push({ documentId: color.documentId, externalId: color.external_id, name: color.name, category, images, skipped });
   }
+  if (EXPORT) return exportSwatches(strapi, colors);
+  if (IMPORT) return importSwatches(strapi, colors);
   console.log(`${colors.length} colours, ${colors.filter((c) => c.image).length} with a swatch, ${todo.length} to try.`);
 
   const publicDir = strapi.dirs.static.public;
@@ -243,7 +276,7 @@ async function main(strapi) {
 
   const results = [];
   for (const [n, color] of todo.entries()) {
-    const swatch = await swatchFor(color, readFile);
+    const swatch = await swatchFor(color, readFile, RELAXED);
     results.push({ color, swatch });
     if ((n + 1) % 50 === 0) console.log(`  ${n + 1}/${todo.length}`);
   }
@@ -253,23 +286,54 @@ async function main(strapi) {
   if (PREVIEW) await preview(PREVIEW, results);
   if (!APPLY) { console.log('Plan only. Add --apply to upload and link.'); return; }
 
-  const upload = strapi.plugin('upload').service('upload');
+  for (const { color, swatch } of found) await link(strapi, color, swatch.buffer);
+  console.log(`Linked ${found.length} swatches.`);
+}
+
+/** Upload one swatch and make it the colour's image (draft and published). */
+async function link(strapi, color, buffer) {
+  const COLOR = 'api::decor-color.decor-color';
+  const name = `swatch-${color.externalId ?? color.documentId}.webp`;
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'swatch-'));
-  let done = 0;
-  for (const { color, swatch } of found) {
-    const name = `swatch-${color.documentId}.webp`;
-    const filepath = path.join(tmp, name);
-    fs.writeFileSync(filepath, swatch.buffer);
-    const [file] = await upload.upload({
+  const filepath = path.join(tmp, name);
+  fs.writeFileSync(filepath, buffer);
+  try {
+    const [file] = await strapi.plugin('upload').service('upload').upload({
       data: { fileInfo: { name, alternativeText: color.name, caption: `Swatch: ${color.name}` } },
-      files: { filepath, originalFilename: name, mimetype: 'image/webp', size: swatch.buffer.length },
+      files: { filepath, originalFilename: name, mimetype: 'image/webp', size: buffer.length },
     });
     await strapi.documents(COLOR).update({ documentId: color.documentId, data: { image: file.id } });
     await strapi.documents(COLOR).publish({ documentId: color.documentId });
+  } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
+}
+
+/** DIR/<external_id>.webp → the colour with that external_id (or documentId); colours with a swatch only with --force. */
+async function importSwatches(strapi, colors) {
+  const byKey = new Map(colors.flatMap((c) => [[c.external_id, c], [c.documentId, c]]).filter(([k]) => k));
+  let done = 0, missing = 0, kept = 0;
+  for (const file of fs.readdirSync(IMPORT).filter((f) => f.endsWith('.webp'))) {
+    const color = byKey.get(file.replace(/\.webp$/, ''));
+    if (!color) { missing += 1; continue; }
+    if (color.image && !FORCE) { kept += 1; continue; }
+    await link(strapi, { documentId: color.documentId, externalId: color.external_id, name: color.name }, fs.readFileSync(path.join(IMPORT, file)));
     done += 1;
   }
-  fs.rmSync(tmp, { recursive: true, force: true });
-  console.log(`Linked ${done} swatches.`);
+  console.log(`Imported ${done}; already had a swatch ${kept}; no such colour ${missing}.`);
+}
+
+/** Every colour's current swatch → DIR/<external_id>.webp. */
+async function exportSwatches(strapi, colors) {
+  fs.mkdirSync(EXPORT, { recursive: true });
+  const publicDir = strapi.dirs.static.public;
+  let done = 0;
+  for (const color of colors) {
+    if (!color.image?.url || !color.external_id) continue;
+    const url = color.image.url;
+    const buffer = /^https?:/.test(url) ? Buffer.from(await (await fetch(url)).arrayBuffer()) : fs.readFileSync(path.join(publicDir, url));
+    fs.writeFileSync(path.join(EXPORT, `${color.external_id}.webp`), buffer);
+    done += 1;
+  }
+  console.log(`Exported ${done} swatches to ${EXPORT}.`);
 }
 
 /** DIR/swatches/<documentId>.webp, DIR/sheet-N.jpg (crop + name, red = no swatch), DIR/plan.json. */
@@ -292,9 +356,9 @@ async function preview(dir, results) {
     await sharp({ create: { width: cols * (T + 4), height: rows * (T + label + 4), channels: 3, background: '#666' } })
       .composite(tiles).jpeg({ quality: 80 }).toFile(path.join(dir, `sheet-${sheet + 1}.jpg`));
   }
-  for (const { color, swatch } of results) if (swatch) fs.writeFileSync(path.join(dir, 'swatches', `${color.documentId}.webp`), swatch.buffer);
+  for (const { color, swatch } of results) if (swatch) fs.writeFileSync(path.join(dir, 'swatches', `${color.externalId ?? color.documentId}.webp`), swatch.buffer);
   fs.writeFileSync(path.join(dir, 'plan.json'), JSON.stringify(ordered.map(({ color, swatch }, index) => ({
-    index, documentId: color.documentId, name: color.name, category: color.category, source: swatch?.source ?? null, crop: swatch?.crop ?? null,
+    index, documentId: color.documentId, externalId: color.externalId, kind: swatch?.kind ?? null, name: color.name, category: color.category, source: swatch?.source ?? null, crop: swatch?.crop ?? null,
   })), null, 1));
   console.log(`Preview: ${dir}`);
 }
