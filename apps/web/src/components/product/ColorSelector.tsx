@@ -28,7 +28,7 @@ export default function ColorSelector({
                   step={`${step}/${total}`}
                   note={note}
                 />
-                <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+                <div className="grid grid-cols-4 gap-1.5 min-[430px]:grid-cols-5 sm:grid-cols-6 sm:gap-2">
                   {decor_colors.map((color) => {
                     const active = value.decor_color === color;
                     return (
@@ -36,7 +36,7 @@ export default function ColorSelector({
                         key={color}
                         type="button"
                         onClick={() => setValue({ decor_color: color })}
-                        className="flex flex-col gap-1.5 items-center group"
+                        className="flex min-w-0 flex-col gap-1 items-center group sm:gap-1.5"
                       >
                         <div
                           suppressHydrationWarning className={`${images[color] ? "img-shell " : ""}relative w-full aspect-square overflow-hidden bg-[#f0f0f0] transition-all ${
@@ -57,7 +57,7 @@ export default function ColorSelector({
                           )}
                         </div>
                         <span
-                          className={`w-full text-center font-['Outfit',sans-serif] product-option-btn truncate ${
+                          className={`w-full text-center font-['Outfit',sans-serif] text-[11px] leading-tight sm:text-[13px] product-option-btn truncate ${
                             active ? "font-semibold text-[#1a1a1a]" : "text-[#555]"
                           }`}
                         >
