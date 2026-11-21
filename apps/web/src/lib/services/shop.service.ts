@@ -6,7 +6,7 @@ export async function getShopLocations(): Promise<ShopLocation[]> {
     const data = await graphqlFetch<{ global: { shopLocations: unknown } | null }>(`
       query ShopLocations {
         global(status: PUBLISHED) {
-          shopLocations { name address lat lng placeId phone hours image { url } }
+          shopLocations { name address description lat lng placeId phone hours image { url } }
         }
       }`, undefined, { cache: "no-store" });
     return normalizeShopLocations(data.global?.shopLocations).map(shop => ({

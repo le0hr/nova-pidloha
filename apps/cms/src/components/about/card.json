@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_about_cards",
+  "info": { "displayName": "Картка з фото й посиланням", "description": "Порожнє фото — стандартне фото сайту" },
+  "options": {},
+  "attributes": {
+    "title": { "type": "string", "required": true },
+    "text": { "type": "text" },
+    "image": { "type": "media", "multiple": false, "allowedTypes": ["images"] },
+    "imageAlt": { "type": "string" },
+    "linkLabel": { "type": "string" },
+    "url": { "type": "string" }
+  }
+}

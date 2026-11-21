@@ -443,11 +443,64 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiAboutPageAboutPage extends Struct.SingleTypeSchema {
+  collectionName: 'about_pages';
+  info: {
+    description: '\u0422\u0435\u043A\u0441\u0442\u0438 \u0439 \u0444\u043E\u0442\u043E \u0441\u0442\u043E\u0440\u0456\u043D\u043A\u0438 /about. \u041F\u043E\u0440\u043E\u0436\u043D\u0454 \u043F\u043E\u043B\u0435 \u2014 \u0441\u0442\u0430\u043D\u0434\u0430\u0440\u0442\u043D\u0438\u0439 \u0442\u0435\u043A\u0441\u0442 \u0441\u0430\u0439\u0442\u0443. \u0423 \u0437\u0430\u0433\u043E\u043B\u043E\u0432\u043A\u0430\u0445: \u043D\u043E\u0432\u0438\u0439 \u0440\u044F\u0434\u043E\u043A \u2014 \u043F\u0435\u0440\u0435\u043D\u043E\u0441, *\u0441\u043B\u043E\u0432\u043E* \u2014 \u0447\u0435\u0440\u0432\u043E\u043D\u0438\u043C. \u0423 \u0434\u043E\u0432\u0433\u0438\u0445 \u0442\u0435\u043A\u0441\u0442\u0430\u0445 \u0430\u0431\u0437\u0430\u0446\u0438 \u0440\u043E\u0437\u0434\u0456\u043B\u044F\u0439\u0442\u0435 \u043F\u043E\u0440\u043E\u0436\u043D\u0456\u043C \u0440\u044F\u0434\u043A\u043E\u043C. \u041C\u0430\u0433\u0430\u0437\u0438\u043D\u0438 \u2014 \u0443 Global \u2192 shopLocations.';
+    displayName: '\u0421\u0442\u043E\u0440\u0456\u043D\u043A\u0430 \u00AB\u041F\u0440\u043E \u043D\u0430\u0441\u00BB';
+    pluralName: 'about-pages';
+    singularName: 'about-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    approachEyebrow: Schema.Attribute.String;
+    approachLead: Schema.Attribute.Text;
+    approachLink: Schema.Attribute.String;
+    approachText: Schema.Attribute.Text;
+    approachTitle: Schema.Attribute.Text;
+    closingButton: Schema.Attribute.String;
+    closingEyebrow: Schema.Attribute.String;
+    closingTitle: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    heroEyebrow: Schema.Attribute.String;
+    heroImage: Schema.Attribute.Media<'images'>;
+    heroImageAlt: Schema.Attribute.String;
+    heroNote: Schema.Attribute.Text;
+    heroText: Schema.Attribute.Text;
+    heroTitle: Schema.Attribute.Text;
+    highlights: Schema.Attribute.Component<'about.highlight', true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::about-page.about-page'
+    > &
+      Schema.Attribute.Private;
+    materials: Schema.Attribute.Component<'about.card', true>;
+    materialsEyebrow: Schema.Attribute.String;
+    materialsText: Schema.Attribute.Text;
+    materialsTitle: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    steps: Schema.Attribute.Component<'about.step', true>;
+    stepsButton: Schema.Attribute.String;
+    stepsEyebrow: Schema.Attribute.String;
+    stepsText: Schema.Attribute.Text;
+    stepsTitle: Schema.Attribute.Text;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiArchitraveTypeArchitraveType
   extends Struct.CollectionTypeSchema {
   collectionName: 'architrave_types';
   info: {
-    displayName: 'Extra';
+    displayName: '\u041A\u043E\u043C\u043F\u043B\u0435\u043A\u0442\u0430\u0446\u0456\u044F';
     pluralName: 'architrave-types';
     singularName: 'architrave-type';
   };
@@ -483,7 +536,7 @@ export interface ApiArchitraveTypeArchitraveType
 export interface ApiBrandBrand extends Struct.CollectionTypeSchema {
   collectionName: 'brands';
   info: {
-    displayName: 'Brand';
+    displayName: '\u0411\u0440\u0435\u043D\u0434';
     pluralName: 'brands';
     singularName: 'brand';
   };
@@ -512,7 +565,7 @@ export interface ApiBrandBrand extends Struct.CollectionTypeSchema {
 export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   collectionName: 'categories';
   info: {
-    displayName: 'Category';
+    displayName: '\u041A\u0430\u0442\u0435\u0433\u043E\u0440\u0456\u044F';
     pluralName: 'categories';
     singularName: 'category';
   };
@@ -553,7 +606,7 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
 export interface ApiDecorColorDecorColor extends Struct.CollectionTypeSchema {
   collectionName: 'decor_colors';
   info: {
-    displayName: 'DecorColor';
+    displayName: '\u041A\u043E\u043B\u0456\u0440';
     pluralName: 'decor-colors';
     singularName: 'decor-color';
   };
@@ -588,7 +641,7 @@ export interface ApiDecorColorDecorColor extends Struct.CollectionTypeSchema {
 export interface ApiDecorGlassDecorGlass extends Struct.CollectionTypeSchema {
   collectionName: 'decor_glasses';
   info: {
-    displayName: 'DecorGlass';
+    displayName: '\u0421\u043A\u043B\u043E';
     pluralName: 'decor-glasses';
     singularName: 'decor-glass';
   };
@@ -621,7 +674,7 @@ export interface ApiDecorGlassDecorGlass extends Struct.CollectionTypeSchema {
 export interface ApiDecorDecor extends Struct.CollectionTypeSchema {
   collectionName: 'decors';
   info: {
-    displayName: 'Decor';
+    displayName: '\u0414\u0435\u043A\u043E\u0440 / \u043A\u043E\u043B\u0435\u043A\u0446\u0456\u044F';
     pluralName: 'decors';
     singularName: 'decor';
   };
@@ -655,7 +708,7 @@ export interface ApiDecorDecor extends Struct.CollectionTypeSchema {
 export interface ApiFilterCodeFilterCode extends Struct.CollectionTypeSchema {
   collectionName: 'filter_codes';
   info: {
-    displayName: 'FilterValue';
+    displayName: '\u0417\u043D\u0430\u0447\u0435\u043D\u043D\u044F \u0444\u0456\u043B\u044C\u0442\u0440\u0430';
     pluralName: 'filter-codes';
     singularName: 'filter-code';
   };
@@ -690,7 +743,7 @@ export interface ApiFilterCodeFilterCode extends Struct.CollectionTypeSchema {
 export interface ApiFilterGroupFilterGroup extends Struct.CollectionTypeSchema {
   collectionName: 'filter_groups';
   info: {
-    displayName: 'FilterGroup';
+    displayName: '\u0413\u0440\u0443\u043F\u0430 \u0444\u0456\u043B\u044C\u0442\u0440\u0456\u0432';
     pluralName: 'filter-groups';
     singularName: 'filter-group';
   };
@@ -729,7 +782,7 @@ export interface ApiFilterGroupFilterGroup extends Struct.CollectionTypeSchema {
 export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
   collectionName: 'globals';
   info: {
-    displayName: 'Global';
+    displayName: '\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F \u0441\u0430\u0439\u0442\u0443';
     pluralName: 'globals';
     singularName: 'global';
   };
@@ -856,7 +909,7 @@ export interface ApiPaymentAttemptPaymentAttempt
   extends Struct.CollectionTypeSchema {
   collectionName: 'payment_attempts';
   info: {
-    displayName: '\u041F\u043B\u0430\u0442\u0456\u0436\u043D\u0456 \u0441\u043F\u0440\u043E\u0431\u0438';
+    displayName: '\u041F\u043B\u0430\u0442\u0456\u0436\u043D\u0430 \u0441\u043F\u0440\u043E\u0431\u0430';
     pluralName: 'payment-attempts';
     singularName: 'payment-attempt';
   };
@@ -910,7 +963,7 @@ export interface ApiProductVariationProductVariation
   extends Struct.CollectionTypeSchema {
   collectionName: 'product_variations';
   info: {
-    displayName: 'ProductVariation';
+    displayName: '\u0412\u0430\u0440\u0456\u0430\u0446\u0456\u044F \u0442\u043E\u0432\u0430\u0440\u0443';
     pluralName: 'product-variations';
     singularName: 'product-variation';
   };
@@ -969,7 +1022,7 @@ export interface ApiProductVariationProductVariation
 export interface ApiProductProduct extends Struct.CollectionTypeSchema {
   collectionName: 'products';
   info: {
-    displayName: 'Product';
+    displayName: '\u0422\u043E\u0432\u0430\u0440';
     pluralName: 'products';
     singularName: 'product';
   };
@@ -1481,6 +1534,11 @@ export interface PluginUsersPermissionsUser
     draftAndPublish: false;
     timestamps: true;
   };
+  pluginOptions: {
+    'content-manager': {
+      visible: false;
+    };
+  };
   attributes: {
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
@@ -1534,6 +1592,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::about-page.about-page': ApiAboutPageAboutPage;
       'api::architrave-type.architrave-type': ApiArchitraveTypeArchitraveType;
       'api::brand.brand': ApiBrandBrand;
       'api::category.category': ApiCategoryCategory;

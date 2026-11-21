@@ -4,7 +4,7 @@
   "info": {
     "singularName": "decor-color",
     "pluralName": "decor-colors",
-    "displayName": "DecorColor"
+    "displayName": "Колір"
   },
   "options": {
     "draftAndPublish": true

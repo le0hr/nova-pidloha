@@ -5,7 +5,8 @@
  *   filter values — create and edit (a new product often needs a new colour or brand), never delete.
  *   Categories — only texts, photo, SEO and "on the home page" (not slug or parent: that would break site URLs).
  *   Filter groups — read only.
- * - Банери: Global → heroEnabled, heroSlides and the promo ticker only (not shops, phone or SEO of the home page).
+ * - Банери й магазини: Global → heroEnabled, heroSlides, the promo ticker and shopLocations (not phone, email or SEO of
+ *   the home page). Сторінка «Про нас»: everything.
  * - Замовлення: orders and payment attempts read only; the manager can edit only "Нотатки менеджера".
  * - Media library: browse, upload, edit, download (not delete). SEO plugin sidebar.
  * Importer keys (external_id) are read only. No settings, users, roles, content-type builder or API tokens.
@@ -15,7 +16,7 @@
  * Bump ROLE_VERSION after changing the rules below or adding fields to these content types.
  */
 const ROLE_CODE = 'nova-manager';
-const ROLE_VERSION = 4;
+const ROLE_VERSION = 6;
 /** Importer keys: visible, never editable (editing one would make the next import create a duplicate). */
 const READ_ONLY = ['external_id'];
 
@@ -30,7 +31,8 @@ const RULES: Rule[] = [
   { uid: 'api::filter-group.filter-group', actions: ['read'] },
   { uid: 'api::category.category', actions: ['read'] },
   { uid: 'api::category.category', actions: ['update', 'publish'], fields: ['description', 'image', 'isFeatured', 'seo'] },
-  { uid: 'api::global.global', actions: ['read', 'update', 'publish'], fields: ['heroEnabled', 'heroSlides', 'promoTicker'] },
+  { uid: 'api::global.global', actions: ['read', 'update', 'publish'], fields: ['heroEnabled', 'heroSlides', 'promoTicker', 'shopLocations'] },
+  { uid: 'api::about-page.about-page', actions: ['read', 'update', 'publish'] },
   { uid: 'api::order.order', actions: ['read'] },
   { uid: 'api::order.order', actions: ['update'], fields: ['managerNotes'] },
   { uid: 'api::payment-attempt.payment-attempt', actions: ['read'] },

@@ -14,6 +14,7 @@ export default function Stores({ shops = SHOP_LOCATIONS }: { shops?: ShopLocatio
           <div className="relative min-h-[220px] w-full shrink-0 sm:w-[32%] lg:w-full xl:w-[32%]"><Image src={store.image ?? `/images/home/${index % 2 ? "store-southwest" : "store-center"}.png`} unoptimized={store.image?.startsWith("http")} alt={`Виставковий зал: ${store.name}`} fill sizes="(min-width: 1280px) 16vw, (min-width: 1024px) 48vw, 32vw" className="object-cover" /></div>
           <div className="flex min-w-0 flex-1 flex-col gap-4 p-6">
             <h3 className="text-lg font-bold leading-snug">{store.name}</h3>
+            {store.description && <p className="whitespace-pre-line text-sm leading-relaxed text-[#666]">{store.description}</p>}
             <address className="flex flex-col gap-3 text-sm not-italic">
               <p className="flex items-start gap-2"><HomeIcon name="map-pin" size={16} /><span>{store.address ?? "Черкаси — точне розташування на карті"}</span></p>
               {store.phone && <a href={`tel:${store.phone.replace(/[^+\d]/g, "")}`} className="flex items-center gap-2 font-semibold hover:text-[#e53935]"><HomeIcon name="phone" size={16} />{store.phone}</a>}

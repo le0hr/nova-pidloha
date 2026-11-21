@@ -1,9 +1,62 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface AboutCard extends Struct.ComponentSchema {
+  collectionName: 'components_about_cards';
+  info: {
+    description: '\u041F\u043E\u0440\u043E\u0436\u043D\u0454 \u0444\u043E\u0442\u043E \u2014 \u0441\u0442\u0430\u043D\u0434\u0430\u0440\u0442\u043D\u0435 \u0444\u043E\u0442\u043E \u0441\u0430\u0439\u0442\u0443';
+    displayName: '\u041A\u0430\u0440\u0442\u043A\u0430 \u0437 \u0444\u043E\u0442\u043E \u0439 \u043F\u043E\u0441\u0438\u043B\u0430\u043D\u043D\u044F\u043C';
+  };
+  attributes: {
+    image: Schema.Attribute.Media<'images'>;
+    imageAlt: Schema.Attribute.String;
+    linkLabel: Schema.Attribute.String;
+    text: Schema.Attribute.Text;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    url: Schema.Attribute.String;
+  };
+}
+
+export interface AboutHighlight extends Struct.ComponentSchema {
+  collectionName: 'components_about_highlights';
+  info: {
+    description: '\u0420\u044F\u0434\u043E\u043A \u043F\u0456\u0434 \u0433\u043E\u043B\u043E\u0432\u043D\u0438\u043C \u0444\u043E\u0442\u043E \u0441\u0442\u043E\u0440\u0456\u043D\u043A\u0438 \u00AB\u041F\u0440\u043E \u043D\u0430\u0441\u00BB';
+    displayName: '\u041F\u0435\u0440\u0435\u0432\u0430\u0433\u0430 (\u0456\u043A\u043E\u043D\u043A\u0430 \u0439 \u0442\u0435\u043A\u0441\u0442)';
+  };
+  attributes: {
+    icon: Schema.Attribute.Enumeration<
+      [
+        'store',
+        'badge-check',
+        'settings',
+        'truck',
+        'calculator',
+        'clock',
+        'map-pin',
+        'phone',
+      ]
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'store'>;
+    text: Schema.Attribute.String;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface AboutStep extends Struct.ComponentSchema {
+  collectionName: 'components_about_steps';
+  info: {
+    displayName: '\u041A\u0440\u043E\u043A';
+  };
+  attributes: {
+    text: Schema.Attribute.Text;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface CatalogCharacteristic extends Struct.ComponentSchema {
   collectionName: 'components_catalog_characteristics';
   info: {
-    displayName: 'Characteristic';
+    displayName: '\u0425\u0430\u0440\u0430\u043A\u0442\u0435\u0440\u0438\u0441\u0442\u0438\u043A\u0430';
   };
   attributes: {
     name: Schema.Attribute.String & Schema.Attribute.Required;
@@ -59,7 +112,7 @@ export interface HomeHeroSlide extends Struct.ComponentSchema {
   collectionName: 'components_home_hero_slides';
   info: {
     description: 'Additional rich hero banners. Reorder these slides; the permanent shop map always stays first. Kind "image": only the picture (no overlay or text), the whole banner links to buttonUrl; title is used as the image description.';
-    displayName: 'Hero slide';
+    displayName: '\u0421\u043B\u0430\u0439\u0434 \u0431\u0430\u043D\u0435\u0440\u0430';
   };
   attributes: {
     alignment: Schema.Attribute.Enumeration<['left', 'center', 'right']> &
@@ -118,7 +171,7 @@ export interface HomePromoTicker extends Struct.ComponentSchema {
 export interface SharedOpenGraph extends Struct.ComponentSchema {
   collectionName: 'components_shared_open_graphs';
   info: {
-    displayName: 'openGraph';
+    displayName: '\u0421\u043E\u0446\u043C\u0435\u0440\u0435\u0436\u0456 (Open Graph)';
     icon: 'project-diagram';
   };
   attributes: {
@@ -140,7 +193,7 @@ export interface SharedSeo extends Struct.ComponentSchema {
   collectionName: 'components_shared_seos';
   info: {
     description: '\u0420\u0443\u0447\u043D\u0456 SEO-\u043F\u0440\u0430\u0432\u043A\u0438. \u041F\u043E\u0440\u043E\u0436\u043D\u0456 \u043F\u043E\u043B\u044F \u0441\u0430\u0439\u0442 \u0437\u0430\u043F\u043E\u0432\u043D\u044E\u0454 \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u043D\u043E \u0437 \u043D\u0430\u0437\u0432\u0438, \u0446\u0456\u043D\u0438 \u0439 \u0445\u0430\u0440\u0430\u043A\u0442\u0435\u0440\u0438\u0441\u0442\u0438\u043A.';
-    displayName: 'seo';
+    displayName: 'SEO';
     icon: 'search';
   };
   attributes: {
@@ -165,10 +218,12 @@ export interface SharedSeo extends Struct.ComponentSchema {
 export interface ShopsLocation extends Struct.ComponentSchema {
   collectionName: 'components_shops_locations';
   info: {
-    displayName: '\u041C\u0430\u0433\u0430\u0437\u0438\u043D \u043D\u0430 \u043A\u0430\u0440\u0442\u0456';
+    description: '\u041F\u043E\u043A\u0430\u0437\u0443\u0454\u0442\u044C\u0441\u044F \u043D\u0430 \u043A\u0430\u0440\u0442\u0456, \u0443 \u0441\u043F\u0438\u0441\u043A\u0443 \u043C\u0430\u0433\u0430\u0437\u0438\u043D\u0456\u0432 \u043D\u0430 \u0433\u043E\u043B\u043E\u0432\u043D\u0456\u0439 \u0456 \u0432 \u00AB\u041F\u0440\u043E \u043D\u0430\u0441\u00BB, \u0443 \u0441\u0430\u043C\u043E\u0432\u0438\u0432\u043E\u0437\u0456';
+    displayName: '\u041C\u0430\u0433\u0430\u0437\u0438\u043D';
   };
   attributes: {
     address: Schema.Attribute.String;
+    description: Schema.Attribute.Text;
     hours: Schema.Attribute.String;
     image: Schema.Attribute.Media<'images'>;
     lat: Schema.Attribute.Decimal &
@@ -198,6 +253,9 @@ export interface ShopsLocation extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export namespace Public {
     export interface ComponentSchemas {
+      'about.card': AboutCard;
+      'about.highlight': AboutHighlight;
+      'about.step': AboutStep;
       'catalog.characteristic': CatalogCharacteristic;
       'catalog.size-note': CatalogSizeNote;
       'catalog.size-rule': CatalogSizeRule;

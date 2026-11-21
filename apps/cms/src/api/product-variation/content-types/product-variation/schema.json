@@ -4,7 +4,7 @@
   "info": {
     "singularName": "product-variation",
     "pluralName": "product-variations",
-    "displayName": "ProductVariation"
+    "displayName": "Варіація товару"
   },
   "options": {
     "draftAndPublish": true

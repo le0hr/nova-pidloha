@@ -1,0 +1,9 @@
+{
+  "collectionName": "components_about_steps",
+  "info": { "displayName": "Крок" },
+  "options": {},
+  "attributes": {
+    "title": { "type": "string", "required": true },
+    "text": { "type": "text" }
+  }
+}

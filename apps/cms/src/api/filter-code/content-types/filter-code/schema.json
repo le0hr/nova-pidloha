@@ -4,7 +4,7 @@
   "info": {
     "singularName": "filter-code",
     "pluralName": "filter-codes",
-    "displayName": "FilterValue"
+    "displayName": "Значення фільтра"
   },
   "options": {
     "draftAndPublish": true

@@ -3,6 +3,7 @@ export type ShopLocation = {
   lat: number;
   lng: number;
   address?: string;
+  description?: string;
   placeId?: string;
   phone?: string;
   hours?: string;
@@ -48,7 +49,7 @@ export function normalizeShopLocations(rows: unknown): ShopLocation[] {
     if (!name || row.lat == null || row.lng == null || row.lat === '' || row.lng === '') return [];
     const lat = Number(row.lat), lng = Number(row.lng);
     if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) return [];
-    return [{ name, lat, lng, address: text(row.address), placeId: text(row.placeId),
+    return [{ name, lat, lng, address: text(row.address), description: text(row.description), placeId: text(row.placeId),
       phone: text(row.phone), hours: text(row.hours), image: text(row.image?.url) }];
   });
   return shops.length ? shops : SHOP_LOCATIONS;

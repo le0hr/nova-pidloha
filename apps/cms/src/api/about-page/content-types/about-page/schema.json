@@ -1,0 +1,39 @@
+{
+  "kind": "singleType",
+  "collectionName": "about_pages",
+  "info": {
+    "singularName": "about-page",
+    "pluralName": "about-pages",
+    "displayName": "Сторінка «Про нас»",
+    "description": "Тексти й фото сторінки /about. Порожнє поле — стандартний текст сайту. У заголовках: новий рядок — перенос, *слово* — червоним. У довгих текстах абзаци розділяйте порожнім рядком. Магазини — у Global → shopLocations."
+  },
+  "options": { "draftAndPublish": true },
+  "pluginOptions": {},
+  "attributes": {
+    "heroEyebrow": { "type": "string" },
+    "heroTitle": { "type": "text" },
+    "heroText": { "type": "text" },
+    "heroImage": { "type": "media", "multiple": false, "allowedTypes": ["images"] },
+    "heroImageAlt": { "type": "string" },
+    "heroNote": { "type": "text" },
+    "highlights": { "type": "component", "repeatable": true, "component": "about.highlight" },
+    "approachEyebrow": { "type": "string" },
+    "approachLead": { "type": "text" },
+    "approachTitle": { "type": "text" },
+    "approachText": { "type": "text" },
+    "approachLink": { "type": "string" },
+    "materialsEyebrow": { "type": "string" },
+    "materialsTitle": { "type": "string" },
+    "materialsText": { "type": "text" },
+    "materials": { "type": "component", "repeatable": true, "component": "about.card" },
+    "stepsEyebrow": { "type": "string" },
+    "stepsTitle": { "type": "text" },
+    "stepsText": { "type": "text" },
+    "steps": { "type": "component", "repeatable": true, "component": "about.step" },
+    "stepsButton": { "type": "string" },
+    "closingEyebrow": { "type": "string" },
+    "closingTitle": { "type": "string" },
+    "closingButton": { "type": "string" },
+    "seo": { "type": "component", "repeatable": false, "component": "shared.seo" }
+  }
+}

@@ -3,6 +3,8 @@ import { configureCheckoutAdmin } from './checkout/admin';
 import { cancelOrder, confirmOrder, reconcilePending, remindHolds } from './checkout/orders';
 import { startPolling } from './checkout/telegram';
 import { syncManagerRole } from './manager-role';
+import { seedAboutPage } from './about-page';
+import { applyAdminLabels } from './admin-labels';
 
 let stopTelegram = () => {};
 
@@ -20,6 +22,8 @@ export default {
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
     await configureCheckoutAdmin(strapi);
     await syncManagerRole(strapi);
+    await seedAboutPage(strapi);
+    await applyAdminLabels(strapi);
     // One-off maintenance scripts (STRAPI_SCRIPT=1, scripts/*.js) load Strapi next to the running CMS:
     // no second payment cron and no second Telegram poller (one bot token can be polled only once).
     const script = process.env.STRAPI_SCRIPT === '1';
@@ -41,7 +45,7 @@ export default {
     });
     if (!productRead) return;
 
-    for (const action of ['api::architrave-type.architrave-type.find', 'api::global.global.find']) {
+    for (const action of ['api::architrave-type.architrave-type.find', 'api::global.global.find', 'api::about-page.about-page.find']) {
       const existing = await permissions.findOne({ where: { role: role.id, action } });
       if (!existing) {
         await permissions.create({ data: { role: role.id, action } });

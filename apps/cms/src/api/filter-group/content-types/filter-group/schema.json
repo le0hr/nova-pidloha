@@ -4,7 +4,7 @@
   "info": {
     "singularName": "filter-group",
     "pluralName": "filter-groups",
-    "displayName": "FilterGroup"
+    "displayName": "Група фільтрів"
   },
   "options": {
     "draftAndPublish": true
