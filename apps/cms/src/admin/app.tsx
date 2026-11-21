@@ -28,7 +28,7 @@ export default {
         'Auth.form.welcome.title': 'Нова Підлога та Двері',
         'Auth.form.welcome.subtitle': 'Увійдіть до панелі керування',
         'Auth.form.rememberMe.label': "Запам'ятати мене",
-        'Auth.form.email.placeholder': 'напр. manager@example.com',
+        'Auth.form.email.placeholder': 'Напр. manager@example.com',
       },
     },
     auth: { logo },
