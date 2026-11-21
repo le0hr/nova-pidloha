@@ -147,8 +147,9 @@ export const getProductBySlug = cache(async (slug: string): Promise<ProductRetur
 
   return {
     addons: (product.addons ?? []).map(normalizeAddon),
-    // Short description first; the full (markdown) one, e.g. hardware texts, when there is no short one.
-    description: product.shortDescription?.trim() || plainParagraphs(product.description),
+    // The full (markdown) text on the page; the short one when there is no full text.
+    description: plainParagraphs(product.description) || product.shortDescription?.trim() || "",
+    summary: product.shortDescription?.trim() || plainParagraphs(product.description),
     characteristics: product.characteristics ?? [],
     name: product.name,
     slug,

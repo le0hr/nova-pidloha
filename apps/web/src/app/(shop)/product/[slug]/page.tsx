@@ -35,7 +35,7 @@ const images = (product: ProductReturnData) =>
 function autoDescription(product: ProductReturnData): string {
   const list = prices(product);
   const unit = priceUnit(product.category?.slug) ? "/м²" : "";
-  const about = plainText(product.description) || product.characteristics.slice(0, 4)
+  const about = plainText(product.summary) || product.characteristics.slice(0, 4)
     .map(({ name, value, unit }) => `${name}: ${[value, unit].filter(Boolean).join(" ")}`).join(", ");
   return [
     `${product.name}${product.brand && !product.name.includes(product.brand) ? ` від ${product.brand}` : ""}${list.length ? ` — ціна від ${formatUah(Math.min(...list))}${unit}` : ""}`,

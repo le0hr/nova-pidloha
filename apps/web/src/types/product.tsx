@@ -31,6 +31,8 @@ export interface ProductReturnData {
   /** Main product photo (variations have their own). */
   image?: string;
   description: string;
+  /** One-line summary for meta tags: the short description, else the start of the full one. */
+  summary: string;
   characteristics: {
     name: string;
     value: string;

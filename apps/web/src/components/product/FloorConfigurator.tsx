@@ -48,18 +48,13 @@ export default function FloorConfigurator({
 }: FloorConfiguratorProps) {
   const unit = byPack ? unitProp : "pack";
 
+  // Everything is sold by whole packs: in m² the step is one pack's area, the unit only changes how it is shown.
+  const packs = Math.max(1, Math.round(qtyM2 / packArea));
   const handleQtyChange = (delta: number) => {
-    if (unit === "m2") {
-      const next = Math.max(packArea, +(qtyM2 + delta).toFixed(2));
-      onQtyChange(next);
-    } else {
-      const currentPacks = Math.round(qtyM2 / packArea);
-      const nextPacks = Math.max(1, currentPacks + delta);
-      onQtyChange(+(nextPacks * packArea).toFixed(3));
-    }
+    onQtyChange(+(Math.max(1, packs + delta) * packArea).toFixed(4));
   };
 
-  const displayValue = unit === "m2" ? +qtyM2.toFixed(2) : Math.round(qtyM2 / packArea);
+  const displayValue = unit === "m2" ? `${+(packs * packArea).toFixed(3)} м²` : `${packs} уп.`;
   const setValue = (partial: Partial<VariationState>) => onChange(partial);
 
   return (
@@ -124,17 +119,17 @@ export default function FloorConfigurator({
         <div className="flex items-center justify-between bg-black text-white h-12 px-4">
           <button
             type="button"
-            onClick={() => handleQtyChange(unit === "m2" ? -0.1 : -1)}
+            onClick={() => handleQtyChange(-1)} aria-label="Менше на одну упаковку"
             className="text-[22px] leading-none w-8 h-8 flex items-center justify-center hover:text-[#e53935] transition-colors"
           >
             −
           </button>
           <span className="font-['Outfit',sans-serif] font-medium text-[18px] tracking-wide">
-            {displayValue}
+            {byPack ? displayValue : packs}
           </span>
           <button
             type="button"
-            onClick={() => handleQtyChange(unit === "m2" ? 0.1 : 1)}
+            onClick={() => handleQtyChange(1)} aria-label="Більше на одну упаковку"
             className="text-[22px] leading-none w-8 h-8 flex items-center justify-center hover:text-[#e53935] transition-colors"
           >
             +
@@ -143,7 +138,7 @@ export default function FloorConfigurator({
 
         {byPack && <div className="flex items-center justify-between text-[13px]">
           <span className="font-['Outfit',sans-serif] text-[#9e9e9e]">
-            {packsApprox} уп. = {+(packsApprox * packArea).toFixed(2)} м²
+            {unit === "m2" ? `${packsApprox} уп.` : `${+(packsApprox * packArea).toFixed(3)} м²`}
           </span>
           <span className="font-['Outfit',sans-serif] text-[#9e9e9e]">
             Мінімальне замовлення: 1 уп. ({packArea} м²)
