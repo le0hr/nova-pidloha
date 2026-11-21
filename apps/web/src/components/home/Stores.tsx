@@ -3,6 +3,7 @@ import HomeIcon from "./HomeIcon";
 import SectionHeader from "./SectionHeader";
 
 import { SHOP_LOCATIONS, shopDirectionsUrl, type ShopLocation } from "@/lib/catalog/shop-locations";
+import { optimizable } from "@/lib/image";
 
 export default function Stores({ shops = SHOP_LOCATIONS }: { shops?: ShopLocation[] }) {
   return (
@@ -11,7 +12,7 @@ export default function Stores({ shops = SHOP_LOCATIONS }: { shops?: ShopLocatio
       <SectionHeader id="stores-title" eyebrow="Де нас знайти" title="Наші магазини у Черкасах" description="Завітайте у наші виставкові зали для огляду зразків наживо" />
       <div className="grid gap-6 lg:grid-cols-2">
         {shops.map((store, index) => <article data-home-reveal="" key={`${store.lat}:${store.lng}`} className="flex min-w-0 flex-col overflow-hidden sm:flex-row border border-[#e0e0e0] bg-[#f5f5f5] lg:flex-col xl:flex-row">
-          <div className="relative min-h-[220px] w-full shrink-0 sm:w-[32%] lg:w-full xl:w-[32%]"><Image src={store.image ?? `/images/home/${index % 2 ? "store-southwest" : "store-center"}.png`} unoptimized={store.image?.startsWith("http")} alt={`Виставковий зал: ${store.name}`} fill sizes="(min-width: 1280px) 16vw, (min-width: 1024px) 48vw, 32vw" className="object-cover" /></div>
+          <div className="img-shell relative min-h-[220px] w-full shrink-0 sm:w-[32%] lg:w-full xl:w-[32%]"><Image src={store.image ?? `/images/home/${index % 2 ? "store-southwest" : "store-center"}.webp`} unoptimized={!optimizable(store.image ?? "/")} alt={`Виставковий зал: ${store.name}`} fill sizes="(min-width: 1280px) 16vw, (min-width: 1024px) 48vw, 32vw" className="object-cover" /></div>
           <div className="flex min-w-0 flex-1 flex-col gap-4 p-6">
             <h3 className="text-lg font-bold leading-snug">{store.name}</h3>
             {store.description && <p className="whitespace-pre-line text-sm leading-relaxed text-[#666]">{store.description}</p>}

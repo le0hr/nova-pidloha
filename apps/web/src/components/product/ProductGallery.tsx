@@ -5,6 +5,7 @@ import type { ProductVariation } from "@/types/product";
 import Lightbox from "yet-another-react-lightbox";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
+import { imageSrc, imageSrcSet } from "@/lib/image";
 
 function getVariationLabel(variation: ProductVariation) {
   return [
@@ -125,12 +126,14 @@ export default function ProductGallery({
   return (
     <div className="product-detail-gallery flex min-w-0 flex-col gap-3 md:gap-4 w-full">
       <div
-        className="product-detail-image relative w-full aspect-[4/5] md:aspect-[1/1] overflow-hidden border border-[#e0e0e0] bg-[#f7f7f7]"
+        className={`product-detail-image ${activeVariation.image ? "img-shell " : ""}relative w-full aspect-[4/5] md:aspect-[1/1] overflow-hidden border border-[#e0e0e0] bg-[#f7f7f7]`}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
         {activeVariation.image ? <img
-          src={activeVariation.image}
+          src={imageSrc(activeVariation.image, 1080)}
+          srcSet={imageSrcSet(activeVariation.image)}
+          sizes="(min-width: 1024px) 50vw, 100vw"
           alt={getVariationLabel(activeVariation) || "Фото товару"}
           className="absolute inset-0 w-full h-full object-contain pointer-events-none"
         /> : <span className="absolute inset-0 flex items-center justify-center text-sm text-[#666]">Фото готується</span>}
@@ -226,7 +229,7 @@ export default function ProductGallery({
                 onClick={() => selectAt(index)}
                 aria-label={getVariationLabel(variation) || `Фото ${index + 1}`}
                 aria-pressed={activeIndex === index}
-                className={`relative shrink-0 w-14 h-14 overflow-hidden transition-all ${
+                className={`${variation.image ? "img-shell " : ""}relative shrink-0 w-14 h-14 overflow-hidden transition-all ${
                   activeIndex === index
                     ? "outline outline-2 outline-[#e53935] outline-offset-[-1px]"
                     : "outline outline-1 outline-[#e0e0e0] hover:outline-[#bbb]"
@@ -234,7 +237,7 @@ export default function ProductGallery({
               >
                 {variation.image && (
                   <img
-                    src={variation.image}
+                    src={imageSrc(variation.image, 256)}
                     alt=""
                     className="absolute inset-0 w-full h-full object-contain"
                   />

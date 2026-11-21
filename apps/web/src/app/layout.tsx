@@ -18,6 +18,8 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+const IMAGE_SHELL_SCRIPT = `(function(){function m(e){var t=e.target;if(t&&t.tagName==="IMG"){var s=t.closest(".img-shell");if(s)s.setAttribute("data-loaded","")}}document.addEventListener("load",m,true);document.addEventListener("error",m,true)})()`;
+
 export default function RootLayout({
   children,
 }: {
@@ -25,6 +27,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="uk">
+      <head>
+        {/* Photos: the grey shimmer of an .img-shell box stops once its picture has loaded (or failed). */}
+        <script dangerouslySetInnerHTML={{ __html: IMAGE_SHELL_SCRIPT }} />
+      </head>
       <body>
         {children}
         <GoogleTag enabled={indexable()} />

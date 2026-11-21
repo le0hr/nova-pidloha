@@ -10,10 +10,10 @@ import { groupedCardColumns } from "@/lib/catalog/home-cards";
 
 // Design previews link to the catalog; shown until featured products are marked in the CMS.
 const previews: HomeProduct[] = [
-  { name: "Ламінат Kronospan Castello Classic Oak", href: "/catalog/pidloha", image: "/images/home/product-laminate.png", price: null, group: "Підлога" },
-  { name: "SPC підлога Rocko Vinyl Toffee Oak", href: "/catalog/pidloha", image: "/images/home/product-spc.png", price: null, group: "Підлога" },
-  { name: "Вінілова плитка IVC Camino Wood", href: "/catalog/pidloha", image: "/images/home/product-vinyl.png", price: null, group: "Підлога" },
-  { name: "Двері міжкімнатні Porta Loft Grau", href: "/catalog/mizhkimnatni", image: "/images/home/product-door.png", price: null, group: "Міжкімнатні двері" },
+  { name: "Ламінат Kronospan Castello Classic Oak", href: "/catalog/pidloha", image: "/images/home/product-laminate.webp", price: null, group: "Підлога" },
+  { name: "SPC підлога Rocko Vinyl Toffee Oak", href: "/catalog/pidloha", image: "/images/home/product-spc.webp", price: null, group: "Підлога" },
+  { name: "Вінілова плитка IVC Camino Wood", href: "/catalog/pidloha", image: "/images/home/product-vinyl.webp", price: null, group: "Підлога" },
+  { name: "Двері міжкімнатні Porta Loft Grau", href: "/catalog/mizhkimnatni", image: "/images/home/product-door.webp", price: null, group: "Міжкімнатні двері" },
 ];
 
 export default function PopularProducts({ products }: { products: HomeProduct[] }) {

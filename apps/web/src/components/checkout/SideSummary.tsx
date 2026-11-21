@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useCartStore } from "@/store/cart-store";
 import ItemOptions from "@/components/cart/ItemOptions";
+import { optimizable } from "@/lib/image";
 
 export default function SideSummary() {
   const items = useCartStore((state) => state.items);
@@ -14,7 +15,7 @@ export default function SideSummary() {
       {items.length > 0 && <ul className="divide-y divide-[#e0e0e0] px-4 lg:px-6">
         {items.map((item) => (
           <li key={item.id} className="flex items-start gap-3 py-4">
-            <Image src={item.image} alt={item.name} width={64} height={64} unoptimized className="size-16 shrink-0 border border-[#e0e0e0] object-cover" />
+            <Image src={item.image} alt={item.name} width={64} height={64} unoptimized={!optimizable(item.image)} className="size-16 shrink-0 border border-[#e0e0e0] object-cover" />
             <div className="flex min-w-0 flex-1 flex-col gap-1.5">
               <p className="break-words font-inter text-sm font-medium leading-snug text-[#1a1a1a]">{item.name}</p>
               <ItemOptions mods={item.mods} />

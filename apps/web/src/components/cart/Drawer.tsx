@@ -5,6 +5,7 @@ import ItemOptions from "@/components/cart/ItemOptions";
 import { useCartStore } from '@/store/cart-store'
 import { plural } from '@/lib/plural'
 import { CheckoutComingSoon, useCheckoutAvailability } from '@/components/checkout/CheckoutAvailability'
+import { imageSrc } from "@/lib/image";
 interface Props {
   onGoToCart: () => void;
   onCheckout: () => void;
@@ -165,7 +166,7 @@ export default function CartDrawer({ onGoToCart, onCheckout }: Props) {
                 >
                   <div className="shrink-0 size-[64px] bg-[#f7f7f7] border border-[#e0e0e0] overflow-hidden">
                     <img
-                      src={item.image}
+                      src={imageSrc(item.image, 128)}
                       alt={item.name}
                       className="w-full h-full object-cover"
                     />

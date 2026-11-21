@@ -45,14 +45,14 @@ export function categoryAncestors(categories: Category[], category: Category): C
 export function categoryImage(category: Category, categories: Category[]): string {
   if (category.image?.url) return mediaUrl(category.image.url);
   const name = `${category.name} ${category.slug}`.toLowerCase();
-  if (/spc|спс/.test(name)) return "/images/home/spc.png";
-  if (/вініл|vinyl|vinil/.test(name)) return "/images/home/vinyl.png";
-  if (/ламінат|laminat/.test(name)) return "/images/home/laminate.png";
+  if (/spc|спс/.test(name)) return "/images/home/spc.webp";
+  if (/вініл|vinyl|vinil/.test(name)) return "/images/home/vinyl.webp";
+  if (/ламінат|laminat/.test(name)) return "/images/home/laminate.webp";
   const path = [...categoryAncestors(categories, category), category]
     .map(item => `${item.name} ${item.slug}`).join(" ").toLowerCase();
-  if (/двер|dver|doors|mizhkimnat|vhidni/.test(path)) return "/images/home/doors.png";
-  if (/підлог|pidloh|floor/.test(path)) return "/images/home/laminate.png";
-  return "/images/home/hero.png";
+  if (/двер|dver|doors|mizhkimnat|vhidni/.test(path)) return "/images/home/doors.webp";
+  if (/підлог|pidloh|floor/.test(path)) return "/images/home/laminate.webp";
+  return "/images/home/hero.webp";
 }
 
 /** Top-level class of a category (itself for a root). */

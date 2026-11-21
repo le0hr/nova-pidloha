@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCartStore } from "@/store/cart-store";
 import CartItemType from "@/types/cart"
+import { imageSrc } from "@/lib/image";
 
 function QtyControl({
   qty,
@@ -64,7 +65,7 @@ export default function CartItem( {item}:{item:CartItemType} ) {
       <td className="px-[16px] pt-[16px] pb-[8px] md:px-[24px] md:py-[20px] block md:table-cell md:w-[100px]">
         <div className="size-[72px] md:size-[80px] overflow-hidden border border-[#E0E0E0] bg-[#F7F7F7]">
           <img
-            src={item.image}
+            src={imageSrc(item.image, 256)}
             alt={item.name}
             className="h-full w-full object-cover"
           />

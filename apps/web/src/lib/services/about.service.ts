@@ -17,7 +17,7 @@ const DEFAULTS: AboutPage = {
   heroEyebrow: "Нова Підлога та Двері · Черкаси",
   heroTitle: "Дім починається\nз *відчуття.*",
   heroText: "Тепло під ногами. Тиша за дверима. Впевненість у кожній деталі. Допомагаємо обрати те, що робить простір вашим.",
-  heroImage: "/images/home/hero.png",
+  heroImage: "/images/home/hero.webp",
   heroImageAlt: "Світла вітальня з дерев’яною підлогою та лаконічними міжкімнатними дверима",
   heroNote: "Матеріали для ремонту.\nВідчуття — для життя.",
   highlights: [
@@ -36,9 +36,9 @@ const DEFAULTS: AboutPage = {
   materialsText: "Від першого кроку до останньої деталі — усе має бути на своєму місці.",
   materials: [
     { title: "Підлога, яку відчуваєш", text: "Текстура дерева, приємний дотик, правильний відтінок. Ламінат, SPC та вініл для вашого ритму життя.",
-      image: "/images/home/laminate.png", imageAlt: "Дерев’яна фактура підлогового покриття", linkLabel: "Обрати підлогу", url: "/catalog/pidloha" },
+      image: "/images/home/laminate.webp", imageAlt: "Дерев’яна фактура підлогового покриття", linkLabel: "Обрати підлогу", url: "/catalog/pidloha" },
     { title: "Двері, що доповнюють", text: "Лаконічні чи класичні, світлі чи акцентні. Знайдіть двері, які поєднають кімнати в одну історію.",
-      image: "/images/home/doors.png", imageAlt: "Міжкімнатні двері в інтер’єрі", linkLabel: "Обрати двері", url: "/catalog/mizhkimnatni" },
+      image: "/images/home/doors.webp", imageAlt: "Міжкімнатні двері в інтер’єрі", linkLabel: "Обрати двері", url: "/catalog/mizhkimnatni" },
   ],
   stepsEyebrow: "Від ідеї до вашого дому",
   stepsTitle: "Великий вибір.\nЗрозумілі кроки.",

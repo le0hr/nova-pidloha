@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, type MouseEvent } from "react";
+import { imageSrc, imageSrcSet } from "@/lib/image";
 
 /** At most this many variation photos per card (keeps the catalog light). */
 const MAX_IMAGES = 6;
@@ -38,7 +39,7 @@ export default function CardImages({ images, alt, className }: { images: string[
   }
 
   return (
-    <div className={`${className} relative`}>
+    <div className={`${className} img-shell relative`}>
       <div
         ref={track}
         onMouseMove={list.length > 1 ? onMouseMove : undefined}
@@ -48,7 +49,7 @@ export default function CardImages({ images, alt, className }: { images: string[
       >
         {list.map((src, index) => (
           // eslint-disable-next-line @next/next/no-img-element
-          <img key={src} src={src} alt={index ? `${alt}, варіант ${index + 1}` : alt} loading={index ? "lazy" : undefined}
+          <img key={src} src={imageSrc(src, 640)} srcSet={imageSrcSet(src, 1920)} sizes="(min-width: 1024px) 30vw, 50vw" alt={index ? `${alt}, варіант ${index + 1}` : alt} loading={index ? "lazy" : undefined}
             draggable={false} className="h-full w-full shrink-0 snap-start object-cover" />
         ))}
       </div>

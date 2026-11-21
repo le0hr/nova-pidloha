@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { categoryHref, categoryImage, categoryRoot, flatSubcategories, type Category } from "@/lib/catalog/categories";
+import { optimizable } from "@/lib/image";
 
 export default function SubclassSelector({ categories, current }: { categories: Category[]; current: Category }) {
   // One flat row of every subcategory of the class, largest (more general) first.
@@ -18,8 +19,8 @@ export default function SubclassSelector({ categories, current }: { categories: 
           const selected = current.documentId === category.documentId;
           return <Link key={category.documentId} href={categoryHref(category.slug)} aria-current={selected ? "page" : undefined}
             className={`group w-[144px] shrink-0 snap-start overflow-hidden border bg-white transition-colors md:w-[184px] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#e53935] ${selected ? "border-[#e53935]" : "border-[#e0e0e0] hover:border-[#e53935]"}`}>
-            <div className="relative h-[92px] overflow-hidden bg-[#f5f5f5] md:h-[116px]">
-              <Image src={categoryImage(category, categories)} alt="" fill unoptimized sizes="184px" className="object-cover motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-105" />
+            <div className="img-shell relative h-[92px] overflow-hidden bg-[#f5f5f5] md:h-[116px]">
+              <Image src={categoryImage(category, categories)} alt="" fill unoptimized={!optimizable(categoryImage(category, categories))} sizes="184px" className="object-cover motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-105" />
               {selected && <span aria-hidden="true" className="absolute right-2 top-2 flex size-6 items-center justify-center bg-[#e53935] text-sm text-white">✓</span>}
             </div>
             <div className={`flex min-h-12 items-center justify-between gap-2 px-3 py-2 text-xs font-semibold md:text-sm ${selected ? "bg-[#fff4f3] text-[#e53935]" : "text-[#1a1a1a] group-hover:text-[#e53935]"}`}>

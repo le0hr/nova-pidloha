@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import HomeIcon from "./HomeIcon";
+import { optimizable } from "@/lib/image";
 
 /** Shared carousel size for homepage cards; the "next" button sits 40px above the bottom of the photo. */
 export const homeCardCarousel = {
@@ -26,11 +27,11 @@ export default function HomeCard({ title, href, image, imagePortrait, badge, des
 }) {
   const media = <>
     {image
-      ? <Image src={image} alt={title} fill sizes="(min-width: 1024px) 24vw, 48vw" unoptimized={image.startsWith("http")} className={imagePortrait ? "object-contain py-2" : "object-cover"} />
+      ? <Image src={image} alt={title} fill sizes="(min-width: 1024px) 24vw, 48vw" unoptimized={!optimizable(image)} className={imagePortrait ? "object-contain py-2" : "object-cover"} />
       : <span className="flex h-full items-center justify-center bg-[#f5f5f5] text-sm text-[#666]">Фото готується</span>}
     {badge && <span className="absolute top-2 left-2 bg-[#e53935] px-2 py-1 text-[10px] font-bold text-white md:top-3 md:left-3 md:text-xs">{badge}</span>}
   </>;
-  const mediaClass = "relative block h-[200px] shrink-0 overflow-hidden md:h-[250px]";
+  const mediaClass = `${image ? "img-shell " : ""}relative block h-[200px] shrink-0 overflow-hidden md:h-[250px]`;
 
   return (
     <article className="flex h-full min-w-0 flex-col bg-white">

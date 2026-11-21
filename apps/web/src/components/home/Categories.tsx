@@ -8,10 +8,10 @@ import { groupedCardColumns, homeCardColumns } from "@/lib/catalog/home-cards";
 
 // Design previews are shown until featured categories are marked in the CMS.
 const previews: HomeCategory[] = [
-  { parentName: "Підлога", name: "Ламінат", description: "Зносостійкі покриття відомих європейських брендів", image: "/images/home/laminate.png", href: "/catalog/pidloha", group: "Підлога" },
-  { parentName: "Підлога", name: "SPC підлога", description: "100% водостійка мінерально-композитна основа", image: "/images/home/spc.png", href: "/catalog/pidloha", group: "Підлога" },
-  { parentName: "Підлога", name: "Вінілова підлога", description: "Тихе, тепле та стійке покриття для будь-якої кімнати", image: "/images/home/vinyl.png", href: "/catalog/pidloha", group: "Підлога" },
-  { parentName: "Міжкімнатні двері", name: "Класичні", description: "Сучасні та класичні моделі з надійною фурнітурою", image: "/images/home/doors.png", href: "/catalog/mizhkimnatni", group: "Міжкімнатні двері" },
+  { parentName: "Підлога", name: "Ламінат", description: "Зносостійкі покриття відомих європейських брендів", image: "/images/home/laminate.webp", href: "/catalog/pidloha", group: "Підлога" },
+  { parentName: "Підлога", name: "SPC підлога", description: "100% водостійка мінерально-композитна основа", image: "/images/home/spc.webp", href: "/catalog/pidloha", group: "Підлога" },
+  { parentName: "Підлога", name: "Вінілова підлога", description: "Тихе, тепле та стійке покриття для будь-якої кімнати", image: "/images/home/vinyl.webp", href: "/catalog/pidloha", group: "Підлога" },
+  { parentName: "Міжкімнатні двері", name: "Класичні", description: "Сучасні та класичні моделі з надійною фурнітурою", image: "/images/home/doors.webp", href: "/catalog/mizhkimnatni", group: "Міжкімнатні двері" },
 ];
 
 export default function Categories({ categories }: { categories: HomeCategory[] }) {

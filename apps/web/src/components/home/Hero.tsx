@@ -8,6 +8,7 @@ import HomeIcon from "./HomeIcon";
 import ShopMap from "./ShopMap";
 import type { ShopLocation } from "@/lib/catalog/shop-locations";
 import HeroBody from "./HeroBody";
+import { optimizable } from "@/lib/image";
 
 export default function Hero({ slides, shops }: { slides: HeroSlide[]; shops?: ShopLocation[] }) {
   const [active, setActive] = useState(0);
@@ -89,8 +90,8 @@ export default function Hero({ slides, shops }: { slides: HeroSlide[]; shops?: S
         className={`hero-media absolute inset-0 bg-[#35332e] ${index === currentIndex ? "opacity-100" : "pointer-events-none opacity-0"}`}>
         {background.kind === "map" ? <ShopMap shops={shops} interactive={index === currentIndex && mapInteractive} onClose={() => setMapInteractive(false)} /> : <>
           {background.image && <Image src={background.image} alt={background.imageAlt ?? (background.kind === "image" ? background.title : "")} fill sizes="100vw"
-            className={`hero-photo object-cover ${background.mobileImage ? "hidden md:block" : ""}`} priority={index === currentIndex} unoptimized={background.image.startsWith("http")} />}
-          {background.mobileImage && <Image src={background.mobileImage} alt={background.imageAlt ?? (background.kind === "image" ? background.title : "")} fill sizes="100vw" className="hero-photo object-cover md:hidden" priority={index === currentIndex} unoptimized={background.mobileImage.startsWith("http")} />}
+            className={`hero-photo object-cover ${background.mobileImage ? "hidden md:block" : ""}`} priority={index === currentIndex} unoptimized={!optimizable(background.image)} />}
+          {background.mobileImage && <Image src={background.mobileImage} alt={background.imageAlt ?? (background.kind === "image" ? background.title : "")} fill sizes="100vw" className="hero-photo object-cover md:hidden" priority={index === currentIndex} unoptimized={!optimizable(background.mobileImage)} />}
         </>}
       </div>)}
       {!mapInteractive && !isImage && <div className={`pointer-events-none absolute inset-0 z-[1] ${isMap ? "bg-gradient-to-r from-black/85 via-black/55 to-transparent" : "bg-black/45"}`} />}

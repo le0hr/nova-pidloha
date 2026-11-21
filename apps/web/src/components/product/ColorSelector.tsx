@@ -1,4 +1,5 @@
 import { StepHeader } from "./StepHeader";
+import { imageSrc } from "@/lib/image";
 
 export default function ColorSelector({
     decor_colors,
@@ -38,15 +39,15 @@ export default function ColorSelector({
                         className="flex flex-col gap-1.5 items-center group"
                       >
                         <div
-                          className={`relative w-full aspect-square overflow-hidden bg-[#f0f0f0] transition-all ${
+                          className={`${images[color] ? "img-shell " : ""}relative w-full aspect-square overflow-hidden bg-[#f0f0f0] transition-all ${
                             active
                               ? "outline outline-2 outline-[#e53935]"
                               : "outline outline-1 outline-[#e0e0e0] group-hover:outline-[#bbb]"
                           }`}
                         >
                           {images[color] ? (
-                            // eslint-disable-next-line @next/next/no-img-element -- small CMS crops, already sized
-                            <img src={images[color]} alt={color} loading="lazy" className="absolute inset-0 size-full object-cover" />
+                            // eslint-disable-next-line @next/next/no-img-element -- resized by imageSrc
+                            <img src={imageSrc(images[color], 256)} alt={color} loading="lazy" className="absolute inset-0 size-full object-cover" />
                           ) : (
                             <div className="absolute inset-0 flex items-center justify-center">
                               <span className="font-['Outfit',sans-serif] text-[10px] text-[#888] text-center px-1 leading-tight">

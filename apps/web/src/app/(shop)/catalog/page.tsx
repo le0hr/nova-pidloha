@@ -4,6 +4,7 @@ import Link from "next/link";
 import Breadcrumb from "@/components/layout/shop/Breadcrumps";
 import { categoryHref, categoryImage, categoryTotal, flatSubcategories } from "@/lib/catalog/categories";
 import { getCategories } from "@/lib/services/category.service";
+import { optimizable } from "@/lib/image";
 
 export const metadata: Metadata = {
   title: "Каталог — підлога, двері, фурнітура",
@@ -34,8 +35,8 @@ export default async function CatalogIndexPage() {
                 {(children.length ? children : [root]).map(category => (
                   <Link key={category.documentId} href={categoryHref(category.slug)}
                     className="group overflow-hidden border border-[#e0e0e0] bg-white transition-colors hover:border-[#e53935] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#e53935]">
-                    <div className="relative aspect-[4/3] overflow-hidden bg-[#f5f5f5]">
-                      <Image src={categoryImage(category, categories)} alt="" fill unoptimized sizes="(min-width: 1024px) 20vw, 50vw"
+                    <div className="img-shell relative aspect-[4/3] overflow-hidden bg-[#f5f5f5]">
+                      <Image src={categoryImage(category, categories)} alt="" fill unoptimized={!optimizable(categoryImage(category, categories))} sizes="(min-width: 1024px) 20vw, 50vw"
                         className="object-cover motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-105" />
                     </div>
                     <div className="flex min-h-12 items-center justify-between gap-2 px-3 py-2 text-sm font-semibold text-[#1a1a1a] group-hover:text-[#e53935]">

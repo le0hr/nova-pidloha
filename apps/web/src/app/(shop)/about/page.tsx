@@ -9,6 +9,7 @@ import JsonLd from "@/components/seo/JsonLd";
 import { getAboutPage } from "@/lib/services/about.service";
 import { getShopLocations } from "@/lib/services/shop.service";
 import { cmsStructuredData, pageMetadata } from "@/lib/seo";
+import { optimizable } from "@/lib/image";
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getAboutPage();
@@ -21,7 +22,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const focus = "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e53935]";
 const eyebrow = "text-xs font-bold uppercase tracking-[0.16em] text-[#e53935]";
-const external = (url: string) => /^https?:\/\//.test(url);
 
 /** CMS title: a new line is a line break, *word* is the red accent. */
 function Rich({ text, accent = "text-[#e53935]" }: { text: string; accent?: string }) {
@@ -50,7 +50,7 @@ export default async function AboutPage() {
         <div className="max-w-md"><p className="text-base leading-relaxed text-[#666] md:text-lg">{page.heroText}</p><a href="#our-approach" className={`mt-6 inline-flex min-h-11 items-center gap-5 text-sm font-bold ${focus}`}>Познайомимось ближче <span className="text-lg text-[#e53935]" aria-hidden="true">↓</span></a></div>
       </div>
       <div className="relative overflow-hidden bg-[#e8e4de]">
-        <div className="relative h-[330px] sm:h-[420px] lg:h-[510px]"><Image src={page.heroImage} unoptimized={external(page.heroImage)} alt={page.heroImageAlt} fill priority sizes="(min-width: 1760px) 1584px, 100vw" className="object-cover object-[58%_center]" /></div>
+        <div className="img-shell relative h-[330px] sm:h-[420px] lg:h-[510px]"><Image src={page.heroImage} unoptimized={!optimizable(page.heroImage)} alt={page.heroImageAlt} fill priority sizes="(min-width: 1760px) 1584px, 100vw" className="object-cover object-[58%_center]" /></div>
         {page.heroNote && <div className="flex items-center justify-between gap-5 bg-[#e53935] px-5 py-5 text-white sm:absolute sm:right-0 sm:bottom-0 sm:w-[330px] sm:p-7"><p className="text-lg font-semibold leading-snug"><Rich text={page.heroNote} accent="" /></p><span className="text-3xl" aria-hidden="true">↗</span></div>}
       </div>
       <div className={`grid divide-y divide-[#e0e0e0] border-b border-[#e0e0e0] sm:divide-x sm:divide-y-0 ${["sm:grid-cols-1", "sm:grid-cols-2", "sm:grid-cols-3", "sm:grid-cols-4"][Math.min(page.highlights.length, 4) - 1]}`}>
@@ -71,7 +71,7 @@ export default async function AboutPage() {
         <div data-home-reveal="" className="mb-8 flex flex-col justify-between gap-4 md:mb-10 md:flex-row md:items-end"><div><p className={`${eyebrow} mb-3`}>{page.materialsEyebrow}</p><h2 id="materials-heading" className="text-3xl font-bold tracking-[-0.03em] md:text-[40px]">{page.materialsTitle}</h2></div><p className="max-w-xs text-sm leading-relaxed text-[#666]">{page.materialsText}</p></div>
         <div className="grid gap-6 md:grid-cols-2">{page.materials.map((item, index) => {
           const body = <>
-            <div className="relative h-[240px] overflow-hidden sm:h-[320px] lg:h-[380px]"><Image src={item.image} unoptimized={external(item.image)} alt={item.imageAlt ?? item.title} fill sizes="(min-width: 768px) 45vw, 100vw" className="object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:group-hover:scale-105" /><span className="absolute top-4 left-4 flex size-10 items-center justify-center bg-white text-xs font-bold">{String(index + 1).padStart(2, "0")}</span></div>
+            <div className="img-shell relative h-[240px] overflow-hidden sm:h-[320px] lg:h-[380px]"><Image src={item.image} unoptimized={!optimizable(item.image)} alt={item.imageAlt ?? item.title} fill sizes="(min-width: 768px) 45vw, 100vw" className="object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:group-hover:scale-105" /><span className="absolute top-4 left-4 flex size-10 items-center justify-center bg-white text-xs font-bold">{String(index + 1).padStart(2, "0")}</span></div>
             <div className="p-6 lg:p-8"><h3 className="text-xl font-bold md:text-2xl">{item.title}</h3>{item.text && <p className="mt-3 text-sm leading-relaxed text-[#666]">{item.text}</p>}{item.url && <span className="mt-6 flex items-center justify-between border-t border-[#e0e0e0] pt-5 text-sm font-bold text-[#e53935]">{item.linkLabel ?? "Детальніше"}<HomeIcon name="arrow-red" size={20} /></span>}</div>
           </>;
           return item.url

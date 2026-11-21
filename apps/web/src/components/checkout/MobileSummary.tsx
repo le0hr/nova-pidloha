@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ItemOptions from "@/components/cart/ItemOptions";
 import { useCartStore } from "@/store/cart-store";
+import { imageSrc } from "@/lib/image";
 
 
 export default function MobileOrderSummary() {
@@ -41,7 +42,7 @@ export default function MobileOrderSummary() {
             return(
                 <div key={item.id} className="flex items-center gap-6 self-stretch">
                   <img
-                    src={item.image}
+                    src={imageSrc(item.image, 256)}
                     alt={item.name}
                     className="h-[94px] w-[94px] shrink-0 rounded-[3px] border border-[#D9D9D9] object-cover"
                   />
