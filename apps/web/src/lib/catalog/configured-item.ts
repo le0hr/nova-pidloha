@@ -1,6 +1,6 @@
 import type { ProductVariation, ProductAddon } from "@/types/product";
 import type CartItemType from "@/types/cart";
-import { addonTotal, configuredCartId } from "./addons";
+import { addonLineTotal, addonTotal, configuredCartId, formatQty } from "./addons";
 import { attributeLabel } from "./variations";
 
 /**
@@ -31,7 +31,7 @@ export function configuredItem(variation: ProductVariation, name: string, addons
     addons: addons.map((addon) => ({ ...addon })),
     mods: [...mods.filter((mod) => !(size && /^(Ширина|Висота)/.test(mod))), ...(sizeLabel ? [sizeLabel] : []),
       ...(packArea ? [`Упаковка: ${packArea} м² (${variation.price.toLocaleString("uk-UA")} грн/м²)`] : []), ...addons.map((addon) =>
-      `${addon.group ? `${addon.group}: ` : ""}${addon.name} (${addon.price > 0 ? "+" : ""}${addon.price.toLocaleString("uk-UA")} грн)`) ],
+      `${addon.group ? `${addon.group}: ` : ""}${addon.name}${(addon.qty ?? 1) !== 1 ? ` × ${formatQty(addon.qty!)}` : ""} (${addon.price > 0 ? "+" : ""}${addonLineTotal(addon).toLocaleString("uk-UA")} грн)`) ],
     price: Math.round((unitPrice + addonTotal(addons)) * 100) / 100,
     image: variation.image,
   };

@@ -39,7 +39,7 @@ export default function ColorSelector({
                         className="flex flex-col gap-1.5 items-center group"
                       >
                         <div
-                          className={`${images[color] ? "img-shell " : ""}relative w-full aspect-square overflow-hidden bg-[#f0f0f0] transition-all ${
+                          suppressHydrationWarning className={`${images[color] ? "img-shell " : ""}relative w-full aspect-square overflow-hidden bg-[#f0f0f0] transition-all ${
                             active
                               ? "outline outline-2 outline-[#e53935]"
                               : "outline outline-1 outline-[#e0e0e0] group-hover:outline-[#bbb]"

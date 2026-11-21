@@ -126,6 +126,7 @@ export default function ProductGallery({
   return (
     <div className="product-detail-gallery flex min-w-0 flex-col gap-3 md:gap-4 w-full">
       <div
+        suppressHydrationWarning
         className={`product-detail-image ${activeVariation.image ? "img-shell " : ""}relative w-full aspect-[4/5] md:aspect-[1/1] overflow-hidden border border-[#e0e0e0] bg-[#f7f7f7]`}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
@@ -229,6 +230,7 @@ export default function ProductGallery({
                 onClick={() => selectAt(index)}
                 aria-label={getVariationLabel(variation) || `Фото ${index + 1}`}
                 aria-pressed={activeIndex === index}
+                suppressHydrationWarning
                 className={`${variation.image ? "img-shell " : ""}relative shrink-0 w-14 h-14 overflow-hidden transition-all ${
                   activeIndex === index
                     ? "outline outline-2 outline-[#e53935] outline-offset-[-1px]"

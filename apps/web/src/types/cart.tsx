@@ -3,6 +3,8 @@ import type { ProductAddon } from "./product";
 type CartItemType = {
   id: string;
   variationSlug?: string;
+  /** A floor add-on (skirting) bought on its own line: `qty` is pieces, priced per piece. */
+  addonId?: string;
   basePrice?: number;
   addons?: ProductAddon[];
   /** Chosen door size; for a non-standard one the price already includes the surcharge. */

@@ -4,7 +4,10 @@ export interface ProductAddon {
   id: string;
   name: string;
   group: string | null;
+  /** Price of one piece. */
   price: number;
+  /** Pieces ordered (moulding: 1, 2.5 or 5; skirting: any whole number). Missing = 1. */
+  qty?: number;
 }
 
 export interface ProductVariation {

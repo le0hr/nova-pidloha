@@ -120,7 +120,7 @@ export default function SearchBox({ initialQuery = "", variant = "header", autoF
                 onClick={(event) => { event.preventDefault(); go(product.href); }}
                 style={{ animationDelay: `${Math.min(i, 5) * 30}ms` }}
                 className={`search-suggestion flex items-center gap-3 px-4 py-2 transition-colors duration-150 ${active === index ? "bg-[#fff4f3]" : "hover:bg-[#f7f7f7]"}`}>
-                <span className="img-shell relative size-12 shrink-0 overflow-hidden border border-[#f0f0f0] bg-[#f7f7f7]">
+                <span suppressHydrationWarning className="img-shell relative size-12 shrink-0 overflow-hidden border border-[#f0f0f0] bg-[#f7f7f7]">
                   {/* eslint-disable-next-line @next/next/no-img-element -- resized by imageSrc */}
                   {product.image && <img src={imageSrc(product.image, 128)} alt="" loading="lazy" className="search-thumb size-full object-contain"
                     onLoad={(event) => event.currentTarget.setAttribute("data-loaded", "")} />}

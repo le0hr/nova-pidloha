@@ -36,8 +36,8 @@ export default function HomeCard({ title, href, image, imagePortrait, badge, des
   return (
     <article className="flex h-full min-w-0 flex-col bg-white">
       {linkContent
-        ? <Link href={href} className={`group ${mediaClass} focus-visible:outline-2 focus-visible:outline-[#e53935]`}>{media}</Link>
-        : <div className={mediaClass}>{media}</div>}
+        ? <Link href={href} suppressHydrationWarning className={`group ${mediaClass} focus-visible:outline-2 focus-visible:outline-[#e53935]`}>{media}</Link>
+        : <div suppressHydrationWarning className={mediaClass}>{media}</div>}
       <div className="flex flex-1 flex-col gap-2 px-2.5 pt-2.5 pb-2 md:gap-3 md:px-4 md:pt-3 md:pb-3">
         <h3 className="line-clamp-1 text-xs font-medium leading-snug md:text-sm" title={title}>
           {linkContent ? <Link href={href} className="hover:text-[#e53935]">{title}</Link> : title}

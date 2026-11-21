@@ -26,9 +26,11 @@ export default function GoogleShopMap({ apiKey, locations, shop, interactive, on
   useEffect(() => {
     if (!map) return;
     const markers = locations.map((location, index) => {
+      // Site-coloured pin: red with a white dot, darker red outline.
+      const pin = new google.maps.marker.PinElement({ background: "#e53935", borderColor: "#b71c1c", glyphColor: "#ffffff", scale: 1.15 });
       const marker = new google.maps.marker.AdvancedMarkerElement({
         map, position: { lat: location.lat, lng: location.lng },
-        title: location.address ?? location.name,
+        title: location.address ?? location.name, content: pin.element,
       });
       const listener = marker.addListener("click", () => onSelect(String(index)));
       return { marker, listener };

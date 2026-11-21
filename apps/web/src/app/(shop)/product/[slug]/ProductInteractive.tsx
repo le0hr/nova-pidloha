@@ -52,6 +52,7 @@ function buildOptions(variations: ProductVariation[], selection: VariationState)
 export default function DynamicField({ product }: { product: ProductReturnData }) {
   const variations = product.variations;
   const [addonSelection, setAddonSelection] = useState<Record<string, string>>({});
+  const [addonQuantities, setAddonQuantities] = useState<Record<string, number>>({});
   const category = product.category?.slug ?? "";
 
   const isFloor = category === "pidloha" || category.startsWith("pidloha-");
@@ -79,8 +80,12 @@ export default function DynamicField({ product }: { product: ProductReturnData }
   });
   const [selectedSlug, setSelectedSlug] = useState(variations[0].slug);
   const selectedVariation = variations.find((variation) => variation.slug === selectedSlug) ?? variations[0];
-  const addons = selectedVariation.addons ?? product.addons ?? [];
-  const chosenAddons = selectedAddons(addons, addonSelection);
+  // Variation add-ons (doors: per colour; Classen floors: the skirting made for this decor) plus the product's own.
+  const addons = useMemo(() => {
+    const seen = new Set<string>();
+    return [...(selectedVariation.addons ?? []), ...(product.addons ?? [])].filter((addon) => !seen.has(addon.id) && seen.add(addon.id));
+  }, [selectedVariation.addons, product.addons]);
+  const chosenAddons = selectedAddons(addons, addonSelection, addonQuantities);
   // One gallery photo per look; another edge/size/side keeps the photo of the same colour.
   const gallery = galleryLooks(variations, selectedVariation);
   const options = useMemo(() => buildOptions(variations, selection), [variations, selection]);
@@ -238,7 +243,8 @@ export default function DynamicField({ product }: { product: ProductReturnData }
         )}
 
         <div className="mt-6 md:mt-8">
-          <AccessoriesSection addons={addons} selected={addonSelection} onChange={setAddonSelection} />
+          <AccessoriesSection addons={addons} selected={addonSelection} onChange={setAddonSelection}
+            quantities={addonQuantities} onQuantityChange={setAddonQuantities} />
         </div>
         <div className="mt-6 md:mt-8">
           <AddToCartButton

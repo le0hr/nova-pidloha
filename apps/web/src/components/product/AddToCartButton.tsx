@@ -5,6 +5,7 @@ import { configuredItem } from "@/lib/catalog/configured-item";
 import ItemOptions from "@/components/cart/ItemOptions";
 import { ProductVariation, ProductAddon } from "@/types/product";
 import { trackAddToCart } from "@/lib/analytics";
+import type CartItemType from "@/types/cart";
 
 interface AddToCartButtonProps {
   variation: ProductVariation;
@@ -35,15 +36,30 @@ export default function AddToCartButton({
       : { inStock: false, label: availability.trim() }
     : !inStock ? { inStock: false, label: "Немає в наявності" } : null;
   const cartStore = useCartStore();
-  const item = configuredItem(variation, productName, addons, size, pack?.area);
+  // Floors are counted in packs: their add-ons (skirting) go on separate lines with their own piece count,
+  // otherwise every pack would carry the whole skirting price again.
+  const separate = Boolean(pack) && addons.length > 0;
+  const item = configuredItem(variation, productName, separate ? [] : addons, size, pack?.area);
   const qty = pack?.qty ?? 1;
-  const total = Math.round(item.price * qty * 100) / 100;
+  const extraLines: (Omit<CartItemType, "qty"> & { qty: number })[] = separate ? addons.map((addon) => ({
+    id: `${variation.slug}:addon:${addon.id}`,
+    variationSlug: variation.slug,
+    addonId: addon.id,
+    name: addon.name,
+    basePrice: addon.price,
+    price: addon.price,
+    mods: [`До: ${productName}`],
+    image: variation.image,
+    qty: addon.qty ?? 1,
+  })) : [];
+  const total = Math.round((item.price * qty + extraLines.reduce((sum, line) => sum + line.price * line.qty, 0)) * 100) / 100;
 
   const handleAdd = () => {
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
 
     cartStore.addItem(item, qty);
+    for (const { qty: pieces, ...line } of extraLines) cartStore.addItem(line, pieces);
     trackAddToCart({ item_id: variation.slug, item_name: productName, item_variant: [variation.decor_color?.name, variation.decor_glass?.name].filter(Boolean).join(", ") || undefined,
       price: item.price, quantity: qty });
   };
@@ -65,7 +81,8 @@ export default function AddToCartButton({
 
       <div className="border-t border-[#e0e0e0]" />
 
-      <ItemOptions mods={item.mods} />
+      <ItemOptions mods={[...item.mods, ...extraLines.map((line) =>
+        `${line.name} × ${line.qty.toLocaleString("uk-UA")} шт (+${Math.round(line.price * line.qty).toLocaleString("uk-UA")} грн)`)]} />
 
       {/* Total row */}
       <div className="flex items-center justify-between">

@@ -42,7 +42,7 @@ export default function CardImages({ images, alt, className }: { images: string[
   }
 
   return (
-    <div className={`${className} img-shell relative`}>
+    <div suppressHydrationWarning className={`${className} img-shell relative`}>
       <div
         ref={track}
         onMouseEnter={wake}

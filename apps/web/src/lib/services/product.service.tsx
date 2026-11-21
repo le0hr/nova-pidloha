@@ -17,7 +17,7 @@ const PRODUCT_QUERY = `
         }
       }
     ) {
-      addons {
+      addons(pagination: {limit: 100}, sort: ["documentId:asc"]) {
         documentId
         name
         group
@@ -114,6 +114,18 @@ export const getProductBySlug = cache(async (slug: string): Promise<ProductRetur
   );
   const product = data.products[0];
   if (!product) return null;
+  // Product add-ons beyond the CMS page limit (floor skirting: up to ~110 boards).
+  for (let start = product.addons?.length ?? 0, page = product.addons ?? []; page.length >= 100; start += page.length) {
+    const more = await graphqlFetch<{ products: { addons: RawAddon[] }[] }>(
+      `query ProductAddons($slug: String!, $start: Int!) {
+        products(filters: {slug: {eq: $slug}}) { addons(pagination: {start: $start, limit: 100}, sort: ["documentId:asc"]) { documentId name group price additionalCost } }
+      }`,
+      { slug, start },
+      { revalidate: 60, tags: [`product-${slug}`] },
+    );
+    page = more.products[0]?.addons ?? [];
+    product.addons = [...(product.addons ?? []), ...page];
+  }
   const variations = [...product.product_variations];
   // Advance by the returned count so a lower CMS limit cannot truncate the result.
   let batch = product.product_variations;
