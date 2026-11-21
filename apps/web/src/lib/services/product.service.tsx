@@ -146,8 +146,13 @@ export const getProductBySlug = cache(async (slug: string): Promise<ProductRetur
   }
 
 
+  // One object per add-on: variations of a colour repeat the same moulding items, and React sends a repeated object
+  // only once to the browser (the page payload of a door with many variations shrinks several times).
+  const addonById = new Map<string, ReturnType<typeof normalizeAddon>>();
+  const toAddon = (raw: RawAddon) => addonById.get(raw.documentId) ?? addonById.set(raw.documentId, normalizeAddon(raw)).get(raw.documentId)!;
+
   return {
-    addons: (product.addons ?? []).map(normalizeAddon),
+    addons: (product.addons ?? []).map(toAddon),
     // The full (markdown) text on the page; the short one when there is no full text.
     description: plainParagraphs(product.description) || product.shortDescription?.trim() || "",
     summary: product.shortDescription?.trim() || plainParagraphs(product.description),
@@ -167,7 +172,7 @@ export const getProductBySlug = cache(async (slug: string): Promise<ProductRetur
         name: decor_color.name,
         image: decor_color.image?.url ? `${process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337"}${decor_color.image.url}` : null,
       } : null,
-      addons: (addons ?? []).map(normalizeAddon),
+      addons: (addons ?? []).map(toAddon),
       price: Number(price) || 0,
       image: image?.url
         ? `${process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337"}${image.url}`

@@ -77,7 +77,7 @@ export async function countProducts(params: CatalogParams, groups: FilterGroup[]
   return data.products_connection.pageInfo.total;
 }
 
-/** `details: false` skips value popularity and price bounds: enough to apply filters, much cheaper ("Показати все"). */
+/** `details: false` skips value popularity and price bounds: enough to apply filters, much cheaper ("Показати ще"). */
 export async function getFilters(categorySlugs: string[], productCategorySlugs: string[] = categorySlugs, { details = true }: { details?: boolean } = {}): Promise<FilterGroup[]> {
   const groups: FilterGroup[] = [];
   let page = 1;
@@ -88,7 +88,7 @@ export async function getFilters(categorySlugs: string[], productCategorySlugs: 
           name slug type filter_values(pagination: {limit: 100}) { name slug }
         }
         filterGroups_connection(status: PUBLISHED, filters: {categories: {slug: {in: $slugs}}}, pagination: {page: $page, pageSize: 100}) { pageInfo { pageCount } }
-      }`, { slugs: categorySlugs, page }, { cache: "no-store" });
+      }`, { slugs: categorySlugs, page }, { revalidate: 60 });
     groups.push(...data.filterGroups.map(group => ({ ...group, type: group.type === "boolean" ? "select" as const : group.type })));
     if (page >= data.filterGroups_connection.pageInfo.pageCount) break;
     page += 1;

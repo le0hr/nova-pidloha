@@ -8,7 +8,7 @@ export async function getShopLocations(): Promise<ShopLocation[]> {
         global(status: PUBLISHED) {
           shopLocations { name address description lat lng placeId phone hours image { url } }
         }
-      }`, undefined, { cache: "no-store" });
+      }`, undefined, { revalidate: 60 });
     return normalizeShopLocations(data.global?.shopLocations).map(shop => ({
       ...shop, image: shop.image ? mediaUrl(shop.image) : undefined,
     }));

@@ -15,7 +15,7 @@ function products(count: number): string {
   return `${count} товарів`;
 }
 
-/** Product grid with "Показати все": appends the remaining pages and keeps the URL page in sync with pagination. */
+/** Product grid with "Показати ще": appends the next page and keeps the URL page in sync with pagination. */
 export default function CatalogGrid({ category, products: initial, pagination }: {
   category: string;
   products: CatalogProduct[];
@@ -32,29 +32,23 @@ export default function CatalogGrid({ category, products: initial, pagination }:
   const shownUntil = Math.min(pagination.total, page * pagination.pageSize);
   const remaining = Math.max(0, pagination.total - shownUntil);
 
-  /** "Показати все": every remaining page at once (fetched in parallel, appended in order). */
-  const loadAll = async () => {
+  const loadMore = async () => {
     if (status === "loading" || page >= pagination.pageCount) return;
     setStatus("loading");
-    const pages = Array.from({ length: pagination.pageCount - page }, (_, i) => page + 1 + i);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", String(page + 1));
     try {
-      const results = await Promise.all(pages.map(async (next) => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("page", String(next));
-        const response = await fetch(`/api/catalog/${encodeURIComponent(category)}?${params}`);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        return await response.json() as { products: CatalogProduct[]; pagination: Page };
-      }));
+      const response = await fetch(`/api/catalog/${encodeURIComponent(category)}?${params}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json() as { products: CatalogProduct[]; pagination: Page };
       const known = new Set(items.map(product => product.slug));
-      const fresh = results.flatMap(result => result.products).filter(product => !known.has(product.slug) && known.add(product.slug));
+      const fresh = data.products.filter(product => !known.has(product.slug));
       setBatchStart(items.length);
       setItems(current => [...current, ...fresh]);
-      setPage(pagination.pageCount);
+      setPage(data.pagination.page);
       setStatus("idle");
-      setAnnouncement(`Показано всі товари: ще ${products(fresh.length)}`);
-      // Pagination reads ?page=: it shows the last page as current.
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("page", String(pagination.pageCount));
+      setAnnouncement(`Завантажено ще ${products(fresh.length)}`);
+      // Pagination reads ?page=, so it shows the last loaded page and "Вперед" continues from it.
       window.history.replaceState(null, "", `${pathname}?${params}`);
     } catch {
       setStatus("error");
@@ -71,9 +65,9 @@ export default function CatalogGrid({ category, products: initial, pagination }:
       </div>
       {remaining > 0 && (
         <div className="flex w-full flex-col items-center gap-2">
-          <button type="button" onClick={loadAll} disabled={status === "loading"} aria-busy={status === "loading"}
+          <button type="button" onClick={loadMore} disabled={status === "loading"} aria-busy={status === "loading"}
             className="flex min-h-11 w-full items-center justify-center gap-2 border border-[#E53935] px-6 py-3 font-['Outfit'] text-sm font-semibold text-[#E53935] transition-colors hover:bg-[#ffebee] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E53935] disabled:cursor-wait disabled:opacity-60 sm:w-auto">
-            {status === "loading" ? "Завантаження…" : "Показати все"}
+            {status === "loading" ? "Завантаження…" : "Показати ще"}
           </button>
           {status === "error" && <p role="alert" className="text-sm text-[#E53935]">Не вдалося завантажити товари. Спробуйте ще раз.</p>}
         </div>

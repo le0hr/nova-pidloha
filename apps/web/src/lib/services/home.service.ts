@@ -178,7 +178,7 @@ export async function getHomeHero(): Promise<import("@/types/home").HeroSlide[]>
           }
         }
       }
-    `, undefined, { cache: "no-store" });
+    `, undefined, { revalidate: 60 });
     return normalizeHero(data.global);
   } catch (error) {
     console.error("Unable to load homepage hero:", error instanceof Error ? error.message : error);

@@ -99,6 +99,9 @@ services:
       CHECKOUT_ENABLED: ${CHECKOUT_ENABLED:-false}
       GOOGLE_TAG_IDS: ${GOOGLE_TAG_IDS:-}
       WEB_PUBLIC_URL: ${WEB_PUBLIC_URL:?Set WEB_PUBLIC_URL}
+    volumes:
+      # Resized photos: kept between deploys so visitors do not wait for them again.
+      - web_image_cache:/app/.next/cache/images
     networks:
       nova-internal:
       novapidloha_edge:
@@ -124,3 +127,5 @@ volumes:
     name: ${DB_VOLUME_NAME:-novapidloha_postgres_data}
   uploads:
     name: ${UPLOADS_VOLUME_NAME:-novapidloha_uploads}
+  web_image_cache:
+    name: ${WEB_IMAGE_CACHE_VOLUME_NAME:-novapidloha_web_image_cache}

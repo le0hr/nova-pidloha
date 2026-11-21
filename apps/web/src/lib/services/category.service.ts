@@ -14,7 +14,7 @@ export const getCategories = cache(async (): Promise<Category[]> => {
         documentId name slug description image { url } parent { documentId }
       }
       categories_connection(status: PUBLISHED, pagination: {page: $page, pageSize: 100}) { pageInfo { pageCount } }
-    }`, { page }, { cache: "no-store" });
+    }`, { page }, { revalidate: 60 });
     categories.push(...data.categories.filter(c => c.slug && c.name));
     if (page >= data.categories_connection.pageInfo.pageCount) break;
     page += 1;
