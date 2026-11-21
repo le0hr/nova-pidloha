@@ -22,6 +22,7 @@
  *                 photos, and for skip-listed colours another photo than the rejected one. Review the preview!
  *   --import=DIR  upload DIR/<external_id>.webp (reviewed crops, e.g. DIR = <preview>/swatches) and link them
  *   --export=DIR  write every colour's swatch to DIR/<external_id>.webp (to move reviewed swatches to a server)
+ *   --import=DIR --remote  the same import into another CMS over REST (STRAPI_URL, STRAPI_TOKEN), no local Strapi
  */
 const fs = require('node:fs');
 const os = require('node:os');
@@ -321,6 +322,40 @@ async function importSwatches(strapi, colors) {
   console.log(`Imported ${done}; already had a swatch ${kept}; no such colour ${missing}.`);
 }
 
+/** --import into another CMS (the server) over REST: STRAPI_URL, STRAPI_TOKEN (upload + update decor colours). */
+async function importRemote(url, token) {
+  const base = url.replace(/\/$/, '');
+  const call = async (method, route, body, json = true) => {
+    const response = await fetch(`${base}/${route}`, { method, body,
+      headers: { Authorization: `Bearer ${token}`, ...(json && body ? { 'Content-Type': 'application/json' } : {}) } });
+    const data = await response.json().catch(() => null);
+    if (!response.ok) throw new Error(`${method} ${route.split('?')[0]}: HTTP ${response.status} ${data?.error?.message ?? ''}`);
+    return data;
+  };
+  const colors = [];
+  for (let page = 1; ; page++) {
+    const body = await call('GET', `api/decor-colors?status=published&pagination[pageSize]=100&pagination[page]=${page}&fields[0]=name&fields[1]=external_id&populate[image][fields][0]=id`);
+    colors.push(...body.data);
+    if (page >= body.meta.pagination.pageCount) break;
+  }
+  const byKey = new Map(colors.flatMap((c) => [[c.external_id, c], [c.documentId, c]]).filter(([k]) => k));
+  let done = 0, missing = 0, kept = 0;
+  for (const file of fs.readdirSync(IMPORT).filter((f) => f.endsWith('.webp'))) {
+    const color = byKey.get(file.replace(/\.webp$/, ''));
+    if (!color) { missing += 1; continue; }
+    if (color.image && !FORCE) { kept += 1; continue; }
+    const name = `swatch-${color.external_id ?? color.documentId}.webp`;
+    const form = new FormData();
+    form.append('files', new Blob([fs.readFileSync(path.join(IMPORT, file))], { type: 'image/webp' }), name);
+    form.append('fileInfo', JSON.stringify({ name, alternativeText: color.name, caption: `Swatch: ${color.name}` }));
+    const [uploaded] = await call('POST', 'api/upload', form, false);
+    await call('PUT', `api/decor-colors/${color.documentId}?status=published`, JSON.stringify({ data: { image: uploaded.id } }));
+    done += 1;
+    if (done % 50 === 0) console.log(`  ${done}…`);
+  }
+  console.log(`Imported ${done}; already had a swatch ${kept}; no such colour ${missing}.`);
+}
+
 /** Every colour's current swatch → DIR/<external_id>.webp. */
 async function exportSwatches(strapi, colors) {
   fs.mkdirSync(EXPORT, { recursive: true });
@@ -364,6 +399,10 @@ async function preview(dir, results) {
 }
 
 (async () => {
+  if (IMPORT && process.argv.includes('--remote')) {
+    if (!process.env.STRAPI_URL || !process.env.STRAPI_TOKEN) throw new Error('--remote needs STRAPI_URL and STRAPI_TOKEN');
+    return importRemote(process.env.STRAPI_URL, process.env.STRAPI_TOKEN).catch((error) => { console.error('ERROR:', error.message); process.exitCode = 1; });
+  }
   // In the Docker image there is no src/, only the built dist/.
   const options = fs.existsSync('src') ? await compileStrapi() : { appDir: process.cwd(), distDir: path.join(process.cwd(), 'dist') };
   const strapi = await createStrapi(options).load();

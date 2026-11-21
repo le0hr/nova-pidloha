@@ -9,6 +9,8 @@
  * Usage (from apps/cms; on the server inside the container with STRAPI_SCRIPT=1):
  *   STRAPI_SCRIPT=1 node scripts/fill-product-info.js --preview=FILE.json   # plan only
  *   STRAPI_SCRIPT=1 node scripts/fill-product-info.js --apply               # write and publish
+ *   STRAPI_URL=… STRAPI_TOKEN=… node scripts/fill-product-info.js --remote [--preview=…|--apply]
+ *                 another CMS (e.g. the server) over REST with an API token that may update products
  */
 const fs = require('node:fs');
 const path = require('node:path');
@@ -17,6 +19,7 @@ const { createStrapi, compileStrapi } = require('@strapi/strapi');
 const arg = (name) => process.argv.find((a) => a.startsWith(`--${name}=`))?.split('=').slice(1).join('=');
 const APPLY = process.argv.includes('--apply');
 const PREVIEW = arg('preview');
+const REMOTE = process.argv.includes('--remote');
 const PRODUCT = 'api::product.product';
 
 const num = (value) => String(value).trim().replace(/\s*(mm|мм)$/i, '').replace('.', ',');
@@ -195,17 +198,61 @@ function plan(product) {
   };
 }
 
-async function main(strapi) {
-  const products = [];
-  for (let start = 0; ; start += 100) {
-    const page = await strapi.documents(PRODUCT).findMany({
-      status: 'published', start, limit: 100,
-      populate: { category: { fields: ['slug'] }, brand: { fields: ['name'] }, characteristics: true,
-        product_variations: { fields: ['catalog_attributes', 'active'], populate: { decor_color: { fields: ['name'] } } } },
+/** Local CMS through the documents API. */
+function localStore(strapi) {
+  return {
+    name: 'local',
+    async list() {
+      const products = [];
+      for (let start = 0; ; start += 100) {
+        const page = await strapi.documents(PRODUCT).findMany({
+          status: 'published', start, limit: 100,
+          populate: { category: { fields: ['slug'] }, brand: { fields: ['name'] }, characteristics: true,
+            product_variations: { fields: ['catalog_attributes', 'active'], populate: { decor_color: { fields: ['name'] } } } },
+        });
+        products.push(...page);
+        if (page.length < 100) break;
+      }
+      return products;
+    },
+    async save(documentId, data) {
+      await strapi.documents(PRODUCT).update({ documentId, data });
+      await strapi.documents(PRODUCT).publish({ documentId });
+    },
+  };
+}
+
+/** Another CMS (the server) through REST with an API token: STRAPI_URL, STRAPI_TOKEN. */
+function remoteStore(url, token) {
+  const call = async (method, route, body) => {
+    const response = await fetch(`${url.replace(/\/$/, '')}/${route}`, {
+      method, headers: { Authorization: `Bearer ${token}`, ...(body ? { 'Content-Type': 'application/json' } : {}) },
+      body: body ? JSON.stringify(body) : undefined,
     });
-    products.push(...page);
-    if (page.length < 100) break;
-  }
+    const json = await response.json().catch(() => null);
+    if (!response.ok) throw new Error(`${method} ${route.split('?')[0]}: HTTP ${response.status} ${json?.error?.message ?? ''}`);
+    return json;
+  };
+  return {
+    name: url,
+    async list() {
+      const products = [];
+      const query = 'status=published&pagination[pageSize]=100&populate[category][fields][0]=slug&populate[brand][fields][0]=name'
+        + '&populate[characteristics]=true&populate[product_variations][fields][0]=catalog_attributes'
+        + '&populate[product_variations][fields][1]=active&populate[product_variations][populate][decor_color][fields][0]=name';
+      for (let page = 1; ; page++) {
+        const body = await call('GET', `api/products?${query}&pagination[page]=${page}`);
+        products.push(...body.data);
+        if (page >= body.meta.pagination.pageCount) break;
+      }
+      return products;
+    },
+    async save(documentId, data) { await call('PUT', `api/products/${documentId}?status=published`, { data }); },
+  };
+}
+
+async function main(store) {
+  const products = await store.list();
   const plans = products.filter((p) => p.active !== false).map(plan)
     .filter((p) => p && (p.addCharacteristics.length || p.description || p.shortDescription));
   console.log(`${products.length} products, ${plans.length} to fill: `
@@ -214,7 +261,7 @@ async function main(strapi) {
   if (PREVIEW) fs.writeFileSync(PREVIEW, JSON.stringify(plans, null, 1));
   if (!APPLY) return;
 
-  const journal = path.join(process.cwd(), `.tmp/fill-product-info-${Date.now()}.jsonl`);
+  const journal = path.join(process.cwd(), `.tmp/fill-product-info-${REMOTE ? 'remote-' : ''}${Date.now()}.jsonl`);
   for (const item of plans) {
     const product = products.find((p) => p.documentId === item.documentId);
     const data = {};
@@ -224,8 +271,7 @@ async function main(strapi) {
     ];
     if (item.description) data.description = item.description;
     if (item.shortDescription) data.shortDescription = item.shortDescription;
-    await strapi.documents(PRODUCT).update({ documentId: item.documentId, data });
-    await strapi.documents(PRODUCT).publish({ documentId: item.documentId });
+    await store.save(item.documentId, data);
     fs.appendFileSync(journal, JSON.stringify({ documentId: item.documentId, before: {
       description: product.description ?? null, shortDescription: product.shortDescription ?? null,
       characteristics: product.characteristics.map(({ name, value, unit }) => ({ name, value, unit })) } }) + '\n');
@@ -234,9 +280,13 @@ async function main(strapi) {
 }
 
 (async () => {
+  if (REMOTE) {
+    if (!process.env.STRAPI_URL || !process.env.STRAPI_TOKEN) throw new Error('--remote needs STRAPI_URL and STRAPI_TOKEN');
+    return main(remoteStore(process.env.STRAPI_URL, process.env.STRAPI_TOKEN)).catch((error) => { console.error('ERROR:', error.message); process.exitCode = 1; });
+  }
   const options = fs.existsSync('src') ? await compileStrapi() : { appDir: process.cwd(), distDir: path.join(process.cwd(), 'dist') };
   const strapi = await createStrapi(options).load();
-  try { await main(strapi); }
+  try { await main(localStore(strapi)); }
   catch (error) { console.error('ERROR:', error.message); process.exitCode = 1; }
   finally { await strapi.destroy(); }
 })();
