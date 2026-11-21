@@ -77,7 +77,7 @@ export async function countProducts(params: CatalogParams, groups: FilterGroup[]
   return data.products_connection.pageInfo.total;
 }
 
-/** `details: false` skips value popularity and price bounds: enough to apply filters, much cheaper ("Показати ще"). */
+/** `details: false` skips value popularity and price bounds: enough to apply filters, much cheaper ("Показати все"). */
 export async function getFilters(categorySlugs: string[], productCategorySlugs: string[] = categorySlugs, { details = true }: { details?: boolean } = {}): Promise<FilterGroup[]> {
   const groups: FilterGroup[] = [];
   let page = 1;

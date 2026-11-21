@@ -67,6 +67,7 @@ const PRODUCT_QUERY = `
         }
         price
         slug
+        note
         image {
           url
         }

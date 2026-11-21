@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SITE_NAME, indexable, siteUrl } from "@/lib/seo";
 import GoogleTag from "@/components/analytics/GoogleTag";
+import NavigationProgress from "@/components/layout/NavigationProgress";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -32,6 +33,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: IMAGE_SHELL_SCRIPT }} />
       </head>
       <body>
+        <NavigationProgress />
         {children}
         <GoogleTag enabled={indexable()} />
       </body>

@@ -194,6 +194,12 @@ export default function DynamicField({ product }: { product: ProductReturnData }
           activeIndex={gallery.activeIndex}
           onSelectVariation={(item) => selectVariation(gallery.select(item))}
         />
+        {selectedVariation.note && (
+          <p className="mt-3 flex items-start gap-2 text-[13px] leading-snug text-[#666]">
+            <svg aria-hidden="true" viewBox="0 0 16 16" className="mt-[2px] size-[14px] shrink-0 fill-none stroke-[#9e9e9e]" strokeWidth="1.5"><circle cx="8" cy="8" r="6.5" /><path d="M8 7.2v4M8 4.8v.1" strokeLinecap="round" /></svg>
+            {selectedVariation.note}
+          </p>
+        )}
       </div>
 
       {/* Configurator */}

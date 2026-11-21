@@ -20,6 +20,8 @@ export interface ProductVariation {
   decor_glass: { name: string } | null;
   price: number;
   image: string;
+  /** Shown under the photo, e.g. "no exact photo of this variation". */
+  note?: string | null;
 }
 
 export interface ProductReturnData {
