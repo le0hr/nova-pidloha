@@ -6,6 +6,8 @@
 const CMS = (process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337").replace(/\/$/, "");
 // Next's default deviceSizes + imageSizes: only these widths are accepted by /_next/image.
 const WIDTHS = [128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840];
+// Steps offered in srcset: enough for phones, laptops and 4K screens without bloating the HTML.
+const SRCSET_WIDTHS = [256, 384, 640, 1080, 1920, 3840];
 
 export function optimizable(src: string | null | undefined): src is string {
   if (!src || /\.svg(\?|$)/i.test(src)) return false;
@@ -22,5 +24,5 @@ export function imageSrc(src: string, width: number, quality = 75): string {
 /** srcset from `min` to `max` px; pair it with a `sizes` attribute. */
 export function imageSrcSet(src: string, max = 3840, min = 256): string | undefined {
   if (!optimizable(src)) return undefined;
-  return WIDTHS.filter((w) => w >= min && w <= max).map((w) => `${imageSrc(src, w)} ${w}w`).join(", ");
+  return SRCSET_WIDTHS.filter((w) => w >= min && w <= max).map((w) => `${imageSrc(src, w)} ${w}w`).join(", ");
 }

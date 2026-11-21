@@ -4,7 +4,7 @@ import CardImages from "./CardImages";
 export default function Card({ product, index = 0 }: {product: CatalogProduct, index:number}) {
   const staggerDelay = `${0.06 + index * 0.07}s`;
     return(
-        <Link 
+        <Link prefetch={false} 
         href={`/product/${product.slug}`} 
         className="catalog-card relative flex w-full min-w-0 flex-col items-start border border-[#E0E0E0] bg-white
                  transition-[border-color,translate] duration-150 ease-out hover:border-[#e53935] motion-safe:hover:-translate-y-1 motion-reduce:transition-none"

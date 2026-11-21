@@ -16,6 +16,9 @@ export default function CardImages({ images, alt, className }: { images: string[
   const list = images.slice(0, MAX_IMAGES);
   const track = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
+  // Only the first photo loads with the page; the others once the visitor points at or swipes the card.
+  const [warm, setWarm] = useState(false);
+  const wake = list.length > 1 && !warm ? () => setWarm(true) : undefined;
 
   const show = (index: number) => {
     const element = track.current;
@@ -42,14 +45,19 @@ export default function CardImages({ images, alt, className }: { images: string[
     <div className={`${className} img-shell relative`}>
       <div
         ref={track}
+        onMouseEnter={wake}
+        onTouchStart={wake}
+        onFocus={wake}
         onMouseMove={list.length > 1 ? onMouseMove : undefined}
         onMouseLeave={list.length > 1 ? () => show(0) : undefined}
         onScroll={list.length > 1 ? onScroll : undefined}
         className="flex h-full w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [@media(hover:hover)]:overflow-x-hidden"
       >
-        {list.map((src, index) => (
+        {list.map((src, index) => index && !warm
+          ? <span key={src} className="h-full w-full shrink-0 snap-start" />
+          : (
           // eslint-disable-next-line @next/next/no-img-element
-          <img key={src} src={imageSrc(src, 640)} srcSet={imageSrcSet(src, 1920)} sizes="(min-width: 1024px) 30vw, 50vw" alt={index ? `${alt}, варіант ${index + 1}` : alt} loading={index ? "lazy" : undefined}
+          <img key={src} src={imageSrc(src, 640)} srcSet={imageSrcSet(src, 1920, 384)} sizes="(min-width: 1024px) 30vw, 50vw" alt={index ? `${alt}, варіант ${index + 1}` : alt} loading="lazy"
             draggable={false} className="h-full w-full shrink-0 snap-start object-cover" />
         ))}
       </div>
