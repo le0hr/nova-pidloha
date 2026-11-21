@@ -25,7 +25,8 @@ export default function ProductTabsClient({
   // Empty tabs are not shown (many products have no description yet).
   const present = (node: React.ReactNode) => node !== null && node !== undefined && node !== false && node !== "";
   const tabs = TABS.filter(tab => present(tab.id === "description" ? description : characteristics));
-  const [active, setActive] = useState<TabId>(tabs.some(tab => tab.id === "characteristics") ? "characteristics" : "description");
+  // The description opens first; characteristics when there is no description.
+  const [active, setActive] = useState<TabId>(tabs[0]?.id ?? "description");
   if (!tabs.length) return null;
 
   return (
