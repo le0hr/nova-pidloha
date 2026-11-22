@@ -1,0 +1,2 @@
+# sudo crontab -e
+17 3,15 * * * cd /opt/reverse-proxy && docker compose run --rm certbot renew --quiet && docker exec edge_nginx nginx -s reload

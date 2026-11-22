@@ -4,7 +4,7 @@ import { plainText } from '@/lib/seo';
 const plainParagraphs = (markdown?: string | null) =>
   String(markdown ?? '').split(/\n\s*\n/).map(plainText).filter(Boolean).join('\n\n');
 import { normalizeAddon, type RawAddon } from '@/lib/catalog/addons';
-import { graphqlFetch } from '@/lib/client';
+import { graphqlFetch, mediaUrl } from '@/lib/client';
 import type { ProductReturnData, ProductVariation } from '@/types/product';
 import type { SizeNote, SizeRule } from '@/lib/catalog/sizing';
 
@@ -173,7 +173,7 @@ export const getProductBySlug = cache(async (slug: string): Promise<ProductRetur
     slug,
     brand: product.brand?.name ?? undefined,
     updatedAt: product.updatedAt ?? undefined,
-    image: product.image?.url ? `${process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337"}${product.image.url}` : undefined,
+    image: product.image?.url ? mediaUrl(product.image.url) : undefined,
     category: product.category,
     // Product rules override the brand's (see sizing.ts).
     sizeRules: product.size_rules?.length ? product.size_rules : product.brand?.size_rules ?? [],
@@ -182,12 +182,12 @@ export const getProductBySlug = cache(async (slug: string): Promise<ProductRetur
       ...variation,
       decor_color: decor_color ? {
         name: decor_color.name,
-        image: decor_color.image?.url ? `${process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337"}${decor_color.image.url}` : null,
+        image: decor_color.image?.url ? mediaUrl(decor_color.image.url) : null,
       } : null,
       addons: (addons ?? []).map(toAddon),
       price: Number(price) || 0,
       image: image?.url
-        ? `${process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337"}${image.url}`
+        ? mediaUrl(image.url)
         : "",
     })),
   };
