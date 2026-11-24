@@ -97,12 +97,6 @@
       "type": "boolean",
       "default": true
     },
-    "catalog_attributes": {
-      "type": "json"
-    },
-    "attribute_definitions": {
-      "type": "json"
-    },
     "sku": {
       "type": "string"
     },

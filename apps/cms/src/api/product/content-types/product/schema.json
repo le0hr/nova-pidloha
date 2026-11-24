@@ -72,12 +72,6 @@
       "type": "boolean",
       "default": true
     },
-    "catalog_attributes": {
-      "type": "json"
-    },
-    "attribute_definitions": {
-      "type": "json"
-    },
     "characteristics": {
       "type": "component",
       "repeatable": true,
