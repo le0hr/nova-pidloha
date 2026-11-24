@@ -13,16 +13,15 @@ type FeaturedProduct = {
   price: string | number | null;
   image: Media | null;
   category: { name: string | null; slug: string | null } | null;
-  catalog_attributes: Record<string, unknown> | null;
   isNew: boolean;
+  isPromo: boolean | null;
+  isSale: boolean | null;
   product_variations: { price: string | number | null; image: Media | null }[];
 };
 type Media = { url: string; width: number | null; height: number | null };
 
-/** Doors are grouped by their subclass; products without one (e.g. floors) by their category. */
+/** Grouped by category (doors: their subcategory, e.g. «Каркасно-щитові»). */
 function productGroup(product: FeaturedProduct): string {
-  const subclass = product.catalog_attributes?.["підклас"];
-  if (typeof subclass === "string" && subclass.trim()) return subclass.trim();
   return product.category?.name?.trim() || "Інше";
 }
 
@@ -43,7 +42,7 @@ export async function getHomeProducts(): Promise<HomeProduct[]> {
         query GetHomeProducts($page: Int!) {
           products(status: PUBLISHED, filters: {isFeatured: {eq: true}, active: {ne: false}},
             pagination: {page: $page, pageSize: 100}, sort: ["name:asc", "documentId:asc"]) {
-            name slug shortDescription price isNew catalog_attributes image { url width height } category { name slug }
+            name slug shortDescription price isNew isPromo isSale image { url width height } category { name slug }
             # Media fields are not filterable and variation price is a string, so pick price/image in JS.
             product_variations(filters: {active: {ne: false}}, pagination: {limit: 50}, sort: ["documentId:asc"]) {
               price image { url width height }
@@ -75,7 +74,7 @@ export async function getHomeProducts(): Promise<HomeProduct[]> {
         unit: priceUnit(product.category?.slug),
         group: productGroup(product),
         description: product.shortDescription?.trim() || undefined,
-        badge: product.isNew ? "Новинка" : "Рекомендуємо",
+        badge: product.isNew ? "Новинка" : product.isPromo ? "Акція" : product.isSale ? "Розпродаж" : "Рекомендуємо",
       };
     });
   } catch (error) {

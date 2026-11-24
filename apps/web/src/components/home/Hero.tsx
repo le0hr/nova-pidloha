@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import type { HeroSlide } from "@/types/home";
+import LineIcon from "@/components/LineIcon";
 import HomeIcon from "./HomeIcon";
 import ShopMap from "./ShopMap";
 import type { ShopLocation } from "@/lib/catalog/shop-locations";
@@ -11,12 +13,40 @@ import HeroBody from "./HeroBody";
 import { optimizable } from "@/lib/image";
 
 export default function Hero({ slides, shops }: { slides: HeroSlide[]; shops?: ShopLocation[] }) {
-  const [active, setActive] = useState(0);
+  // "/?map=1" ("Адреси магазинів" in the cart) opens the shop map right away.
+  const searchParams = useSearchParams();
+  const mapRequested = searchParams.get("map") === "1";
+  const listRequested = searchParams.get("shops") === "1";
+  const mapIndex = slides.findIndex((item) => item.kind === "map");
+  const openMap = mapRequested && mapIndex >= 0;
+  const [active, setActive] = useState(openMap ? mapIndex : 0);
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [mapInteractive, setMapInteractive] = useState(false);
+  const [mapInteractive, setMapInteractive] = useState(openMap);
+  const [wasOpenMap, setWasOpenMap] = useState(openMap);
+  if (openMap !== wasOpenMap) {
+    setWasOpenMap(openMap);
+    if (openMap) { setActive(mapIndex); setMapInteractive(true); }
+  }
+  const closeMap = () => {
+    setMapInteractive(false);
+    // So the same link opens the map again.
+    if (mapRequested) window.history.replaceState(null, "", window.location.pathname);
+  };
+  // The map is at the top of the page; when its slide is switched off in the CMS, show the list of shops instead.
+  useEffect(() => {
+    if (mapRequested && mapIndex >= 0) window.scrollTo({ top: 0 });
+    if (!listRequested && !(mapRequested && mapIndex < 0)) return;
+    // After the navigation's own scroll to the top and the cart drawer's scroll lock.
+    const timer = window.setTimeout(() => {
+      document.getElementById("contacts")?.scrollIntoView();
+      // So the same link works again.
+      window.history.replaceState(null, "", window.location.pathname);
+    }, 100);
+    return () => window.clearTimeout(timer);
+  }, [mapRequested, listRequested, mapIndex]);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const elapsed = useRef(0);
   const progress = useRef<HTMLDivElement>(null);
@@ -88,7 +118,7 @@ export default function Hero({ slides, shops }: { slides: HeroSlide[]; shops?: S
       className="home-hero relative isolate w-full overflow-hidden bg-[#35332e] text-white">
       {slides.map((background, index) => <div key={`${index}:${background.title}`} aria-hidden={index !== currentIndex} inert={index !== currentIndex}
         className={`hero-media absolute inset-0 bg-[#35332e] ${index === currentIndex ? "opacity-100" : "pointer-events-none opacity-0"}`}>
-        {background.kind === "map" ? <ShopMap shops={shops} interactive={index === currentIndex && mapInteractive} onClose={() => setMapInteractive(false)} /> : <>
+        {background.kind === "map" ? <ShopMap shops={shops} interactive={index === currentIndex && mapInteractive} onClose={closeMap} /> : <>
           {background.image && <Image src={background.image} alt={background.imageAlt ?? (background.kind === "image" ? background.title : "")} fill sizes="100vw"
             className={`hero-photo object-cover ${background.mobileImage ? "hidden md:block" : ""}`} priority={index === currentIndex} unoptimized={!optimizable(background.image)} />}
           {background.mobileImage && <Image src={background.mobileImage} alt={background.imageAlt ?? (background.kind === "image" ? background.title : "")} fill sizes="100vw" className="hero-photo object-cover md:hidden" priority={index === currentIndex} unoptimized={!optimizable(background.mobileImage)} />}
@@ -103,7 +133,7 @@ export default function Hero({ slides, shops }: { slides: HeroSlide[]; shops?: S
           {(slide.description || slide.mobileDescription) && <p className="text-sm leading-relaxed text-white/90 md:text-base"><span className="md:hidden">{slide.mobileDescription || slide.description}</span><span className="hidden md:inline">{slide.description}</span></p>}
           {!!slide.body?.length && <HeroBody blocks={slide.body} />}
           <div className="flex w-full flex-wrap gap-3 pt-1 md:w-auto md:pt-3">
-            {isMap && <button type="button" onClick={() => setMapInteractive(true)} className="flex min-h-12 items-center justify-center gap-3 bg-[#e53935] px-6 py-3 text-sm font-bold hover:bg-[#c62828] md:px-8 md:py-4 md:text-base">Знайти магазини<HomeIcon name="map-pin" /></button>}
+            {isMap && <button type="button" onClick={() => setMapInteractive(true)} className="flex min-h-12 items-center justify-center gap-3 bg-[#e53935] px-6 py-3 text-sm font-bold hover:bg-[#c62828] md:px-8 md:py-4 md:text-base">Знайти магазини<LineIcon name="pin" /></button>}
             {slide.href && slide.label && <Link href={slide.href} className="flex min-h-12 items-center justify-center gap-3 bg-[#e53935] px-6 py-3 text-sm font-bold hover:bg-[#c62828] md:px-8 md:py-4 md:text-base">{slide.label}<HomeIcon name="arrow-white" /></Link>}
             {slide.secondaryHref && slide.secondaryLabel && <Link href={slide.secondaryHref} className="flex min-h-12 items-center gap-3 border-2 border-white px-6 py-3 font-bold hover:bg-white/15">{slide.secondaryLabel}<HomeIcon name="arrow-white" /></Link>}
           </div>

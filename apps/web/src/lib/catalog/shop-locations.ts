@@ -16,6 +16,11 @@ export const SHOP_LOCATIONS: ShopLocation[] = [
   { name: "Нова Підлога та Двері — магазин 2", lat: 49.42909246799387, lng: 32.00709050070083 },
 ];
 
+/** Home page with the shop map opened (see Hero). */
+export const SHOP_MAP_HREF = "/?map=1";
+/** Home page scrolled to the list of shops (a parameter: Next breaks on a repeated "/#contacts" link). */
+export const SHOP_LIST_HREF = "/?shops=1";
+
 export function shopMapEmbedUrl(shop: ShopLocation): string {
   const params = new URLSearchParams({
     q: `${shop.lat},${shop.lng}`, z: "16", hl: "uk", output: "embed",

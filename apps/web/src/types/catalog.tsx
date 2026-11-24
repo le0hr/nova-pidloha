@@ -24,6 +24,8 @@ export interface CatalogProduct {
   square?: boolean;
   /** Short product description from the CMS. */
   description?: string;
-  /** "isNew" flag from the CMS: shows the NEW badge. */
+  /** CMS flags: badges on the card. */
   isNew?: boolean;
+  isPromo?: boolean;
+  isSale?: boolean;
 }

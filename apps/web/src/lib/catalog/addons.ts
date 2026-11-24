@@ -30,32 +30,50 @@ export function groupAddons(addons: ProductAddon[]) {
   }
   return [...groups.values()];
 }
+type AddonLabel = Pick<ProductAddon, "group" | "name">;
 /**
- * How many pieces of an add-on can be ordered: door frame, casing, extension board and stop strip come in
- * 1, 2.5 or 5 pieces; skirting in any whole number; everything else is one piece. Keep in sync with
- * apps/cms/src/checkout/catalog.ts.
+ * How an add-on is counted: casing by door sides, frame and extension board per door, skirting in any whole number, the rest one piece.
+ * A side of casing, a frame or an extension = 2.5 pieces, or one set when the price is per set ("1 комплект (2,5 шт.)", "2,5 шт.").
+ * Keep in sync with apps/cms/src/checkout/catalog.ts.
  */
-export const ADDON_PRESETS = [1, 2.5, 5];
+export const SIDES = [1, 2];
 export const SKIRTING_MAX = 100;
-export function addonQuantityKind(addon: Pick<ProductAddon, "group" | "name">): "preset" | "count" | "single" {
-  const text = `${addon.group ?? ""} ${addon.name}`.toLowerCase();
-  if (/плінтус/.test(text)) return "count";
-  if (/коробк|лиштв|добір|добірн|притворн/.test(text)) return "preset";
-  return "single";
+export function addonQuantityKind(addon: AddonLabel): "sides" | "perDoor" | "count" | "single" {
+  if (/плінтус/i.test(`${addon.group ?? ""} ${addon.name}`)) return "count";
+  const label = addon.group || addon.name;
+  return /^\s*лиштв/i.test(label) ? "sides" : /^\s*(коробк|добір)/i.test(label) ? "perDoor" : "single";
 }
-export function validAddonQty(addon: Pick<ProductAddon, "group" | "name">, qty: unknown): number {
+/** The price already covers 2.5 pieces. */
+export const isSet = (addon: AddonLabel) => /2[.,]5\s*шт/i.test(addon.name);
+/** Priced units (pieces or sets) for one side of casing, one frame or one extension. */
+export const unitsPerSet = (addon: AddonLabel) => (isSet(addon) ? 1 : 2.5);
+/** The chosen value: sides for casing, pieces for skirting; the first option (1) by default. */
+export function validAddonChoice(addon: AddonLabel, choice: unknown): number {
   const kind = addonQuantityKind(addon);
-  const value = Number(qty);
-  if (kind === "preset") return ADDON_PRESETS.includes(value) ? value : 1;
+  const value = Number(choice);
+  if (kind === "sides") return SIDES.includes(value) ? value : SIDES[0];
   if (kind === "count") return Number.isInteger(value) && value >= 1 && value <= SKIRTING_MAX ? value : 1;
   return 1;
 }
-/** "2,5 шт" */
-export const formatQty = (qty: number) => `${qty.toLocaleString("uk-UA")} шт`;
+/** Priced units of a choice. */
+export const addonUnits = (addon: AddonLabel, choice: unknown) =>
+  validAddonChoice(addon, choice) * (["sides", "perDoor"].includes(addonQuantityKind(addon)) ? unitsPerSet(addon) : 1);
+export const sidesLabel = (sides: number) => (sides === 2 ? "На дві сторони" : "На одну сторону");
+/** "2,5 шт", "1 комплект", "2 комплекти" */
+export const formatUnits = (addon: AddonLabel, units: number) =>
+  isSet(addon) ? `${units} ${units === 1 ? "комплект" : "комплекти"}` : `${units.toLocaleString("uk-UA")} шт`;
+/** Cart line: " — на одну сторону (2,5 шт)" for casing, " × 3 шт" for several pieces. */
+export function addonQtyNote(addon: ProductAddon): string {
+  const units = addon.qty ?? 1;
+  if (addonQuantityKind(addon) === "perDoor") return ` — на одні двері (${formatUnits(addon, units)})`;
+  if (addonQuantityKind(addon) === "sides") return ` — ${sidesLabel(units / unitsPerSet(addon)).toLowerCase()} (${formatUnits(addon, units)})`;
+  return units !== 1 ? ` × ${formatUnits(addon, units)}` : "";
+}
 
-export const selectedAddons = (addons: ProductAddon[], selection: Record<string, string>, quantities: Record<string, number> = {}) =>
+/** `choices`: sides or pieces by add-on group; `qty` of the result is priced units. */
+export const selectedAddons = (addons: ProductAddon[], selection: Record<string, string>, choices: Record<string, number> = {}) =>
   addons.filter((addon) => selection[addonGroup(addon)] === addon.id)
-    .map((addon) => ({ ...addon, qty: validAddonQty(addon, quantities[addonGroup(addon)] ?? 1) }));
+    .map((addon) => ({ ...addon, qty: addonUnits(addon, choices[addonGroup(addon)]) }));
 export const addonLineTotal = (addon: ProductAddon) => Math.round(addon.price * (addon.qty ?? 1) * 100) / 100;
 export const addonTotal = (addons: ProductAddon[]) =>
   Math.round(addons.reduce((sum, addon) => sum + addonLineTotal(addon), 0) * 100) / 100;

@@ -6,6 +6,7 @@ import ProductTabsClient from "@/components/product/ProductTabs";
 import CharacteristicsTable from "@/components/product/CharacteristicsTable";
 import JsonLd from "@/components/seo/JsonLd";
 import ViewItem from "@/components/analytics/ViewItem";
+import { parseProductConfig } from "@/lib/catalog/item-link";
 import { priceUnit } from "@/lib/catalog/floor";
 import { categoryHref } from "@/lib/catalog/categories";
 import {
@@ -19,6 +20,7 @@ type ProductPageProps = {
   params: Promise<{
     slug: string;
   }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 const productSeo = cache((slug: string) => fetchSeo(
@@ -85,8 +87,9 @@ function productLd(product: ProductReturnData) {
   };
 }
 
-export default async function ProductPage({ params }: ProductPageProps) {
+export default async function ProductPage({ params, searchParams }: ProductPageProps) {
   const slug = (await params).slug;
+  const config = parseProductConfig(await searchParams);
   const [product, seo] = await Promise.all([getProductBySlug(slug), productSeo(slug)]);
 
   if (!product?.variations?.length) {
@@ -136,13 +139,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <h1 className="font-['Outfit',sans-serif] font-bold text-[#1a1a1a] text-[24px] md:text-[32px] product-title">
               {productName}
             </h1>
-            <p className="font-['Outfit',sans-serif] font-normal md:font-medium text-[#9e9e9e] text-[13px] md:text-[15px] product-category">
+            <p className="font-['Outfit',sans-serif] font-normal md:font-medium text-[#9e9e9e] text-fs13 md:text-fs15 product-category">
               {categoryLabel}
             </p>
           </div>
 
           <DynamicField
+            key={JSON.stringify(config ?? null)}
             product={product}
+            config={config}
           />
 
           <ProductTabsClient

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import ItemOptions from "@/components/cart/ItemOptions";
+import ItemReceipt from "@/components/cart/Receipt";
+import { money } from "@/lib/catalog/receipt";
 import { useCartStore } from "@/store/cart-store";
 import { imageSrc } from "@/lib/image";
 
@@ -31,36 +32,29 @@ export default function MobileOrderSummary() {
         </div>
 
         <span className="font-outfit text-4 font-bold leading-[1.1] text-[#E53935]">
-          {totalPrice} ₴
+          {money(totalPrice)}
         </span>
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-full z-50 flex w-full flex-col gap-6 border-b border-[#E0E0E0] bg-white px-4 py-6 shadow-lg md:px-10">
+        <div className="absolute left-0 top-full z-50 flex max-h-[70dvh] w-full flex-col overflow-y-auto gap-6 border-b border-[#E0E0E0] bg-white px-4 py-6 shadow-lg md:px-10">
           {/* товар */}
           {items.map((item) =>{
             return(
-                <div key={item.id} className="flex items-center gap-6 self-stretch">
+                <div key={item.id} className="flex items-start gap-4 self-stretch">
                   <img
                     src={imageSrc(item.image, 256)}
                     alt={item.name}
-                    className="h-[94px] w-[94px] shrink-0 rounded-[3px] border border-[#D9D9D9] object-cover"
+                    className="size-16 shrink-0 rounded-[3px] border border-[#D9D9D9] object-cover"
                   />
 
-                  <div className="flex min-w-0 flex-1 flex-col gap-1">
-                    <span className="truncate font-inter text-3 font-medium leading-[1.25] text-[#1A1A1A]">
-                      {item.name}
-                    </span>
-
-                    <ItemOptions mods={item.mods} />
-                    <span className="font-inter text-[10px] font-normal leading-[1.25] text-[#666666]">
-                      {item.qty} шт
-                    </span>
+                  <div className="flex min-w-0 flex-1 flex-col gap-2">
+                    <ItemReceipt item={item} qty={item.qty} />
+                    {!!item.addons?.length && <div className="flex justify-between gap-3 font-outfit text-sm font-bold text-[#1A1A1A]">
+                      <span className="font-inter text-xs font-normal text-[#666]">Кількість: {item.qty}</span>
+                      <span>{money(Math.round(item.price * item.qty * 100) / 100)}</span>
+                    </div>}
                   </div>
-
-                  <span className="shrink-0 font-outfit text-3 font-bold leading-[1.2] text-[#1A1A1A]">
-                    {(item.price * item.qty).toLocaleString("uk-UA")} ₴
-                  </span>
                 </div>
             );
 

@@ -22,7 +22,7 @@ const domain = require('../dist/src/checkout/domain');
 async function run() {
   const app = await createStrapi({appDir: path.resolve(__dirname, '..'), distDir: path.resolve(__dirname, '../dist')}).load();
   try {
-    const addon = await app.documents('api::architrave-type.architrave-type').create({data: {name:'Коробка', additionalCost: 100, group:'Коробка'}, status:'published'});
+    const addon = await app.documents('api::architrave-type.architrave-type').create({data: {name:'Притворна планка', additionalCost: 100, group:'Притворна планка'}, status:'published'});
     const product = await app.documents('api::product.product').create({data: {name:'Двері', slug:'test-door', active:true}, status:'published'});
     const variation = await app.documents('api::product-variation.product-variation').create({data: {slug:'test-door-oak', price:'1000.50', active:true, products:[product.documentId], addons:[addon.documentId]}, status:'published'});
     const token = 'a'.repeat(64);
@@ -128,14 +128,42 @@ async function run() {
     assert.ok(payment.heldAt && payment.holdReviewAt); assert.equal(payment.events.length,3);
     assert.equal(domain.paymentState('sandbox',true),'test'); assert.equal(domain.paymentState('sandbox',false),'pending');
 
+    // --- add-on pieces: casing by door sides, everything else 1 ----------------------------------------------------
+    const casing = await app.documents('api::architrave-type.architrave-type').create({data:{name:'Лиштва', additionalCost:100, group:'Лиштва'}, status:'published'});
+    const casingSet = await app.documents('api::architrave-type.architrave-type').create({data:{name:'Лиштва плоска, 1 комплект (2,5 шт.)', additionalCost:2800, group:'Лиштва'}, status:'published'});
+    const cladding = await app.documents('api::architrave-type.architrave-type').create({data:{name:'Комплект обшивки: лиштва + добір, 1 комплект', additionalCost:1630, group:'Комплект обшивки'}, status:'published'});
+    const frame = await app.documents('api::architrave-type.architrave-type').create({data:{name:'Коробка 90х38х2070, 1 шт.', additionalCost:1020, group:'Коробка'}, status:'published'});
+    const frameSet = await app.documents('api::architrave-type.architrave-type').create({data:{name:'Алюмінієва коробка, 2,5 шт. Включає випрямляч', additionalCost:5885, group:'Коробка'}, status:'published'});
+    const extension = await app.documents('api::architrave-type.architrave-type').create({data:{name:'Добірна дошка МДФ 100х10х2070 мм, 1 шт.', additionalCost:600, group:'Добірна дошка'}, status:'published'});
+    const joint = await app.documents('api::architrave-type.architrave-type').create({data:{name:'З’єднувач для добірної дошки, 1 шт.', additionalCost:51, group:'З’єднувач'}, status:'published'});
+    const trimmed = await app.documents('api::product-variation.product-variation').create({data:{slug:'test-door-trim', price:'1000', active:true,
+      products:[product.documentId], addons:[addon.documentId, casing.documentId, casingSet.documentId, cladding.documentId, frame.documentId, frameSet.documentId, extension.documentId, joint.documentId]}, status:'published'});
+    const pieces = (id, qty) => ({step:'cart', items:[{id:'trim', variationSlug:trimmed.slug, qty:1, addons:[{id, qty}]}]});
+    const trimToken = randomBytes(32).toString('hex');
+    for (const [id, qty, unit, note] of [
+      [casing.documentId, 2.5, 125000, 'на одну сторону (2,5 шт)'], [casing.documentId, 5, 150000, 'на дві сторони (5 шт)'],
+      [casingSet.documentId, 1, 380000, 'на одну сторону (1 комплект)'], [casingSet.documentId, 2, 660000, 'на дві сторони (2 комплекти)'],
+      [cladding.documentId, 1, 263000, '1 комплект'],
+      [extension.documentId, 2.5, 250000, 'на одні двері (2,5 шт)'], [joint.documentId, 1, 105100, 'добірної дошки'],
+      [frame.documentId, 2.5, 355000, 'на одні двері (2,5 шт)'], [frameSet.documentId, 1, 688500, 'на одні двері (1 комплект)'],
+    ]) {
+      await orders.save(app, trimToken, pieces(id, qty));
+      const line = (await orders.find(app, trimToken)).items[0];
+      assert.equal(line.unit, unit); assert.ok(line.addons[0].name.endsWith(note), line.addons[0].name);
+    }
+    for (const qty of [undefined, 1, 5]) for (const id of [frame.documentId, extension.documentId]) await assert.rejects(orders.save(app, trimToken, pieces(id, qty)), /кількість/i);
+    for (const qty of [2.5, 5]) for (const id of [casingSet.documentId, cladding.documentId, frameSet.documentId]) await assert.rejects(orders.save(app, trimToken, pieces(id, qty)), /кількість/i);
+    for (const qty of [1, undefined, 3]) await assert.rejects(orders.save(app, trimToken, pieces(casing.documentId, qty)), /кількість/i);
+    await assert.rejects(orders.save(app, trimToken, pieces(addon.documentId, 5)), /кількість/i);
+
     // --- floor: price per m² × pack area; doors: size rules from the CMS -------------------------------------------
     const floor = await app.documents('api::product.product').create({data:{name:'Ламінат', slug:'test-floor', active:true}, status:'published'});
     const floorRow = await app.documents('api::product-variation.product-variation').create({data:{slug:'test-floor-oak', price:'500', active:true,
-      products:[floor.documentId], catalog_attributes:{'Площа в пачці, м2':'2,13'}}, status:'published'});
+      products:[floor.documentId], packArea:2.13}, status:'published'});
     const sized = await app.documents('api::product.product').create({data:{name:'Двері розмір', slug:'test-door-size', active:true,
       size_rules:[{dimension:'height', min:1700, max:1990, step:10, percent:15}]}, status:'published'});
     const sizedRow = await app.documents('api::product-variation.product-variation').create({data:{slug:'test-door-size-white', price:'1000', active:true,
-      products:[sized.documentId]}, status:'published'});
+      products:[sized.documentId], options:[{name:'Сторона відкривання', value:'Ліве'}]}, status:'published'});
     const sizeToken = randomBytes(32).toString('hex');
     const sizeBody = {step:'cart', items:[
       {id:'floor', variationSlug:floorRow.slug, qty:3, price:1},
@@ -148,6 +176,7 @@ async function run() {
     assert.equal(lines[1].unit, 100000, 'standard size costs the standard price');
     assert.equal(lines[2].unit, 115000, 'non-standard height +15%');
     assert.deepEqual(lines[2].size, {width:800, height:1950, percent:15});
+    assert.ok(lines[1].mods.includes('Сторона відкривання: Ліве'), 'variation options go to the order line');
     assert.ok(lines[2].mods.includes('Нестандартний розмір: 800×1950 мм (+15%)')); assert.ok(lines[1].mods.includes('Розмір: 800×2000 мм'));
     assert.equal(sizeDraft.totalMinor, 3 * 106500 + 100000 + 115000);
     await assert.rejects(orders.save(app, sizeToken, {step:'cart', items:[{id:'x', variationSlug:sizedRow.slug, qty:1, size:{width:800, height:1955}}]}), /розмір/i, 'off the 10 mm step');

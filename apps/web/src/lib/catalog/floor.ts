@@ -1,25 +1,14 @@
 import type { ProductVariation } from "@/types/product";
 
-function attribute(variation: ProductVariation | undefined, pattern: RegExp): string | undefined {
-  const entry = Object.entries(variation?.catalog_attributes ?? {}).find(([key]) => pattern.test(key));
-  const value = entry?.[1];
-  return value == null || String(value).trim() === "" ? undefined : String(value).trim();
-}
-
-/** Area of one pack in m² from the importer attribute "Площа в пачці, м2"; null when the item is not sold by packs. */
+/** Area of one pack in m²; null when the item is not sold by packs. */
 export function packArea(variation: ProductVariation | undefined): number | null {
-  const area = Number(attribute(variation, /площа.*пач/i)?.replace(",", "."));
-  return Number.isFinite(area) && area > 0 ? area : null;
+  const area = Number(variation?.packArea);
+  return variation?.packArea != null && Number.isFinite(area) && area > 0 ? area : null;
 }
 
 /** Board size label, e.g. "1285×192×8". */
 export function boardSize(variation: ProductVariation | undefined): string | undefined {
-  return attribute(variation, /розмір.*дошк/i);
-}
-
-/** Whole packs needed to cover `m2` (laminate is sold only by full packs). */
-export function packsFor(m2: number, area: number): number {
-  return Math.max(1, Math.ceil(m2 / area - 1e-9));
+  return variation?.boardSize?.trim() || undefined;
 }
 
 /** Floor categories (pidloha, pidloha-…): square card photos. */

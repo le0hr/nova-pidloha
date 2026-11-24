@@ -48,7 +48,7 @@ async function buildIndex(): Promise<Entry[]> {
       query SearchIndex($page: Int!) {
         products(status: PUBLISHED, pagination: {page: $page, pageSize: 100}, sort: ["name:asc"],
           filters: {or: [{active: {eq: true}}, {active: {null: true}}]}) {
-          name slug price shortDescription isNew image { url } category { slug name } brand { name }
+          name slug price shortDescription isNew isPromo isSale image { url } category { slug name } brand { name }
           product_variations(filters: {active: {ne: false}}, pagination: {start: 0, limit: 100}) {
             active price image { url } decor { name } decor_color { name }
           }

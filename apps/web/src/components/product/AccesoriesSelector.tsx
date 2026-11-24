@@ -2,24 +2,38 @@
 
 import { useState, useId } from "react";
 import type { ProductAddon } from "@/types/product";
-import { ADDON_PRESETS, SKIRTING_MAX, addonQuantityKind, addonTotal, formatQty, groupAddons, selectedAddons } from "@/lib/catalog/addons";
+import { SIDES, SKIRTING_MAX, addonLineTotal, addonQuantityKind, addonTotal, addonUnits, formatUnits, groupAddons, isSet, selectedAddons, sidesLabel, validAddonChoice } from "@/lib/catalog/addons";
 
-/** Pieces of the chosen moulding: 1 / 2,5 / 5 buttons, or a counter for skirting. */
+/** Casing: one or two door sides; skirting: a counter of pieces. */
 function QuantityControl({ addon, qty, onChange, indent = true }: { addon: ProductAddon; qty: number; onChange: (qty: number) => void; indent?: boolean }) {
   const kind = addonQuantityKind(addon);
   if (kind === "single") return null;
+  if (kind === "perDoor") {
+    const units = addonUnits(addon, 1);
+    return (
+      <p className={`${indent ? "ml-[28px]" : ""} font-['Outfit',sans-serif] text-fs12 text-[#666]`}>
+        На одні двері: {formatUnits(addon, units)}, <span className="text-fs13 text-[#1a1a1a]">+{addonLineTotal({ ...addon, qty: units }).toLocaleString("uk-UA")} грн</span>
+      </p>
+    );
+  }
   return (
     <div className={`${indent ? "ml-[28px] mt-1" : ""} flex flex-col gap-1.5`}>
-      <span className="font-['Outfit',sans-serif] text-[12px] text-[#888]">{kind === "count" ? "Кількість, шт" : "Кількість"}</span>
-      {kind === "preset" ? (
-        <div role="radiogroup" aria-label={`Кількість: ${addon.group ?? addon.name}`} className="inline-flex self-start border border-[#e0e0e0]">
-          {ADDON_PRESETS.map((value) => (
-            <button key={value} type="button" role="radio" aria-checked={qty === value} onClick={() => onChange(value)}
-              className={`min-h-9 border-r border-[#e0e0e0] px-3.5 font-['Outfit',sans-serif] text-[13px] transition-colors last:border-r-0 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#e53935] ${
-                qty === value ? "bg-[#e53935] font-semibold text-white" : "bg-white text-[#1a1a1a] hover:bg-[#fff5f5]"}`}>
-              {formatQty(value)}
-            </button>
-          ))}
+      {kind === "count" && <span className="font-['Outfit',sans-serif] text-fs12 text-[#888]">Кількість, шт</span>}
+      {kind === "sides" ? (
+        <div role="radiogroup" aria-label={`Сторони: ${addon.group ?? addon.name}`} className="grid grid-cols-1 gap-2 min-[420px]:grid-cols-2">
+          {SIDES.map((sides) => {
+            const units = addonUnits(addon, sides);
+            const active = qty === sides;
+            return (
+              <button key={sides} type="button" role="radio" aria-checked={active} onClick={() => onChange(sides)}
+                className={`flex flex-col items-start border px-3 py-2 text-left font-['Outfit',sans-serif] text-fs13 leading-snug transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#e53935] ${
+                  active ? "border-[#e53935] bg-[#fff5f5]" : "border-[#e0e0e0] bg-white hover:border-[#e53935]/50"}`}>
+                <span className={`text-fs13 font-semibold ${active ? "text-[#e53935]" : "text-[#1a1a1a]"}`}>{sidesLabel(sides)}</span>
+                <span className="text-fs12 text-[#666]">{formatUnits(addon, units)}</span>
+                <span className="text-fs13 text-[#1a1a1a]">+{addonLineTotal({ ...addon, qty: units }).toLocaleString("uk-UA")} грн</span>
+              </button>
+            );
+          })}
         </div>
       ) : (
         <div className="inline-flex h-9 items-center self-start bg-black text-white">
@@ -27,7 +41,7 @@ function QuantityControl({ addon, qty, onChange, indent = true }: { addon: Produ
             className="flex size-9 items-center justify-center text-[18px] leading-none transition-colors hover:text-[#e53935] disabled:opacity-40 disabled:hover:text-white">−</button>
           <input type="number" inputMode="numeric" min={1} max={SKIRTING_MAX} value={qty} aria-label={`Кількість: ${addon.group ?? addon.name}`}
             onChange={(event) => { const value = Math.round(Number(event.target.value)); if (value >= 1 && value <= SKIRTING_MAX) onChange(value); }}
-            className="h-full w-12 bg-transparent text-center font-['Outfit',sans-serif] text-[14px] font-medium [appearance:textfield] focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
+            className="h-full w-12 bg-transparent text-center font-['Outfit',sans-serif] text-fs14 font-medium [appearance:textfield] focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
           <button type="button" aria-label="Більше на 1 шт" disabled={qty >= SKIRTING_MAX} onClick={() => onChange(Math.min(SKIRTING_MAX, qty + 1))}
             className="flex size-9 items-center justify-center text-[18px] leading-none transition-colors hover:text-[#e53935] disabled:opacity-40 disabled:hover:text-white">+</button>
         </div>
@@ -60,7 +74,7 @@ function LinePicker({ addons, value, onSelect, qty, onQty }: {
   const chosen = addons.find((addon) => addon.id === value);
   const chosenLine = chosen ? splitName(chosen.name).line : "";
   const options = chosenLine ? lines.get(chosenLine)! : [];
-  const button = (active: boolean) => `min-h-10 border px-3 py-2 text-left font-['Outfit',sans-serif] text-[13px] leading-snug transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#e53935] ${
+  const button = (active: boolean) => `min-h-10 border px-3 py-2 text-left font-['Outfit',sans-serif] text-fs13 leading-snug transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#e53935] ${
     active ? "border-[#e53935] bg-[#fff5f5] font-semibold text-[#e53935]" : "border-[#e0e0e0] bg-white text-[#1a1a1a] hover:border-[#e53935]/50"}`;
   return (
     <div className="flex flex-col gap-3">
@@ -73,16 +87,16 @@ function LinePicker({ addons, value, onSelect, qty, onQty }: {
             <button key={line} type="button" role="radio" aria-checked={line === chosenLine}
               onClick={() => onSelect(line === chosenLine ? value : items[0].id)} className={button(line === chosenLine)}>
               {line.replace(/^Плінтус\s+/, "")}
-              <span className="block text-[12px] font-normal text-[#888]">{items.length > 1 ? "від " : ""}{from.toLocaleString("uk-UA")} грн/шт</span>
+              <span className="block text-fs12 font-normal text-[#888]">{items.length > 1 ? "від " : ""}{from.toLocaleString("uk-UA")} грн/шт</span>
             </button>
           );
         })}
       </div>
       {chosen && options.length > 1 && (
         <label className="flex flex-col gap-1.5">
-          <span className="font-['Outfit',sans-serif] text-[12px] text-[#888]">Колір</span>
+          <span className="font-['Outfit',sans-serif] text-fs12 text-[#888]">Колір</span>
           <select value={value} onChange={(event) => onSelect(event.target.value)}
-            className="h-10 border border-[#e0e0e0] bg-white px-3 font-['Outfit',sans-serif] text-[14px] text-[#1a1a1a] focus:border-[#e53935] focus:outline-none">
+            className="h-10 border border-[#e0e0e0] bg-white px-3 font-['Outfit',sans-serif] text-fs14 text-[#1a1a1a] focus:border-[#e53935] focus:outline-none">
             {[...options].sort((a, b) => splitName(a.name).colour.localeCompare(splitName(b.name).colour, "uk")).map((addon) => (
               <option key={addon.id} value={addon.id}>{splitName(addon.name).colour || addon.name} — {addon.price.toLocaleString("uk-UA")} грн/шт</option>
             ))}
@@ -90,9 +104,9 @@ function LinePicker({ addons, value, onSelect, qty, onQty }: {
         </label>
       )}
       {chosen && options.length === 1 && splitName(chosen.name).colour && (
-        <p className="font-['Outfit',sans-serif] text-[13px] text-[#1a1a1a]">{splitName(chosen.name).colour} <span className="text-[#666]">({chosen.price.toLocaleString("uk-UA")} грн/шт)</span></p>
+        <p className="font-['Outfit',sans-serif] text-fs13 text-[#1a1a1a]">{splitName(chosen.name).colour} <span className="text-[#666]">({chosen.price.toLocaleString("uk-UA")} грн/шт)</span></p>
       )}
-      {chosen && <QuantityControl addon={chosen} qty={qty} onChange={onQty} indent={false} />}
+      {chosen && <QuantityControl addon={chosen} qty={validAddonChoice(chosen, qty)} onChange={onQty} indent={false} />}
     </div>
   );
 }
@@ -101,7 +115,7 @@ export default function AccessoriesSection({ addons, selected, onChange, quantit
   addons: ProductAddon[];
   selected: Record<string, string>;
   onChange: (selection: Record<string, string>) => void;
-  /** Pieces per add-on group (missing = 1). */
+  /** Sides (casing) or pieces (skirting) per add-on group (missing = the default). */
   quantities?: Record<string, number>;
   onQuantityChange?: (quantities: Record<string, number>) => void;
 }) {
@@ -141,7 +155,7 @@ export default function AccessoriesSection({ addons, selected, onChange, quantit
               aria-controls={panelId}
               className="w-full flex items-center justify-between bg-[#e53935] px-4 py-3 text-left"
             >
-              <span className="font-['Outfit',sans-serif] font-semibold text-white text-[15px]">
+              <span className="font-['Outfit',sans-serif] font-semibold text-white text-fs15">
                 {section.title}
               </span>
               <span className="relative size-5 shrink-0 text-white" aria-hidden="true">
@@ -162,7 +176,7 @@ export default function AccessoriesSection({ addons, selected, onChange, quantit
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
                   {section.groups.map((group) => (
                     <div key={group.id} className={`flex flex-col gap-2.5 ${group.options.length - 1 > LONG_LIST ? "sm:col-span-2" : ""}`}>
-                      <h4 className="font-['Outfit',sans-serif] font-semibold text-[#1a1a1a] text-[14px]">
+                      <h4 className="font-['Outfit',sans-serif] font-semibold text-[#1a1a1a] text-fs14">
                         {group.title}
                       </h4>
 
@@ -201,18 +215,18 @@ export default function AccessoriesSection({ addons, selected, onChange, quantit
                                 )}
                               </span>
 
-                              <span className="font-['Outfit',sans-serif] text-[13px] leading-snug text-[#1a1a1a]">
+                              <span className="font-['Outfit',sans-serif] text-fs13 leading-snug text-[#1a1a1a]">
                                 {option.label}
                                 {option.price !== 0 && (
                                   <span className="text-[#666]">
                                     {" "}
-                                    ({option.price > 0 ? "+" : ""}{option.price.toLocaleString("uk-UA")} грн{kind === "single" ? "" : "/шт"})
+                                    ({option.price > 0 ? "+" : ""}{option.price.toLocaleString("uk-UA")} грн{kind === "single" ? "" : option.addon && isSet(option.addon) ? "/комплект" : "/шт"})
                                   </span>
                                 )}
                               </span>
                             </label>
                             {isActive && option.addon && (
-                              <QuantityControl addon={option.addon} qty={quantities[group.id] ?? 1}
+                              <QuantityControl addon={option.addon} qty={validAddonChoice(option.addon, quantities[group.id])}
                                 onChange={(qty) => onQuantityChange?.({ ...quantities, [group.id]: qty })} />
                             )}
                             </div>
@@ -224,9 +238,9 @@ export default function AccessoriesSection({ addons, selected, onChange, quantit
                   ))}
                 </div>
                 {selectedAddons(addons, selected, quantities).length > 0 && (
-                  <div className="mt-5 flex items-center justify-between border-t border-[#eeeeee] pt-3 font-['Outfit',sans-serif] text-[13px] text-[#666]">
+                  <div className="mt-5 flex items-center justify-between border-t border-[#eeeeee] pt-3 font-['Outfit',sans-serif] text-fs13 text-[#666]">
                     <span>Доповнення разом</span>
-                    <span className="text-[15px] font-semibold text-[#1a1a1a]">{addonTotal(selectedAddons(addons, selected, quantities)).toLocaleString("uk-UA")} грн</span>
+                    <span className="text-fs15 font-semibold text-[#1a1a1a]">{addonTotal(selectedAddons(addons, selected, quantities)).toLocaleString("uk-UA")} грн</span>
                   </div>
                 )}
                 </div>

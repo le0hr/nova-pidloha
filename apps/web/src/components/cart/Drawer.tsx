@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from "next/link";
+import { cartItemHref } from "@/lib/catalog/item-link";
 import ItemOptions from "@/components/cart/ItemOptions";
 import { useCartStore } from '@/store/cart-store'
 import { plural } from '@/lib/plural'
@@ -21,7 +23,7 @@ function QtyControl({
   onPlus: () => void
 }) {
   return (
-    <div className="flex items-center border border-[#e0e0e0]">
+    <div className="relative z-10 flex items-center border border-[#e0e0e0]">
       <button
         onClick={onMinus}
         className="flex items-center justify-center size-[28px] hover:bg-[#f7f7f7] transition-colors duration-150 shrink-0"
@@ -35,7 +37,7 @@ function QtyControl({
           />
         </svg>
       </button>
-      <span className="flex items-center justify-center w-[36px] h-[28px] font-['Inter',sans-serif] font-semibold text-[#1a1a1a] text-[13px] border-x border-[#e0e0e0]">
+      <span className="flex items-center justify-center w-[36px] h-[28px] font-['Inter',sans-serif] font-semibold text-[#1a1a1a] text-fs13 border-x border-[#e0e0e0]">
         {qty}
       </span>
       <button
@@ -121,7 +123,7 @@ export default function CartDrawer({ onGoToCart, onCheckout }: Props) {
         {/* Subtitle */}
         {!isEmpty && (
           <div className="px-[24px] pt-[14px] pb-[8px] shrink-0">
-            <span className="font-['Inter',sans-serif] font-normal text-[#9e9e9e] text-[13px]">
+            <span className="font-['Inter',sans-serif] font-normal text-[#9e9e9e] text-fs13">
               {totalQty} {plural(totalQty, 'товар', 'товари', 'товарів')} у кошику
             </span>
           </div>
@@ -144,7 +146,7 @@ export default function CartDrawer({ onGoToCart, onCheckout }: Props) {
                 <p className="font-['Outfit',sans-serif] font-bold text-[#1a1a1a] text-[18px]">
                   Кошик порожній
                 </p>
-                <p className="font-['Inter',sans-serif] font-normal text-[#666] text-[13px]">
+                <p className="font-['Inter',sans-serif] font-normal text-[#666] text-fs13">
                   Додайте товари з каталогу
                 </p>
               </div>
@@ -152,17 +154,19 @@ export default function CartDrawer({ onGoToCart, onCheckout }: Props) {
                 onClick={()=> {
                   closeCart()
                 }}
-                className="bg-[#e53935] hover:bg-[#c62828] px-[24px] py-[11px] font-['Outfit',sans-serif] font-bold text-white text-[14px] transition-colors duration-200"
+                className="bg-[#e53935] hover:bg-[#c62828] px-[24px] py-[11px] font-['Outfit',sans-serif] font-bold text-white text-fs14 transition-colors duration-200"
               >
                 Перейти до каталогу
               </button>
             </div>
           ) : (
             <div className="flex flex-col">
-              {items.map((item) => (
+              {items.map((item) => {
+                const href = cartItemHref(item, items);
+                return (
                 <div
                   key={item.id}
-                  className="flex gap-[12px] px-[24px] py-[14px] border-b border-[#e0e0e0]"
+                  className={`relative flex gap-[12px] px-[24px] py-[14px] border-b border-[#e0e0e0] ${href ? "transition-colors hover:bg-[#fafafa]" : ""}`}
                 >
                   <div className="shrink-0 size-[64px] bg-[#f7f7f7] border border-[#e0e0e0] overflow-hidden">
                     <img
@@ -174,12 +178,12 @@ export default function CartDrawer({ onGoToCart, onCheckout }: Props) {
 
                   <div className="flex flex-col gap-[8px] flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-[8px]">
-                      <p className="font-['Inter',sans-serif] font-semibold text-[#1a1a1a] text-[13px] leading-[1.4] line-clamp-2">
-                        {item.name}
+                      <p className="font-['Inter',sans-serif] font-semibold text-[#1a1a1a] text-fs13 leading-[1.4] line-clamp-2">
+                        {href ? <Link href={href} onClick={closeCart} className="transition-colors hover:text-[#e53935] after:absolute after:inset-0 after:content-['']">{item.name}</Link> : item.name}
                       </p>
                       <button
                         onClick={() => removeItem(item.id)}
-                        className="shrink-0 p-[4px] hover:text-[#e53935] text-[#9e9e9e] transition-colors duration-150"
+                        className="relative z-10 shrink-0 p-[4px] hover:text-[#e53935] text-[#9e9e9e] transition-colors duration-150"
                       >
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                           <path
@@ -195,7 +199,7 @@ export default function CartDrawer({ onGoToCart, onCheckout }: Props) {
 
                     <ItemOptions mods={item.mods} />
                     <div className="flex items-center justify-between gap-[8px]">
-                      <span className="font-['Outfit',sans-serif] font-semibold text-[#1a1a1a] text-[13px]">
+                      <span className="font-['Outfit',sans-serif] font-semibold text-[#1a1a1a] text-fs13">
                         ₴{item.price.toLocaleString()}/шт
                       </span>
                       <QtyControl
@@ -206,7 +210,8 @@ export default function CartDrawer({ onGoToCart, onCheckout }: Props) {
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -215,7 +220,7 @@ export default function CartDrawer({ onGoToCart, onCheckout }: Props) {
         {!isEmpty && (
           <div className="border-t border-[#e0e0e0] px-[24px] py-[16px] flex flex-col gap-[10px] shrink-0 bg-white">
             <div className="flex items-center justify-between">
-              <span className="font-['Inter',sans-serif] font-normal text-[#666] text-[14px]">
+              <span className="font-['Inter',sans-serif] font-normal text-[#666] text-fs14">
                 Разом:
               </span>
               <span className="font-['Outfit',sans-serif] font-extrabold text-[#e53935] text-[18px]">
@@ -229,7 +234,7 @@ export default function CartDrawer({ onGoToCart, onCheckout }: Props) {
                   closeCart()
                   onCheckout()
                 }}
-              className="w-full h-[48px] bg-[#e53935] hover:bg-[#c62828] font-['Inter',sans-serif] font-bold text-white text-[15px] transition-colors duration-200">
+              className="w-full h-[48px] bg-[#e53935] hover:bg-[#c62828] font-['Inter',sans-serif] font-bold text-white text-fs15 transition-colors duration-200">
                 Оформити замовлення
               </button>
             ) : <CheckoutComingSoon compact onNavigate={closeCart} />}
@@ -239,7 +244,7 @@ export default function CartDrawer({ onGoToCart, onCheckout }: Props) {
                 closeCart()
                 onGoToCart()
               }}
-              className="w-full h-[44px] border border-[#1a1a1a] hover:bg-[#f7f7f7] font-['Inter',sans-serif] font-semibold text-[#1a1a1a] text-[14px] transition-colors duration-200"
+              className="w-full h-[44px] border border-[#1a1a1a] hover:bg-[#f7f7f7] font-['Inter',sans-serif] font-semibold text-[#1a1a1a] text-fs14 transition-colors duration-200"
             >
               Перейти до кошика
             </button>

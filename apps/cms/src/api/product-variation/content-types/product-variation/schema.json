@@ -48,6 +48,38 @@
       "target": "api::decor-glass.decor-glass",
       "inversedBy": "product_variations"
     },
+    "width": {
+      "type": "integer",
+      "min": 1
+    },
+    "height": {
+      "type": "integer",
+      "min": 1
+    },
+    "options": {
+      "type": "component",
+      "repeatable": true,
+      "component": "catalog.variation-option"
+    },
+    "packArea": {
+      "type": "decimal",
+      "min": 0
+    },
+    "boardSize": {
+      "type": "string"
+    },
+    "availability": {
+      "type": "enumeration",
+      "enum": [
+        "in_stock",
+        "on_order"
+      ]
+    },
+    "characteristics": {
+      "type": "component",
+      "repeatable": true,
+      "component": "catalog.characteristic"
+    },
     "architrave_types": {
       "type": "relation",
       "relation": "manyToMany",

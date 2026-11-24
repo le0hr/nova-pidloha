@@ -9,9 +9,10 @@ import json
 import re
 from typing import Any
 
-from app.models.catalog import Catalog, Product, Variation
+from app.models.catalog import Catalog, Product
 from app.models.import_plan import MediaAsset
 from app.parser.headers import normalize
+from app.strapi.columns import classify, marks
 
 ORDER = (
     "media",
@@ -277,6 +278,7 @@ def desired_records(
         return reference("architrave-types", key)
 
     brand_of = {p.external_id: p.brand for p in catalog.products}
+    product_of = {p.external_id: p for p in catalog.products}
     extras: dict[str, list[dict[str, str]]] = {}
     for p in sorted(catalog.products, key=lambda p: p.external_id):
         extras[p.external_id] = []
@@ -298,14 +300,14 @@ def desired_records(
             "active": p.external_id in categories
             and p.active
             and (not p.variations or any(v.active for v in p.variations)),
-            "catalog_attributes": p.attributes,
-            "attribute_definitions": definitions(p),
-            "characteristics": [
-                c.model_dump(mode="json") for c in sorted(p.characteristics, key=lambda c: c.name)
-            ],
+            "characteristics": product_characteristics(p),
             "addons": extras[p.external_id],
             "filter_values": product_filters[p.external_id],
         }
+        # Flags are only ever set from the price list; one ticked in the CMS by hand stays.
+        for flag, mark in (("isNew", "новинка"), ("isPromo", "акці"), ("isSale", "розпродаж")):
+            if mark in marks(p.attributes):
+                records["products"][p.external_id][flag] = True
         # Combined tables attach the photo to variations; preserve a hand-managed product image.
         if p.image:
             records["products"][p.external_id]["image"] = image_ref(p.image)
@@ -316,6 +318,9 @@ def desired_records(
             ref = addon_ref(brand_of.get(v.product_external_id), a)
             if ref not in variation_extras:
                 variation_extras.append(ref)
+        fields = classify(v)[0]
+        if fields["availability"] is None and "під замовлення" in marks(product_of[v.product_external_id].attributes):
+            fields["availability"] = "on_order"
         labels = {
             normalize(a.display_name): v.attributes.get(a.key) for a in v.attribute_definitions
         }
@@ -336,8 +341,7 @@ def desired_records(
             "sku": v.sku,
             "note": v.note,
             "supplier_code": v.supplier_code,
-            "catalog_attributes": v.attributes,
-            "attribute_definitions": definitions(v),
+            **fields,
             "decor": decor_ref,
             "decor_color": named("decor-colors", color, decor or "", decor=decor_ref)
             if color
@@ -352,8 +356,15 @@ def desired_records(
     return records
 
 
-def definitions(entity: Product | Variation) -> list[dict[str, str]]:
-    return [a.model_dump() for a in sorted(entity.attribute_definitions, key=lambda a: a.key)]
+def product_characteristics(product: Product) -> list[dict[str, Any]]:
+    """Workbook characteristics; a door's «підклас» becomes «Конструкція» unless the workbook already has one."""
+    result = [c.model_dump(mode="json") for c in product.characteristics]
+    subclass = str(product.attributes.get("підклас") or "").strip()
+    parts = [normalize(part) for part in category_path(product) or []]
+    door = bool(parts) and (parts[0] == "двері" or any(part in DOOR_CLASSES for part in parts))
+    if subclass and door and not any(c["name"].casefold().startswith("конструкц") for c in result):
+        result.append({"name": "Конструкція", "value": subclass, "unit": None})
+    return sorted(result, key=lambda c: c["name"])
 
 
 def resolve(value: Any, identifiers: dict[tuple[str, str], str], *, pending: bool = False) -> Any:
@@ -395,10 +406,17 @@ def project_remote(entity: str, data: dict[str, Any], fields: dict[str, Any]) ->
             result[key] = sorted(relation_id(item, target == "media") for item in value)
         else:
             result[key] = relation_id(value, target == "media")
+    if "options" in result:
+        result["options"] = [
+            {"name": o.get("name"), "value": o.get("value"), "changesLook": bool(o.get("changesLook"))}
+            for o in data.get("options") or []
+        ]
+    if result.get("packArea") is not None:
+        result["packArea"] = float(result["packArea"])
     if "characteristics" in result:
         result["characteristics"] = [
             {k: c.get(k) for k in ("name", "value", "unit")}
-            for c in data.get("characteristics", [])
+            for c in data.get("characteristics") or []
         ]
     return result
 

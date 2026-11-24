@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCartStore } from "@/store/cart-store";
 import CartItemType from "@/types/cart"
+import { cartItemHref } from "@/lib/catalog/item-link";
 import { imageSrc } from "@/lib/image";
 
 function QtyControl({
@@ -31,7 +32,7 @@ function QtyControl({
         </svg>
       </button>
 
-      <span className="flex h-[32px] w-[40px] items-center justify-center border-x border-[#E0E0E0] font-['Inter',sans-serif] text-[13px] font-semibold text-[#1A1A1A]">
+      <span className="flex h-[32px] w-[40px] items-center justify-center border-x border-[#E0E0E0] font-['Inter',sans-serif] text-fs13 font-semibold text-[#1A1A1A]">
         {qty}
       </span>
 
@@ -56,11 +57,13 @@ function QtyControl({
 
 
 export default function CartItem( {item}:{item:CartItemType} ) {
+  const items = useCartStore((s) => s.items);
+  const href = cartItemHref(item, items);
   const removeItem = useCartStore((s) => s.removeItem);
   const updateQty = useCartStore((s) => s.updateQty);
 
   return (
-    <tr className="border-b border-[#E0E0E0] last:border-b-0 md:table-row block">
+    <tr className={`relative border-b border-[#E0E0E0] last:border-b-0 md:table-row block ${href ? "transition-colors hover:bg-[#FAFAFA]" : ""}`}>
       {/*Image */}
       <td className="px-[16px] pt-[16px] pb-[8px] md:px-[24px] md:py-[20px] block md:table-cell md:w-[100px]">
         <div className="size-[72px] md:size-[80px] overflow-hidden border border-[#E0E0E0] bg-[#F7F7F7]">
@@ -73,49 +76,54 @@ export default function CartItem( {item}:{item:CartItemType} ) {
       </td>
 
       {/* Name */}
-      <td className="px-[16px] py-[4px] md:px-[12px] md:py-[20px] block md:table-cell">
-        <Link
-          href={`/product/${item.id}`}
-          className="line-clamp-2 font-['Outfit',sans-serif] text-[14px] md:text-[15px] font-semibold text-[#1A1A1A] transition-colors hover:text-[#E53935]"
-        >
-          {item.name}
-        </Link>
+      <td className="px-[16px] py-[4px] md:px-[12px] md:py-[20px] block md:table-cell md:w-[26%] md:min-w-[150px]">
+        {href ? (
+          <Link
+            href={href}
+            className="line-clamp-2 font-['Outfit',sans-serif] text-fs14 md:text-fs15 font-semibold text-[#1A1A1A] transition-colors hover:text-[#E53935] after:absolute after:inset-0 after:content-['']"
+          >
+            {item.name}
+          </Link>
+        ) : (
+          <span className="line-clamp-2 font-['Outfit',sans-serif] text-fs14 md:text-fs15 font-semibold text-[#1A1A1A]">{item.name}</span>
+        )}
       </td>
 
       {/* Mods */}
-      <td className="px-[16px] py-[4px] md:px-[12px] md:py-[20px] block md:table-cell md:min-w-[160px]">
+      <td className="px-[16px] py-[4px] md:px-[12px] md:py-[20px] block md:table-cell md:w-[28%] md:min-w-[150px] md:max-w-0">
         {item.mods && item.mods.length > 0 ? (
-          <div className="flex flex-col gap-[1px]">
+          <div className="flex min-w-0 flex-col gap-[1px]">
             {item.mods.map((mod, index) => (
               <span
                 key={`${item.id}-mod-${index}`}
-                className="font-['Inter',sans-serif] text-[12px] text-[#9E9E9E]"
+                title={mod}
+                className="block truncate font-['Inter',sans-serif] text-fs12 text-[#9E9E9E]"
               >
                 {mod}
               </span>
             ))}
           </div>
         ) : (
-          <span className="text-[12px] text-[#BDBDBD]">—</span>
+          <span className="text-fs12 text-[#BDBDBD]">—</span>
         )}
       </td>
 
       {/* Price */}
       <td className="px-[16px] py-[8px] md:px-[12px] md:py-[20px] block md:table-cell md:w-[110px] md:text-center">
         <div className="flex items-center justify-between md:block">
-          <span className="font-['Inter',sans-serif] text-[12px] text-[#9E9E9E] md:hidden">
+          <span className="font-['Inter',sans-serif] text-fs12 text-[#9E9E9E] md:hidden">
             Ціна
           </span>
-          <span className="font-['Outfit',sans-serif] text-[14px] font-semibold text-[#1A1A1A]">
+          <span className="font-['Outfit',sans-serif] text-fs14 font-semibold text-[#1A1A1A]">
             ₴{item.price.toLocaleString("uk-UA")}
           </span>
         </div>
       </td>
 
       {/* Qty */}
-      <td className="px-[16px] py-[8px] md:px-[12px] md:py-[20px] block md:table-cell md:w-[140px]">
+      <td className="px-[16px] py-[8px] md:px-[12px] md:py-[20px] relative z-10 block md:table-cell md:w-[140px]">
         <div className="flex items-center justify-between md:justify-center">
-          <span className="font-['Inter',sans-serif] text-[12px] text-[#9E9E9E] md:hidden">
+          <span className="font-['Inter',sans-serif] text-fs12 text-[#9E9E9E] md:hidden">
             Кількість
           </span>
           <QtyControl
@@ -129,17 +137,17 @@ export default function CartItem( {item}:{item:CartItemType} ) {
       {/* Sum */}
       <td className="px-[16px] py-[8px] md:px-[12px] md:py-[20px] block md:table-cell md:w-[110px] md:text-right">
         <div className="flex items-center justify-between md:block">
-          <span className="font-['Inter',sans-serif] text-[12px] text-[#9E9E9E] md:hidden">
+          <span className="font-['Inter',sans-serif] text-fs12 text-[#9E9E9E] md:hidden">
             Сума
           </span>
-          <span className="font-['Outfit',sans-serif] text-[15px] font-bold text-[#1A1A1A]">
+          <span className="font-['Outfit',sans-serif] text-fs15 font-bold text-[#1A1A1A]">
             ₴{(item.price * item.qty).toLocaleString("uk-UA")}
           </span>
         </div>
       </td>
 
       {/* Dlt */}
-      <td className="px-[16px] pb-[16px] pt-[4px] md:px-[12px] md:py-[20px] block md:table-cell md:w-[40px] md:text-center">
+      <td className="px-[16px] pb-[16px] pt-[4px] md:px-[12px] md:py-[20px] relative z-10 block md:table-cell md:w-[40px] md:text-center">
         <div className="flex justify-end md:justify-center">
           <button
             type="button"

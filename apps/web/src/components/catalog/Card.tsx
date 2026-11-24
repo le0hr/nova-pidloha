@@ -11,15 +11,17 @@ export default function Card({ product, index = 0 }: {product: CatalogProduct, i
       style={{
         animation: `fade-up 0.42s cubic-bezier(0.22,1,0.36,1) ${staggerDelay} both`,
       }}>
-            {product.isNew && (
+            {(product.isNew || product.isPromo || product.isSale) && (
               <span className="absolute left-3 top-3 z-10 flex flex-col items-start gap-1.5">
-                <span className="bg-[#1A1A1A] px-2 py-1 font-outfit text-xs font-bold uppercase tracking-wide text-white">New</span>
+                {product.isNew && <span className="bg-[#1A1A1A] px-2 py-1 font-outfit text-xs font-bold uppercase tracking-wide text-white">New</span>}
+                {product.isPromo && <span className="bg-[#e53935] px-2 py-1 font-outfit text-xs font-bold uppercase tracking-wide text-white">Акція</span>}
+                {product.isSale && <span className="bg-[#e53935] px-2 py-1 font-outfit text-xs font-bold uppercase tracking-wide text-white">Розпродаж</span>}
               </span>
             )}
             <CardImages images={product.images} alt={product.name}
               className={`catalog-card-image ${product.square ? "catalog-card-square " : ""}block w-full min-w-0 h-[420px] self-stretch overflow-hidden`} />
             <div className="catalog-card-details flex min-h-[54px] min-w-0 flex-col items-start gap-1.5 self-stretch p-[14px]">
-                <h3 className="[overflow-wrap:anywhere] font-outfit text-[15px] font-bold text-[#1A1A1A]">{product.name}</h3>
+                <h3 className="[overflow-wrap:anywhere] font-outfit text-fs15 font-bold text-[#1A1A1A]">{product.name}</h3>
                 {product.description && <span className="line-clamp-2 font-outfit text-xs font-light text-[#9E9E9E]">{product.description}</span>}
             </div>
             {/* Purchase  */}

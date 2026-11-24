@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "2026-11-21T17:48:08.711Z"
+    "x-generation-date": "2026-11-24T13:14:37.838Z"
   },
   "x-strapi-config": {
     "plugins": [
@@ -11646,6 +11646,12 @@
                       "isNew": {
                         "type": "boolean"
                       },
+                      "isPromo": {
+                        "type": "boolean"
+                      },
+                      "isSale": {
+                        "type": "boolean"
+                      },
                       "product_variations": {
                         "type": "array",
                         "items": {
@@ -11673,8 +11679,6 @@
                       "active": {
                         "type": "boolean"
                       },
-                      "catalog_attributes": {},
-                      "attribute_definitions": {},
                       "characteristics": {
                         "type": "array",
                         "items": {
@@ -12811,6 +12815,38 @@
                     }
                   }
                 },
+                "width": {
+                  "type": "integer"
+                },
+                "height": {
+                  "type": "integer"
+                },
+                "options": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CatalogVariationOptionComponent"
+                  }
+                },
+                "packArea": {
+                  "type": "number",
+                  "format": "float"
+                },
+                "boardSize": {
+                  "type": "string"
+                },
+                "availability": {
+                  "type": "string",
+                  "enum": [
+                    "in_stock",
+                    "on_order"
+                  ]
+                },
+                "characteristics": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CatalogCharacteristicComponent"
+                  }
+                },
                 "architrave_types": {
                   "type": "array",
                   "items": {
@@ -12841,8 +12877,6 @@
                 "active": {
                   "type": "boolean"
                 },
-                "catalog_attributes": {},
-                "attribute_definitions": {},
                 "sku": {
                   "type": "string"
                 },
@@ -13151,6 +13185,30 @@
           },
           "text": {
             "type": "string"
+          }
+        }
+      },
+      "CatalogVariationOptionComponent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          },
+          "changesLook": {
+            "type": "boolean"
           }
         }
       },
@@ -15016,6 +15074,12 @@
                 "isNew": {
                   "type": "boolean"
                 },
+                "isPromo": {
+                  "type": "boolean"
+                },
+                "isSale": {
+                  "type": "boolean"
+                },
                 "product_variations": {
                   "type": "array",
                   "items": {
@@ -15792,6 +15856,38 @@
                           }
                         }
                       },
+                      "width": {
+                        "type": "integer"
+                      },
+                      "height": {
+                        "type": "integer"
+                      },
+                      "options": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/CatalogVariationOptionComponent"
+                        }
+                      },
+                      "packArea": {
+                        "type": "number",
+                        "format": "float"
+                      },
+                      "boardSize": {
+                        "type": "string"
+                      },
+                      "availability": {
+                        "type": "string",
+                        "enum": [
+                          "in_stock",
+                          "on_order"
+                        ]
+                      },
+                      "characteristics": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/CatalogCharacteristicComponent"
+                        }
+                      },
                       "architrave_types": {
                         "type": "array",
                         "items": {
@@ -15932,8 +16028,6 @@
                       "active": {
                         "type": "boolean"
                       },
-                      "catalog_attributes": {},
-                      "attribute_definitions": {},
                       "sku": {
                         "type": "string"
                       },
@@ -16066,8 +16160,6 @@
                 "active": {
                   "type": "boolean"
                 },
-                "catalog_attributes": {},
-                "attribute_definitions": {},
                 "characteristics": {
                   "type": "array",
                   "items": {
@@ -18439,6 +18531,12 @@
                       "isNew": {
                         "type": "boolean"
                       },
+                      "isPromo": {
+                        "type": "boolean"
+                      },
+                      "isSale": {
+                        "type": "boolean"
+                      },
                       "product_variations": {
                         "type": "array",
                         "items": {
@@ -19215,6 +19313,38 @@
                                 }
                               }
                             },
+                            "width": {
+                              "type": "integer"
+                            },
+                            "height": {
+                              "type": "integer"
+                            },
+                            "options": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/CatalogVariationOptionComponent"
+                              }
+                            },
+                            "packArea": {
+                              "type": "number",
+                              "format": "float"
+                            },
+                            "boardSize": {
+                              "type": "string"
+                            },
+                            "availability": {
+                              "type": "string",
+                              "enum": [
+                                "in_stock",
+                                "on_order"
+                              ]
+                            },
+                            "characteristics": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/CatalogCharacteristicComponent"
+                              }
+                            },
                             "architrave_types": {
                               "type": "array",
                               "items": {
@@ -19355,8 +19485,6 @@
                             "active": {
                               "type": "boolean"
                             },
-                            "catalog_attributes": {},
-                            "attribute_definitions": {},
                             "sku": {
                               "type": "string"
                             },
@@ -19489,8 +19617,6 @@
                       "active": {
                         "type": "boolean"
                       },
-                      "catalog_attributes": {},
-                      "attribute_definitions": {},
                       "characteristics": {
                         "type": "array",
                         "items": {
@@ -22151,6 +22277,12 @@
                                 "isNew": {
                                   "type": "boolean"
                                 },
+                                "isPromo": {
+                                  "type": "boolean"
+                                },
+                                "isSale": {
+                                  "type": "boolean"
+                                },
                                 "product_variations": {
                                   "type": "array",
                                   "items": {
@@ -22178,8 +22310,6 @@
                                 "active": {
                                   "type": "boolean"
                                 },
-                                "catalog_attributes": {},
-                                "attribute_definitions": {},
                                 "characteristics": {
                                   "type": "array",
                                   "items": {
@@ -22907,6 +23037,38 @@
                               }
                             }
                           },
+                          "width": {
+                            "type": "integer"
+                          },
+                          "height": {
+                            "type": "integer"
+                          },
+                          "options": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/CatalogVariationOptionComponent"
+                            }
+                          },
+                          "packArea": {
+                            "type": "number",
+                            "format": "float"
+                          },
+                          "boardSize": {
+                            "type": "string"
+                          },
+                          "availability": {
+                            "type": "string",
+                            "enum": [
+                              "in_stock",
+                              "on_order"
+                            ]
+                          },
+                          "characteristics": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/CatalogCharacteristicComponent"
+                            }
+                          },
                           "architrave_types": {
                             "type": "array",
                             "items": {
@@ -22937,8 +23099,6 @@
                           "active": {
                             "type": "boolean"
                           },
-                          "catalog_attributes": {},
-                          "attribute_definitions": {},
                           "sku": {
                             "type": "string"
                           },
@@ -25642,6 +25802,12 @@
                                 "isNew": {
                                   "type": "boolean"
                                 },
+                                "isPromo": {
+                                  "type": "boolean"
+                                },
+                                "isSale": {
+                                  "type": "boolean"
+                                },
                                 "product_variations": {
                                   "type": "array",
                                   "items": {
@@ -25669,8 +25835,6 @@
                                 "active": {
                                   "type": "boolean"
                                 },
-                                "catalog_attributes": {},
-                                "attribute_definitions": {},
                                 "characteristics": {
                                   "type": "array",
                                   "items": {
@@ -26398,6 +26562,38 @@
                               }
                             }
                           },
+                          "width": {
+                            "type": "integer"
+                          },
+                          "height": {
+                            "type": "integer"
+                          },
+                          "options": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/CatalogVariationOptionComponent"
+                            }
+                          },
+                          "packArea": {
+                            "type": "number",
+                            "format": "float"
+                          },
+                          "boardSize": {
+                            "type": "string"
+                          },
+                          "availability": {
+                            "type": "string",
+                            "enum": [
+                              "in_stock",
+                              "on_order"
+                            ]
+                          },
+                          "characteristics": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/CatalogCharacteristicComponent"
+                            }
+                          },
                           "architrave_types": {
                             "type": "array",
                             "items": {
@@ -26428,8 +26624,6 @@
                           "active": {
                             "type": "boolean"
                           },
-                          "catalog_attributes": {},
-                          "attribute_definitions": {},
                           "sku": {
                             "type": "string"
                           },
@@ -28709,6 +28903,12 @@
                       "isNew": {
                         "type": "boolean"
                       },
+                      "isPromo": {
+                        "type": "boolean"
+                      },
+                      "isSale": {
+                        "type": "boolean"
+                      },
                       "product_variations": {
                         "type": "array",
                         "items": {
@@ -28736,8 +28936,6 @@
                       "active": {
                         "type": "boolean"
                       },
-                      "catalog_attributes": {},
-                      "attribute_definitions": {},
                       "characteristics": {
                         "type": "array",
                         "items": {
@@ -29874,6 +30072,38 @@
                     }
                   }
                 },
+                "width": {
+                  "type": "integer"
+                },
+                "height": {
+                  "type": "integer"
+                },
+                "options": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CatalogVariationOptionComponent"
+                  }
+                },
+                "packArea": {
+                  "type": "number",
+                  "format": "float"
+                },
+                "boardSize": {
+                  "type": "string"
+                },
+                "availability": {
+                  "type": "string",
+                  "enum": [
+                    "in_stock",
+                    "on_order"
+                  ]
+                },
+                "characteristics": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CatalogCharacteristicComponent"
+                  }
+                },
                 "architrave_types": {
                   "type": "array",
                   "items": {
@@ -29904,8 +30134,6 @@
                 "active": {
                   "type": "boolean"
                 },
-                "catalog_attributes": {},
-                "attribute_definitions": {},
                 "sku": {
                   "type": "string"
                 },
@@ -31808,6 +32036,12 @@
                           "isNew": {
                             "type": "boolean"
                           },
+                          "isPromo": {
+                            "type": "boolean"
+                          },
+                          "isSale": {
+                            "type": "boolean"
+                          },
                           "product_variations": {
                             "type": "array",
                             "items": {
@@ -32584,6 +32818,38 @@
                                     }
                                   }
                                 },
+                                "width": {
+                                  "type": "integer"
+                                },
+                                "height": {
+                                  "type": "integer"
+                                },
+                                "options": {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/components/schemas/CatalogVariationOptionComponent"
+                                  }
+                                },
+                                "packArea": {
+                                  "type": "number",
+                                  "format": "float"
+                                },
+                                "boardSize": {
+                                  "type": "string"
+                                },
+                                "availability": {
+                                  "type": "string",
+                                  "enum": [
+                                    "in_stock",
+                                    "on_order"
+                                  ]
+                                },
+                                "characteristics": {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/components/schemas/CatalogCharacteristicComponent"
+                                  }
+                                },
                                 "architrave_types": {
                                   "type": "array",
                                   "items": {
@@ -32724,8 +32990,6 @@
                                 "active": {
                                   "type": "boolean"
                                 },
-                                "catalog_attributes": {},
-                                "attribute_definitions": {},
                                 "sku": {
                                   "type": "string"
                                 },
@@ -32858,8 +33122,6 @@
                           "active": {
                             "type": "boolean"
                           },
-                          "catalog_attributes": {},
-                          "attribute_definitions": {},
                           "characteristics": {
                             "type": "array",
                             "items": {
@@ -35044,6 +35306,12 @@
                                 "isNew": {
                                   "type": "boolean"
                                 },
+                                "isPromo": {
+                                  "type": "boolean"
+                                },
+                                "isSale": {
+                                  "type": "boolean"
+                                },
                                 "product_variations": {
                                   "type": "array",
                                   "items": {
@@ -35820,6 +36088,38 @@
                                           }
                                         }
                                       },
+                                      "width": {
+                                        "type": "integer"
+                                      },
+                                      "height": {
+                                        "type": "integer"
+                                      },
+                                      "options": {
+                                        "type": "array",
+                                        "items": {
+                                          "$ref": "#/components/schemas/CatalogVariationOptionComponent"
+                                        }
+                                      },
+                                      "packArea": {
+                                        "type": "number",
+                                        "format": "float"
+                                      },
+                                      "boardSize": {
+                                        "type": "string"
+                                      },
+                                      "availability": {
+                                        "type": "string",
+                                        "enum": [
+                                          "in_stock",
+                                          "on_order"
+                                        ]
+                                      },
+                                      "characteristics": {
+                                        "type": "array",
+                                        "items": {
+                                          "$ref": "#/components/schemas/CatalogCharacteristicComponent"
+                                        }
+                                      },
                                       "architrave_types": {
                                         "type": "array",
                                         "items": {
@@ -35960,8 +36260,6 @@
                                       "active": {
                                         "type": "boolean"
                                       },
-                                      "catalog_attributes": {},
-                                      "attribute_definitions": {},
                                       "sku": {
                                         "type": "string"
                                       },
@@ -36094,8 +36392,6 @@
                                 "active": {
                                   "type": "boolean"
                                 },
-                                "catalog_attributes": {},
-                                "attribute_definitions": {},
                                 "characteristics": {
                                   "type": "array",
                                   "items": {
@@ -37822,6 +38118,12 @@
               "isNew": {
                 "type": "boolean"
               },
+              "isPromo": {
+                "type": "boolean"
+              },
+              "isSale": {
+                "type": "boolean"
+              },
               "product_variations": {
                 "type": "array",
                 "items": {
@@ -37842,8 +38144,6 @@
               "active": {
                 "type": "boolean"
               },
-              "catalog_attributes": {},
-              "attribute_definitions": {},
               "characteristics": {
                 "type": "array",
                 "items": {
@@ -39620,6 +39920,12 @@
                     "isNew": {
                       "type": "boolean"
                     },
+                    "isPromo": {
+                      "type": "boolean"
+                    },
+                    "isSale": {
+                      "type": "boolean"
+                    },
                     "product_variations": {
                       "type": "array",
                       "items": {
@@ -40396,6 +40702,38 @@
                               }
                             }
                           },
+                          "width": {
+                            "type": "integer"
+                          },
+                          "height": {
+                            "type": "integer"
+                          },
+                          "options": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/CatalogVariationOptionComponent"
+                            }
+                          },
+                          "packArea": {
+                            "type": "number",
+                            "format": "float"
+                          },
+                          "boardSize": {
+                            "type": "string"
+                          },
+                          "availability": {
+                            "type": "string",
+                            "enum": [
+                              "in_stock",
+                              "on_order"
+                            ]
+                          },
+                          "characteristics": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/CatalogCharacteristicComponent"
+                            }
+                          },
                           "architrave_types": {
                             "type": "array",
                             "items": {
@@ -40536,8 +40874,6 @@
                           "active": {
                             "type": "boolean"
                           },
-                          "catalog_attributes": {},
-                          "attribute_definitions": {},
                           "sku": {
                             "type": "string"
                           },
@@ -40670,8 +41006,6 @@
                     "active": {
                       "type": "boolean"
                     },
-                    "catalog_attributes": {},
-                    "attribute_definitions": {},
                     "characteristics": {
                       "type": "array",
                       "items": {
@@ -41107,6 +41441,12 @@
           "isNew": {
             "type": "boolean"
           },
+          "isPromo": {
+            "type": "boolean"
+          },
+          "isSale": {
+            "type": "boolean"
+          },
           "product_variations": {
             "type": "array",
             "items": {
@@ -41134,8 +41474,6 @@
           "active": {
             "type": "boolean"
           },
-          "catalog_attributes": {},
-          "attribute_definitions": {},
           "characteristics": {
             "type": "array",
             "items": {
@@ -41505,6 +41843,38 @@
                 ],
                 "example": "string or id"
               },
+              "width": {
+                "type": "integer"
+              },
+              "height": {
+                "type": "integer"
+              },
+              "options": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CatalogVariationOptionComponent"
+                }
+              },
+              "packArea": {
+                "type": "number",
+                "format": "float"
+              },
+              "boardSize": {
+                "type": "string"
+              },
+              "availability": {
+                "type": "string",
+                "enum": [
+                  "in_stock",
+                  "on_order"
+                ]
+              },
+              "characteristics": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CatalogCharacteristicComponent"
+                }
+              },
               "architrave_types": {
                 "type": "array",
                 "items": {
@@ -41528,8 +41898,6 @@
               "active": {
                 "type": "boolean"
               },
-              "catalog_attributes": {},
-              "attribute_definitions": {},
               "sku": {
                 "type": "string"
               },
@@ -43385,6 +43753,12 @@
                 "isNew": {
                   "type": "boolean"
                 },
+                "isPromo": {
+                  "type": "boolean"
+                },
+                "isSale": {
+                  "type": "boolean"
+                },
                 "product_variations": {
                   "type": "array",
                   "items": {
@@ -44161,6 +44535,38 @@
                           }
                         }
                       },
+                      "width": {
+                        "type": "integer"
+                      },
+                      "height": {
+                        "type": "integer"
+                      },
+                      "options": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/CatalogVariationOptionComponent"
+                        }
+                      },
+                      "packArea": {
+                        "type": "number",
+                        "format": "float"
+                      },
+                      "boardSize": {
+                        "type": "string"
+                      },
+                      "availability": {
+                        "type": "string",
+                        "enum": [
+                          "in_stock",
+                          "on_order"
+                        ]
+                      },
+                      "characteristics": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/CatalogCharacteristicComponent"
+                        }
+                      },
                       "architrave_types": {
                         "type": "array",
                         "items": {
@@ -44301,8 +44707,6 @@
                       "active": {
                         "type": "boolean"
                       },
-                      "catalog_attributes": {},
-                      "attribute_definitions": {},
                       "sku": {
                         "type": "string"
                       },
@@ -44435,8 +44839,6 @@
                 "active": {
                   "type": "boolean"
                 },
-                "catalog_attributes": {},
-                "attribute_definitions": {},
                 "characteristics": {
                   "type": "array",
                   "items": {
@@ -44955,6 +45357,38 @@
               }
             }
           },
+          "width": {
+            "type": "integer"
+          },
+          "height": {
+            "type": "integer"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogVariationOptionComponent"
+            }
+          },
+          "packArea": {
+            "type": "number",
+            "format": "float"
+          },
+          "boardSize": {
+            "type": "string"
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "in_stock",
+              "on_order"
+            ]
+          },
+          "characteristics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogCharacteristicComponent"
+            }
+          },
           "architrave_types": {
             "type": "array",
             "items": {
@@ -44985,8 +45419,6 @@
           "active": {
             "type": "boolean"
           },
-          "catalog_attributes": {},
-          "attribute_definitions": {},
           "sku": {
             "type": "string"
           },

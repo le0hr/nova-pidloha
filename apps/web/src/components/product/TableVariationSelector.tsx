@@ -1,7 +1,7 @@
 "use client";
 
 import type { ProductVariation } from "@/types/product";
-import { attributeValue, extraRows, visibleExtraFields, attributeLabel } from "@/lib/catalog/variations";
+import { attributeValue, extraRows, visibleExtraFields } from "@/lib/catalog/variations";
 import DoorDecorSelector from "./DoorDecorSelector";
 
 export default function TableVariationSelector({ variations, selected, onSelect, startStep = 1, total }: {
@@ -18,7 +18,7 @@ export default function TableVariationSelector({ variations, selected, onSelect,
       const candidates = extraRows(variations, selected, key);
       const values = [...new Set(candidates.map((row) => attributeValue(row, key)).filter(Boolean))];
       return <DoorDecorSelector key={key}
-        label={attributeLabel(display_name)} step={startStep + index}
+        label={display_name} step={startStep + index}
         total={total ?? startStep + fields.length - 1}
         decors={values} value={{ decor: attributeValue(selected, key) }}
         setValue={({ decor }: { decor: string }) => {

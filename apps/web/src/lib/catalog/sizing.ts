@@ -1,5 +1,5 @@
 import type { ProductVariation } from "@/types/product";
-import { attributeValue, tableFields } from "./variations";
+import { attributeValue, extraFields } from "./variations";
 
 /**
  * Door sizes. Standard sizes come from the supplier file (variations with their own price) or, for doors priced the
@@ -22,24 +22,14 @@ export interface SizeRule {
 }
 
 const label = (value: string) => value.trim().toLocaleLowerCase("uk");
-export const isWidthLabel = (value: string) => label(value).startsWith("ширина");
-export const isHeightLabel = (value: string) => label(value).startsWith("висота");
-
-/** Attribute keys holding width/height in variation catalog_attributes, if the product has them. */
-export function sizeKeys(variations: ProductVariation[]): { width?: string; height?: string } {
-  const fields = tableFields(variations);
-  return {
-    width: fields.find((field) => isWidthLabel(field.display_name))?.key,
-    height: fields.find((field) => isHeightLabel(field.display_name))?.key,
-  };
+/** Which dimensions the variations carry (sized doors: every standard size is its own variation). */
+export function sizeKeys(variations: ProductVariation[]): { width: boolean; height: boolean } {
+  return { width: variations.some((row) => sizeOf(row).width), height: variations.some((row) => sizeOf(row).height) };
 }
 
-export function sizeOf(variation: ProductVariation, keys: { width?: string; height?: string }): Partial<Size> {
-  const read = (key?: string) => {
-    const value = key ? Number(attributeValue(variation, key)) : NaN;
-    return Number.isFinite(value) && value > 0 ? value : undefined;
-  };
-  return { width: read(keys.width), height: read(keys.height) };
+export function sizeOf(variation: ProductVariation): Partial<Size> {
+  const read = (value?: number | null) => (value != null && Number.isFinite(value) && value > 0 ? value : undefined);
+  return { width: read(variation.width), height: read(variation.height) };
 }
 
 /** Catalog note shown when this size is chosen (e.g. width 400: made without glass). */
@@ -59,31 +49,31 @@ const sorted = (values: Iterable<number>) => [...new Set(values)].sort((a, b) =>
  */
 export function standardSizes(variations: ProductVariation[], selected: ProductVariation) {
   const keys = sizeKeys(variations);
-  const others = tableFields(variations).filter((field) => field.key !== keys.width && field.key !== keys.height);
+  const others = extraFields(variations);
   const same = (row: ProductVariation) =>
     (["decor", "decor_color", "decor_glass"] as const).every((field) => (row[field]?.name ?? "") === (selected[field]?.name ?? "")) &&
     others.every((field) => attributeValue(row, field.key) === attributeValue(selected, field.key));
   const rows = variations.filter(same);
-  const current = sizeOf(selected, keys);
+  const current = sizeOf(selected);
   return {
     keys,
     rows,
-    widths: sorted(rows.flatMap((row) => sizeOf(row, keys).width ?? [])),
-    heights: sorted(rows.filter((row) => current.width === undefined || sizeOf(row, keys).width === current.width)
-      .flatMap((row) => sizeOf(row, keys).height ?? [])),
+    widths: sorted(rows.flatMap((row) => sizeOf(row).width ?? [])),
+    heights: sorted(rows.filter((row) => current.width === undefined || sizeOf(row).width === current.width)
+      .flatMap((row) => sizeOf(row).height ?? [])),
   };
 }
 
 /** The variation with this standard size for the current choice (closest height if needed). */
 export function variationForSize(variations: ProductVariation[], selected: ProductVariation, size: Partial<Size>) {
-  const { rows, keys } = standardSizes(variations, selected);
-  const current = sizeOf(selected, keys);
+  const { rows } = standardSizes(variations, selected);
+  const current = sizeOf(selected);
   const want = { width: size.width ?? current.width, height: size.height ?? current.height };
   const exact = rows.find((row) => {
-    const s = sizeOf(row, keys);
+    const s = sizeOf(row);
     return s.width === want.width && s.height === want.height;
   });
-  return exact ?? rows.find((row) => sizeOf(row, keys).width === want.width) ?? selected;
+  return exact ?? rows.find((row) => sizeOf(row).width === want.width) ?? selected;
 }
 
 /** Interior doors without size data in the catalog. */

@@ -13,8 +13,15 @@ export interface ProductAddon {
 export interface ProductVariation {
   addons?: ProductAddon[];
   active?: boolean;
-  catalog_attributes?: Record<string, string | number | boolean> | null;
-  attribute_definitions?: { key: string; display_name: string }[] | null;
+  /** Selection steps besides decor/colour/glass/size, in step order (construction, edge, side…). */
+  options?: { name: string; value: string; changesLook?: boolean | null }[] | null;
+  /** Standard door size of this variation, mm. */
+  width?: number | null;
+  height?: number | null;
+  /** Floor sold by whole packs of this many m²; null = by the piece. */
+  packArea?: number | null;
+  boardSize?: string | null;
+  availability?: "in_stock" | "on_order" | null;
   name: string;
   slug: string;
   decor: { name: string } | null;

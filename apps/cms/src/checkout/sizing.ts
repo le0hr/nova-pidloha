@@ -5,7 +5,7 @@
  * Doors: standard sizes are free; a non-standard size is allowed only on the grid of the CMS size rules
  * (product rules override the brand's; a rule may be limited to decors/colours) and costs the rule's percent;
  * width and height percents add up; a single-value rule (min = max) is a priced option even for a standard value.
- * Floor: price is per m², the cart line is one pack of "Площа в пачці, м2".
+ * Floor: price is per m², the cart line is one pack of packArea m².
  */
 import { ensure } from './domain';
 
@@ -18,21 +18,18 @@ const sorted = (values: number[]) => [...new Set(values)].sort((a, b) => a - b);
 const normalized = (value: string) => label(value).replace(/\s+/g, ' ');
 const DEFAULT_STANDARD: Record<Dimension, number[]> = { width: [600, 700, 800, 900], height: [2000] };
 
-/** Pack area in m² ("Площа в пачці, м2"); null when the item is not sold by packs. */
+/** Pack area in m² (variation field packArea); null when the item is not sold by packs. */
 export function packArea(variation: any): number | null {
-  const entry = Object.entries(variation?.catalog_attributes ?? {}).find(([key]) => /площа.*пач/i.test(key));
-  const area = Number(String(entry?.[1] ?? '').trim().replace(',', '.'));
+  const area = Number(variation?.packArea);
   return Number.isFinite(area) && area > 0 ? area : null;
 }
 
-/** Width/height of a door variation from its attributes ("Ширина, мм", "Висота, мм"). */
+/** Standard width/height of a sized door variation. */
 function variationSize(variation: any): Partial<Record<Dimension, number>> {
   const out: Partial<Record<Dimension, number>> = {};
-  const defs: { key: string; display_name: string }[] = variation?.attribute_definitions ?? [];
-  for (const def of defs) {
-    const dim = label(def.display_name).startsWith('ширина') ? 'width' : label(def.display_name).startsWith('висота') ? 'height' : null;
-    const value = Number(variation?.catalog_attributes?.[def.key]);
-    if (dim && Number.isFinite(value) && value > 0) out[dim] = value;
+  for (const dim of ['width', 'height'] as Dimension[]) {
+    const value = Number(variation?.[dim]);
+    if (variation?.[dim] != null && Number.isFinite(value) && value > 0) out[dim] = value;
   }
   return out;
 }

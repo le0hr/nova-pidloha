@@ -108,6 +108,18 @@ export interface CatalogSizeRule extends Struct.ComponentSchema {
   };
 }
 
+export interface CatalogVariationOption extends Struct.ComponentSchema {
+  collectionName: 'components_catalog_variation_options';
+  info: {
+    displayName: '\u041F\u0430\u0440\u0430\u043C\u0435\u0442\u0440 \u0432\u0438\u0431\u043E\u0440\u0443';
+  };
+  attributes: {
+    changesLook: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    value: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface HomeHeroSlide extends Struct.ComponentSchema {
   collectionName: 'components_home_hero_slides';
   info: {
@@ -259,6 +271,7 @@ declare module '@strapi/strapi' {
       'catalog.characteristic': CatalogCharacteristic;
       'catalog.size-note': CatalogSizeNote;
       'catalog.size-rule': CatalogSizeRule;
+      'catalog.variation-option': CatalogVariationOption;
       'home.hero-slide': HomeHeroSlide;
       'home.promo-ticker': HomePromoTicker;
       'shared.open-graph': SharedOpenGraph;

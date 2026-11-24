@@ -980,8 +980,9 @@ export interface ApiProductVariationProductVariation
       'manyToMany',
       'api::architrave-type.architrave-type'
     >;
-    attribute_definitions: Schema.Attribute.JSON;
-    catalog_attributes: Schema.Attribute.JSON;
+    availability: Schema.Attribute.Enumeration<['in_stock', 'on_order']>;
+    boardSize: Schema.Attribute.String;
+    characteristics: Schema.Attribute.Component<'catalog.characteristic', true>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -999,6 +1000,13 @@ export interface ApiProductVariationProductVariation
       'manyToMany',
       'api::filter-code.filter-code'
     >;
+    height: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
     image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -1007,6 +1015,14 @@ export interface ApiProductVariationProductVariation
     > &
       Schema.Attribute.Private;
     note: Schema.Attribute.String;
+    options: Schema.Attribute.Component<'catalog.variation-option', true>;
+    packArea: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
     price: Schema.Attribute.String;
     products: Schema.Attribute.Relation<'manyToMany', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
@@ -1016,6 +1032,13 @@ export interface ApiProductVariationProductVariation
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    width: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
   };
 }
 
@@ -1035,9 +1058,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       'manyToMany',
       'api::architrave-type.architrave-type'
     >;
-    attribute_definitions: Schema.Attribute.JSON;
     brand: Schema.Attribute.Relation<'manyToOne', 'api::brand.brand'>;
-    catalog_attributes: Schema.Attribute.JSON;
     category: Schema.Attribute.Relation<'manyToOne', 'api::category.category'>;
     characteristics: Schema.Attribute.Component<'catalog.characteristic', true>;
     createdAt: Schema.Attribute.DateTime;
@@ -1052,6 +1073,8 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     image: Schema.Attribute.Media<'images'>;
     isFeatured: Schema.Attribute.Boolean;
     isNew: Schema.Attribute.Boolean;
+    isPromo: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    isSale: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',

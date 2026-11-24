@@ -12,6 +12,8 @@ type ProductItem = { name: string; slug: string; price: string | number | null; 
   category?: { slug: string | null } | null;
   shortDescription?: string | null;
   isNew?: boolean | null;
+  isPromo?: boolean | null;
+  isSale?: boolean | null;
   product_variations: { active: boolean | null; price: string | number | null; image: { url: string } | null }[] };
 
 export function catalogProduct(product: ProductItem): CatalogProduct {
@@ -24,7 +26,7 @@ export function catalogProduct(product: ProductItem): CatalogProduct {
     images: [...new Set(images)].map(mediaUrl), unit: priceUnit(product.category?.slug),
     square: isFloorCategory(product.category?.slug),
     description: product.shortDescription?.trim() || undefined,
-    isNew: product.isNew === true };
+    isNew: product.isNew === true, isPromo: product.isPromo === true, isSale: product.isSale === true };
 }
 
 /** CMS sort for the catalog URL `sort`; price uses product.price (= minimum active variation price). */
@@ -42,7 +44,7 @@ export async function getProducts(params: CatalogParams, groups: FilterGroup[], 
   const data = await graphqlFetch<{ products: ProductItem[]; products_connection: { pageInfo: PageInfo } }>(`
     query GetProducts($filters: ProductFiltersInput, $pagination: PaginationArg, $sort: [String]) {
       products(status: PUBLISHED, filters: $filters, pagination: $pagination, sort: $sort) {
-        name slug price shortDescription isNew image { url } category { slug }
+        name slug price shortDescription isNew isPromo isSale image { url } category { slug }
         product_variations(filters: {active: {ne: false}}, pagination: {start: 0, limit: 100}, sort: ["documentId:asc"]) { active price image { url } }
       }
       products_connection(status: PUBLISHED, filters: $filters, pagination: $pagination) {

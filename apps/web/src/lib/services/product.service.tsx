@@ -53,8 +53,12 @@ const PRODUCT_QUERY = `
           additionalCost
         }
         active
-        catalog_attributes
-        attribute_definitions
+        width
+        height
+        packArea
+        boardSize
+        availability
+        options { name value changesLook }
         decor {
           name
         }

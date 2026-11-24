@@ -1,6 +1,6 @@
 /**
  * Characteristics, description and short description for products that lack them — built only from catalog data
- * (variation attributes, brand, category, existing characteristics), no invented specs.
+ * (variation fields and characteristics, brand, category, existing characteristics), no invented specs.
  *
  *   Characteristics: missing ones are added (an existing one with the same name is never changed). A value that
  *   differs between variations is listed ("8, 10 мм"); one with too many different values is left out.
@@ -64,10 +64,13 @@ function kindOf(slug) {
   return null;
 }
 
-/** Values of one attribute across the variations. */
-function values(variations, pattern) {
-  return uniq(variations.flatMap((v) => Object.entries(v.catalog_attributes ?? {}).filter(([k]) => pattern.test(k)).map(([, x]) => x)));
-}
+/** Values across the variations: `field` is a function of a variation (value or list). */
+const values = (variations, field) => uniq(variations.flatMap((v) => field(v) ?? []));
+/** A variation characteristic (specs from the price list: «Клас зносостійкості», «Товщина»…). */
+const spec = (name) => (v) => (v.characteristics ?? []).filter((c) => c.name === name).map((c) => c.value);
+const option = (name) => (v) => (v.options ?? []).filter((o) => o.name === name).map((o) => o.value);
+/** Interior door subcategory (Каркасно-щитові, Збірні…) stands for the construction. */
+const construction = (product) => (product.category?.parent?.slug === 'mizhkimnatni' ? product.category.name : null);
 
 function plan(product) {
   const kind = kindOf(product.category?.slug ?? '');
@@ -83,22 +86,22 @@ function plan(product) {
   const floor = ['laminate', 'spc', 'lvt'].includes(kind);
 
   add('Бренд', !has('Виробник') ? brand : null);
-  const types = uniq(values(vars, /^тип_покриття$/).map(coating));
+  const types = uniq(values(vars, (v) => v.decor?.name).map(coating));
   let text = '';
   let short = '';
 
   if (floor) {
-    const cls = values(vars, /клас_зносост/).sort(byNumber);
-    const thick = values(vars, /^товщина_мм$/).map(num).sort(byNumber);
-    const sizes = values(vars, /розмір_дошки/);
-    const areas = values(vars, /площа_в_пачці/).map(num).sort(byNumber);
-    const planks = values(vars, /планок_у_пачці/).sort(byNumber);
-    const bevels = uniq(values(vars, /^фаска$/).map(bevel));
-    const locks = uniq(values(vars, /^замок$/).map(lock));
-    const glue = values(vars, /^замок$/).some((v) => /^клей/i.test(v)) || kind === 'lvt';
-    const material = values(vars, /^матеріал$/);
-    const wear = uniq(values(vars, /захисний_шар/).map((v) => `${num(v.replace(/\s*(mm|мм)\s*$/i, ''))} мм`));
-    const water = values(vars, /вологост/).some((v) => /^так$/i.test(v));
+    const cls = values(vars, spec('Клас зносостійкості')).sort(byNumber);
+    const thick = values(vars, spec('Товщина')).map(num).sort(byNumber);
+    const sizes = values(vars, (v) => v.boardSize);
+    const areas = values(vars, (v) => v.packArea).map(num).sort(byNumber);
+    const planks = values(vars, spec('Планок у пачці')).sort(byNumber);
+    const bevels = uniq(values(vars, spec('Фаска')).map(bevel));
+    const locks = uniq(values(vars, spec('Замок')).map(lock));
+    const glue = values(vars, spec('Замок')).some((v) => /^клей/i.test(v)) || kind === 'lvt';
+    const material = values(vars, spec('Матеріал'));
+    const wear = uniq(values(vars, spec('Захисний шар')).map((v) => `${num(v.replace(/\s*(mm|мм)\s*$/i, ''))} мм`));
+    const water = values(vars, spec('Вологостійкий')).some((v) => /^так$/i.test(v));
     const typeName = { laminate: 'Ламінат', spc: 'Вінілова підлога SPC (замкова)', lvt: 'Вінілова підлога LVT (клейова)' }[kind];
 
     add('Тип покриття', typeName);
@@ -137,12 +140,12 @@ function plan(product) {
     text = parts.join('\n\n');
     short = `${what.charAt(0).toUpperCase() + what.slice(1)}${brand ? ` ${brand}` : ''}${specs.length ? `, ${specs.slice(0, 2).join(', ')}` : ''}.`;
   } else {
-    const glass = uniq(values(vars, /^glass$/));
-    const widths = values(vars, /^ширина_мм$/).sort(byNumber);
-    const heights = values(vars, /^висота_мм$/).sort(byNumber);
-    const sides = values(vars, /сторона_відкрив/).sort();
-    const edges = values(vars, /^кромка/);
-    const subclass = product.catalog_attributes?.['підклас'];
+    const glass = values(vars, (v) => v.decor_glass?.name);
+    const widths = values(vars, (v) => v.width).sort(byNumber);
+    const heights = values(vars, (v) => v.height).sort(byNumber);
+    const sides = values(vars, option('Сторона відкривання')).sort();
+    const edges = values(vars, option('Кромка'));
+    const subclass = existing.find((c) => /^конструкц/i.test(c.name))?.value ?? construction(product);
 
     if (kind === 'interior') {
       add('Тип покриття', list(types, 6));
@@ -153,14 +156,14 @@ function plan(product) {
       if (!has('Стандартна висота полотна') && !has('Висота полотна')) add('Висота полотна', heights.length ? `${heights.join(', ')} мм` : null);
     } else {
       add('Розміри', widths.length && heights.length ? uniq(vars.map((v) => {
-        const a = v.catalog_attributes ?? {}; return a['ширина_мм'] && a['висота_мм'] ? `${a['ширина_мм']}×${a['висота_мм']}` : null;
+        return v.width && v.height ? `${v.width}×${v.height}` : null;
       })).sort(byNumber).join(', ') + ' мм' : null);
       add('Сторона відкривання', sides.length ? sides.map(lower).join(' / ') : null);
       add('Оздоблення (зовні / всередині)', list(types.map((t) => t.replace('/', ' / ')), 4));
       add('Скління', list(glass, 3));
     }
 
-    const colours = uniq(vars.map((v) => v.decor_color?.name ?? v.catalog_attributes?.['покриття']));
+    const colours = uniq(vars.map((v) => v.decor_color?.name));
     if (kind === 'interior') {
       const what = `міжкімнатні двері${brand ? ` ${brand}` : ''}${collection ? `, колекція ${collection}` : ''}`;
       const construction = !/^(збірн|каркасн)/i.test(subclass ?? '') ? '' : /конструкц/i.test(subclass) ? ` ${lower(subclass)}` : ` ${lower(subclass).replace(/і$/, 'ої')} конструкції`;
@@ -207,8 +210,10 @@ function localStore(strapi) {
       for (let start = 0; ; start += 100) {
         const page = await strapi.documents(PRODUCT).findMany({
           status: 'published', start, limit: 100,
-          populate: { category: { fields: ['slug'] }, brand: { fields: ['name'] }, characteristics: true,
-            product_variations: { fields: ['catalog_attributes', 'active'], populate: { decor_color: { fields: ['name'] } } } },
+          populate: { category: { fields: ['slug', 'name'], populate: { parent: { fields: ['slug'] } } }, brand: { fields: ['name'] },
+            characteristics: true, product_variations: { fields: ['active', 'width', 'height', 'packArea', 'boardSize'],
+              populate: { decor: { fields: ['name'] }, decor_color: { fields: ['name'] }, decor_glass: { fields: ['name'] },
+                options: true, characteristics: true } } },
         });
         products.push(...page);
         if (page.length < 100) break;
@@ -237,9 +242,12 @@ function remoteStore(url, token) {
     name: url,
     async list() {
       const products = [];
-      const query = 'status=published&pagination[pageSize]=100&populate[category][fields][0]=slug&populate[brand][fields][0]=name'
-        + '&populate[characteristics]=true&populate[product_variations][fields][0]=catalog_attributes'
-        + '&populate[product_variations][fields][1]=active&populate[product_variations][populate][decor_color][fields][0]=name';
+      const v = 'populate[product_variations]';
+      const query = 'status=published&pagination[pageSize]=100&populate[category][fields][0]=slug&populate[category][fields][1]=name'
+        + '&populate[category][populate][parent][fields][0]=slug&populate[brand][fields][0]=name&populate[characteristics]=true'
+        + ['active', 'width', 'height', 'packArea', 'boardSize'].map((f, i) => `&${v}[fields][${i}]=${f}`).join('')
+        + ['decor', 'decor_color', 'decor_glass'].map((r) => `&${v}[populate][${r}][fields][0]=name`).join('')
+        + `&${v}[populate][options]=true&${v}[populate][characteristics]=true`;
       for (let page = 1; ; page++) {
         const body = await call('GET', `api/products?${query}&pagination[page]=${page}`);
         products.push(...body.data);

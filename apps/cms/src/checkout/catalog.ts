@@ -1,15 +1,26 @@
 import { ensure, Item, money } from './domain';
 import { packArea, sizePercent } from './sizing';
 
-/** Pieces per add-on — same rules as apps/web/src/lib/catalog/addons.ts (moulding 1 / 2.5 / 5, skirting 1–100). */
-const ADDON_PRESETS = [1, 2.5, 5];
+/** Priced units per add-on — same rules as apps/web/src/lib/catalog/addons.ts (casing by door sides, frame and extension board per door, skirting 1–100, the rest 1). */
+const isCasing = (addon: any) => /^\s*лиштв/i.test(addon.group || addon.name || '') && !/плінтус/i.test(`${addon.group ?? ''} ${addon.name ?? ''}`);
+const isPerDoor = (addon: any) => /^\s*(коробк|добір)/i.test(addon.group || addon.name || '');
+/** The price already covers 2.5 pieces ("1 комплект (2,5 шт.)"). */
+const isSet = (addon: any) => /2[.,]5\s*шт/i.test(addon.name ?? '');
+const unitsPerSet = (addon: any) => (isSet(addon) ? 1 : 2.5);
 function addonQty(addon: any, qty: unknown): number {
-  const text = `${addon.group ?? ''} ${addon.name ?? ''}`.toLowerCase();
   const value = qty === undefined || qty === null ? 1 : Number(qty);
-  if (/плінтус/.test(text)) { ensure(Number.isInteger(value) && value >= 1 && value <= 100, 'Некоректна кількість плінтуса'); return value; }
-  if (/коробк|лиштв|добір|добірн|притворн/.test(text)) { ensure(ADDON_PRESETS.includes(value), 'Некоректна кількість комплектації'); return value; }
+  if (/плінтус/i.test(`${addon.group ?? ''} ${addon.name ?? ''}`)) { ensure(Number.isInteger(value) && value >= 1 && value <= 100, 'Некоректна кількість плінтуса'); return value; }
+  if (isCasing(addon)) { ensure([1, 2].includes(value / unitsPerSet(addon)), 'Некоректна кількість лиштви'); return value; }
+  if (isPerDoor(addon)) { ensure(value === unitsPerSet(addon), 'Некоректна кількість комплектації'); return value; }
   ensure(value === 1, 'Некоректна кількість доповнення');
   return 1;
+}
+/** Order line: casing shows the door sides, the rest the pieces. */
+function qtyNote(addon: any, qty: number): string {
+  if (!isCasing(addon) && !isPerDoor(addon)) return qty === 1 ? '' : ` × ${String(qty).replace('.', ',')} шт`;
+  const units = isSet(addon) ? `${qty} ${qty === 1 ? 'комплект' : 'комплекти'}` : `${String(qty).replace('.', ',')} шт`;
+  if (isPerDoor(addon)) return ` — на одні двері (${units})`;
+  return ` — на ${qty / unitsPerSet(addon) === 2 ? 'дві сторони' : 'одну сторону'} (${units})`;
 }
 
 export async function snapshot(strapi: any, input: any): Promise<Item[]> {
@@ -23,7 +34,7 @@ export async function snapshot(strapi: any, input: any): Promise<Item[]> {
     ensure(typeof slug === 'string' && slug.length <= 500, 'Некоректний товар');
     const variation = await strapi.documents('api::product-variation.product-variation').findFirst({
       status: 'published', filters: { slug, active: { $ne: false } },
-      populate: { addons: true, architrave_types: true, decor: true, decor_color: true, decor_glass: true,
+      populate: { addons: true, architrave_types: true, options: true, decor: true, decor_color: true, decor_glass: true,
         products: { populate: { addons: true, size_rules: true, characteristics: true, brand: { populate: { size_rules: true } } } } },
     });
     ensure(variation, 'Варіант товару більше недоступний');
@@ -52,7 +63,7 @@ export async function snapshot(strapi: any, input: any): Promise<Item[]> {
       // `price` is the line total in kopecks (piece price × pieces), `qty` the pieces.
       const name = String(addon.name).replace(/,\s*1\s*шт\.?(\s*)/i, (m: string, rest: string, offset: number, full: string) =>
         offset + m.length < full.length && rest ? '. ' : '').trim();
-      return { id: addon.documentId, name: qty === 1 ? name : `${name} × ${String(qty).replace('.', ',')} шт`,
+      return { id: addon.documentId, name: name + qtyNote(addon, qty),
         price: Math.round(money(addon.additionalCost ?? addon.price ?? 0) * qty), qty };
     });
     // Same rules as the product page: floor = price per m² × pack area; door = standard price + size surcharge.
@@ -64,11 +75,10 @@ export async function snapshot(strapi: any, input: any): Promise<Item[]> {
       : money(variation.price);
     ensure(Number.isFinite(base) && base > 0, 'Ціну товару потрібно уточнити');
     const unit = base + addons.reduce((sum: number, a: any) => sum + a.price, 0);
-    const labels = new Map<string, string>((variation.attribute_definitions || []).map((d: any) => [d.key, d.display_name]));
-    const mods = Object.entries(variation.catalog_attributes || {})
-      .filter(([key]) => !(hasSize && /^(ширина|висота)/i.test(labels.get(key) || key)))
-      .map(([key, value]) => `${(labels.get(key) || key).replace(/\s*\([^)]*\)\s*$/, '')}: ${String(value)}`);
+    const mods: string[] = [];
     for (const key of ['decor', 'decor_color', 'decor_glass']) if (variation[key]?.name) mods.push(variation[key].name);
+    for (const option of variation.options || []) if (option.value) mods.push(`${option.name}: ${option.value}`);
+    if (!hasSize && variation.width && variation.height) mods.push(`Розмір: ${variation.width}×${variation.height} мм`);
     const size = hasSize ? { width: Number(line.size.width), height: Number(line.size.height), percent } : undefined;
     if (size) mods.push(percent ? `Нестандартний розмір: ${size.width}×${size.height} мм (+${percent}%)` : `Розмір: ${size.width}×${size.height} мм`);
     if (area) mods.push(`Упаковка: ${area} м² (${Number(variation.price).toLocaleString('uk-UA')} грн/м²)`);

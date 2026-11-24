@@ -2,6 +2,7 @@ import json
 from dataclasses import dataclass
 
 from app.models.catalog import Addon, Characteristic, Source
+from app.strapi.columns import classify
 from app.validation.errors import Issue, ValidationResult
 
 
@@ -61,7 +62,21 @@ def validate_catalog(result: ValidationResult, related: list[Related]) -> None:
         return True
 
     combinations: dict[tuple[str, str], Source] = {}
+    unknown_columns: set[tuple[str, str]] = set()
     for variation in catalog.variations:
+        for column in classify(variation)[1]:
+            if (variation.source.sheet, column) not in unknown_columns:
+                unknown_columns.add((variation.source.sheet, column))
+                result.issues.append(
+                    Issue(
+                        severity="WARNING",
+                        source=variation.source,
+                        field="attributes",
+                        message="Unknown column: kept as raw data only, not shown on the site. "
+                        "Add it to app/strapi/columns.py if it matters.",
+                        value=column,
+                    )
+                )
         if reference(
             variation.product_external_id, variation.source, f'Variation "{variation.external_id}"'
         ):

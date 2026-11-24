@@ -50,6 +50,14 @@
     "isNew": {
       "type": "boolean"
     },
+    "isPromo": {
+      "type": "boolean",
+      "default": false
+    },
+    "isSale": {
+      "type": "boolean",
+      "default": false
+    },
     "product_variations": {
       "type": "relation",
       "relation": "manyToMany",

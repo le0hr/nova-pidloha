@@ -7,6 +7,8 @@ type CartState = {
   isOpen: boolean
 
   addItem: (item: Omit<CartItemType, 'qty'>, qty?: number) => void
+  /** Replaces a line (and its floor add-on lines) in place; a line that already exists gets the quantities summed. */
+  replaceItem: (id: string, lines: CartItemType[]) => void
   removeItem: (id: string) => void
   updateQty: (id: string, qty: number) => void
   clearCart: () => void
@@ -41,6 +43,23 @@ export const useCartStore = create<CartState>()(
         }
 
         set({ isOpen: true })
+      },
+
+      replaceItem: (id, lines) => {
+        const current = get().items
+        const at = current.findIndex((i) => i.id === id)
+        if (at < 0) return
+        const old = current[at]
+        const belongs = (i: CartItemType) => i.id === id || (!!i.addonId && i.variationSlug === old.variationSlug)
+        const before = current.slice(0, at).filter((i) => !belongs(i))
+        const after = current.slice(at).filter((i) => !belongs(i))
+        const rest = [...before, ...after]
+        const merged = new Map(lines.filter((l) => rest.some((i) => i.id === l.id)).map((l) => [l.id, l]))
+        const sum = (i: CartItemType) => merged.has(i.id) ? { ...i, ...merged.get(i.id)!, qty: i.qty + merged.get(i.id)!.qty } : i
+        set({
+          items: [...before.map(sum), ...lines.filter((l) => !merged.has(l.id)), ...after.map(sum)],
+          isOpen: true,
+        })
       },
 
       removeItem: (id) => {
