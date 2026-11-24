@@ -15,7 +15,7 @@ const LAYOUTS: Record<string, string[]> = {
   ],
   'api::product-variation.product-variation': [
     'products/8 active/4',
-    'decor/6 decor_color/6', 'decor_glass/6 architrave_types/6', 'image/6 note/6',
+    'decor/6 decor_color/6', 'decor_glass/12', 'image/6 note/6',
     'price/4 availability/4 sku/4',
     'width/6 height/6', 'options/12',
     'packArea/4 boardSize/8', 'characteristics/12',
@@ -30,7 +30,7 @@ const LAYOUTS: Record<string, string[]> = {
   'api::decor.decor': ['name/12', 'decor_colors/12', 'product_variations/12', 'external_id/12'],
   'api::decor-color.decor-color': ['name/6 decor/6', 'image/12', 'product_variations/12', 'external_id/12'],
   'api::decor-glass.decor-glass': ['name/12', 'product_variations/12', 'external_id/12'],
-  'api::architrave-type.architrave-type': ['group/4 name/8', 'additionalCost/6 price/6', 'product_variations/12', 'external_id/12'],
+  'api::architrave-type.architrave-type': ['group/4 name/8', 'additionalCost/6 price/6', 'external_id/12'],
   'api::filter-group.filter-group': ['name/8 type/4', 'categories/12', 'filter_values/12', 'slug/6 external_id/6'],
   'api::filter-code.filter-code': ['name/6 filter_group/6', 'products/12', 'slug/6 external_id/6'],
   'api::global.global': ['phone/6 email/6', 'shopLocations/12', 'heroEnabled/12', 'heroSlides/12', 'promoTicker/12', 'seo/12'],

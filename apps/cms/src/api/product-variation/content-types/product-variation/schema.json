@@ -80,12 +80,6 @@
       "repeatable": true,
       "component": "catalog.characteristic"
     },
-    "architrave_types": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::architrave-type.architrave-type",
-      "mappedBy": "product_variations"
-    },
     "slug": {
       "type": "uid"
     },

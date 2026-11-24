@@ -45,7 +45,6 @@ RELATIONS: dict[str, dict[str, tuple[str, bool]]] = {
         "decor": ("decors", False),
         "decor_color": ("decor-colors", False),
         "decor_glass": ("decor-glasses", False),
-        "architrave_types": ("architrave-types", True),
         "addons": ("architrave-types", True),
         "filter_values": ("filter-codes", True),
         "image": ("media", False),
@@ -328,9 +327,6 @@ def desired_records(
         decor = attribute(v.external_id, labels, "тип покриття", "декор", "decor")
         color = attribute(v.external_id, labels, "покриття", "колір", "color")
         glass = attribute(v.external_id, labels, "скло", "glass")
-        # Workbook edge headings may include explanatory text in parentheses.
-        edge_names = tuple(name for name in labels if re.fullmatch(r"кромка(?:\s*\(.*\))?", name))
-        edge = attribute(v.external_id, labels, "edge", "architrave_types", *edge_names)
         decor_ref = named("decors", decor) if decor else None
         records["product-variations"][v.external_id] = {
             "external_id": v.external_id,
@@ -347,7 +343,6 @@ def desired_records(
             if color
             else None,
             "decor_glass": named("decor-glasses", glass) if glass else None,
-            "architrave_types": [named("architrave-types", edge)] if edge else [],
             "addons": variation_extras,
             "filter_values": variation_filters[v.external_id],
         }

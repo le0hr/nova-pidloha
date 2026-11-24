@@ -34,13 +34,13 @@ export async function snapshot(strapi: any, input: any): Promise<Item[]> {
     ensure(typeof slug === 'string' && slug.length <= 500, 'Некоректний товар');
     const variation = await strapi.documents('api::product-variation.product-variation').findFirst({
       status: 'published', filters: { slug, active: { $ne: false } },
-      populate: { addons: true, architrave_types: true, options: true, decor: true, decor_color: true, decor_glass: true,
+      populate: { addons: true, options: true, decor: true, decor_color: true, decor_glass: true,
         products: { populate: { addons: true, size_rules: true, characteristics: true, brand: { populate: { size_rules: true } } } } },
     });
     ensure(variation, 'Варіант товару більше недоступний');
     const product = variation.products?.find((p: any) => p.active !== false && p.publishedAt);
     ensure(product, 'Товар більше недоступний');
-    const available = [...(variation.addons || []), ...(product.addons || []), ...(variation.architrave_types || [])];
+    const available = [...(variation.addons || []), ...(product.addons || [])];
     if (line.addonId !== undefined) {
       // A floor add-on (skirting) on its own line: qty is pieces, priced per piece.
       ensure(typeof line.addonId === 'string', 'Некоректна комплектація');

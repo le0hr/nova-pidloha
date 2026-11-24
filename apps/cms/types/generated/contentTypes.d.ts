@@ -522,10 +522,6 @@ export interface ApiArchitraveTypeArchitraveType
       Schema.Attribute.Private;
     name: Schema.Attribute.String;
     price: Schema.Attribute.Decimal;
-    product_variations: Schema.Attribute.Relation<
-      'manyToMany',
-      'api::product-variation.product-variation'
-    >;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -973,10 +969,6 @@ export interface ApiProductVariationProductVariation
   attributes: {
     active: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     addons: Schema.Attribute.Relation<
-      'manyToMany',
-      'api::architrave-type.architrave-type'
-    >;
-    architrave_types: Schema.Attribute.Relation<
       'manyToMany',
       'api::architrave-type.architrave-type'
     >;

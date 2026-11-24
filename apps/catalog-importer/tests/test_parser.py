@@ -432,7 +432,7 @@ def test_independent_variation_addons_and_filters(tmp_path: Path) -> None:
         "Кромка (або назва додаткового параметру)",
     ],
 )
-def test_edge_relation_is_separate_from_addons(tmp_path: Path, heading: str) -> None:
+def test_edge_is_an_option_not_an_addon(tmp_path: Path, heading: str) -> None:
     from app.models.catalog import Addon
     from app.strapi.mapping import desired_records
 
@@ -449,14 +449,13 @@ def test_edge_relation_is_separate_from_addons(tmp_path: Path, heading: str) -> 
         ("decor_glass", "decor-glasses", "value2"),
     ]:
         assert records[collection][mapped[field]["$id"]]["name"] == expected
-    edge = mapped["architrave_types"][0]
     addon = mapped["addons"][0]
-    assert edge != addon
-    assert records["architrave-types"][edge["$id"]]["name"] == "value3"
+    assert mapped["options"] == [{"name": "Кромка", "value": "value3", "changesLook": False}]
+    assert "architrave_types" not in mapped and len(records["architrave-types"]) == 1
     assert records["architrave-types"][addon["$id"]]["name"] == "Frame"
     variation.attributes.pop(variation.attribute_definitions[-1].key)
     mapped = desired_records(result.catalog, result.assets)["product-variations"][
         variation.external_id
     ]
-    assert mapped["architrave_types"] == []
+    assert mapped["options"] == []
     assert len(mapped["addons"]) == 1
