@@ -5,6 +5,7 @@ import { startPolling } from './checkout/telegram';
 import { syncManagerRole } from './manager-role';
 import { seedAboutPage } from './about-page';
 import { applyAdminLabels } from './admin-labels';
+import { applyAdminLayout } from './admin-layout';
 
 let stopTelegram = () => {};
 
@@ -24,6 +25,7 @@ export default {
     await syncManagerRole(strapi);
     await seedAboutPage(strapi);
     await applyAdminLabels(strapi);
+    await applyAdminLayout(strapi);
     // One-off maintenance scripts (STRAPI_SCRIPT=1, scripts/*.js) load Strapi next to the running CMS:
     // no second payment cron and no second Telegram poller (one bot token can be polled only once).
     const script = process.env.STRAPI_SCRIPT === '1';
