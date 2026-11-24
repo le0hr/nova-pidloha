@@ -1016,7 +1016,7 @@ export interface ApiProductVariationProductVariation
       Schema.Attribute.Private;
     note: Schema.Attribute.String;
     options: Schema.Attribute.Component<'catalog.variation-option', true>;
-    packArea: Schema.Attribute.Decimal &
+    packArea: Schema.Attribute.Float &
       Schema.Attribute.SetMinMax<
         {
           min: 0;

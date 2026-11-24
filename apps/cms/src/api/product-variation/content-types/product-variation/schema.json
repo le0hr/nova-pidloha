@@ -62,7 +62,7 @@
       "component": "catalog.variation-option"
     },
     "packArea": {
-      "type": "decimal",
+      "type": "float",
       "min": 0
     },
     "boardSize": {
