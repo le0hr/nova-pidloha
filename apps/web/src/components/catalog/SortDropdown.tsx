@@ -32,7 +32,7 @@ export default function SortDropdown({ mobile = false }: Props) {
           onClick={() => setOpen((o) => !o)}
           className="flex items-center gap-[6px] border border-[#e0e0e0] px-[12px] py-[8px] w-full justify-between hover:border-[#1a1a1a] transition-colors duration-200"
         >
-          <span className="font-['Outfit',sans-serif] font-medium text-[#1a1a1a] text-[13px]">
+          <span className="font-['Outfit',sans-serif] font-medium text-[#1a1a1a] text-fs13">
             {sort}
           </span>
           <svg
@@ -55,7 +55,7 @@ export default function SortDropdown({ mobile = false }: Props) {
                   setSort(o);
                   setOpen(false);
                 }}
-                className={`w-full px-[12px] py-[8px] text-left font-['Outfit',sans-serif] text-[13px]
+                className={`w-full px-[12px] py-[8px] text-left font-['Outfit',sans-serif] text-fs13
                             hover:bg-[#f7f7f7] transition-colors duration-150
                             ${sort === o ? "font-semibold text-[#e53935]" : "font-normal text-[#1a1a1a]"}`}
               >
@@ -79,7 +79,7 @@ export default function SortDropdown({ mobile = false }: Props) {
           onClick={() => setOpen((o) => !o)}
           className="flex items-center gap-[6px] border border-[#e0e0e0] hover:border-[#1a1a1a] px-[12px] py-[6px] transition-colors duration-200"
         >
-          <span className="font-['Outfit',sans-serif] font-medium text-[#1a1a1a] text-[13px]">
+          <span className="font-['Outfit',sans-serif] font-medium text-[#1a1a1a] text-fs13">
             {sort}
           </span>
           <svg

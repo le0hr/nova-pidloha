@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import LineIcon from "@/components/LineIcon";
 import GoogleShopMap from "./GoogleShopMap";
 import { SHOP_LOCATIONS, shopDirectionsUrl, shopMapEmbedUrl, shopsMapEmbedUrl, type ShopLocation } from "@/lib/catalog/shop-locations";
 
@@ -27,7 +28,7 @@ export default function ShopMap({ interactive, shops = SHOP_LOCATIONS, onClose }
         </label>
         {shop && <a href={shopDirectionsUrl(shop)} target="_blank" rel="noopener noreferrer"
           aria-label={`Прокласти маршрут: ${shop.name} (нова вкладка)`}
-          className="col-start-2 flex min-h-11 shrink-0 items-center justify-center justify-self-end rounded-none bg-[#e53935] px-4 text-sm font-bold text-white shadow-lg hover:bg-[#c62828]">Маршрут ↗</a>}
+          className="col-start-2 flex min-h-11 shrink-0 items-center justify-center gap-2 justify-self-end rounded-none bg-[#e53935] px-4 text-sm font-bold text-white shadow-lg hover:bg-[#c62828]">Маршрут<LineIcon name="arrow" className="w-4" strokeWidth={2} /></a>}
       </div>}
     </div>
   );

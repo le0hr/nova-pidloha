@@ -4,6 +4,18 @@ import { useEffect, useRef, useState } from "react";
 import Script from "next/script";
 import type { ShopLocation } from "@/lib/catalog/shop-locations";
 
+/** Red pin with the logo in a white circle; the tip (bottom centre) is the exact place. */
+function logoPin() {
+  const pin = document.createElement("div");
+  pin.style.cssText = "position:relative;width:48px;height:60px;cursor:pointer;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))";
+  pin.innerHTML = `<svg width="48" height="60" viewBox="0 0 48 60" aria-hidden="true" style="display:block">
+    <path d="M24 1C11.3 1 1 11.3 1 24c0 16.5 23 35 23 35s23-18.5 23-35C47 11.3 36.7 1 24 1Z" fill="#e53935" stroke="#b71c1c" stroke-width="1.5"/>
+    <circle cx="24" cy="24" r="19.5" fill="#fff"/></svg>
+    <span style="position:absolute;left:7px;top:7px;width:34px;height:34px;border-radius:50%;overflow:hidden">
+      <img src="/nova-pidloha.png" alt="" style="display:block;width:35.6px;max-width:none;height:35.6px"></span>`;
+  return pin;
+}
+
 export default function GoogleShopMap({ apiKey, locations, shop, interactive, onSelect }: {
   apiKey: string;
   locations: ShopLocation[];
@@ -26,11 +38,9 @@ export default function GoogleShopMap({ apiKey, locations, shop, interactive, on
   useEffect(() => {
     if (!map) return;
     const markers = locations.map((location, index) => {
-      // Site-coloured pin: red with a white dot, darker red outline.
-      const pin = new google.maps.marker.PinElement({ background: "#e53935", borderColor: "#b71c1c", glyphColor: "#ffffff", scale: 1.15 });
       const marker = new google.maps.marker.AdvancedMarkerElement({
         map, position: { lat: location.lat, lng: location.lng },
-        title: location.address ?? location.name, content: pin.element,
+        title: location.address ?? location.name, content: logoPin(),
       });
       const listener = marker.addListener("click", () => onSelect(String(index)));
       return { marker, listener };

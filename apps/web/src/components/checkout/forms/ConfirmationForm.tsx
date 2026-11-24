@@ -102,7 +102,7 @@ export default function ConfirmationForm() {
         {order && <p className="mb-3 font-semibold">До {payment === 'card' ? 'резервування' : 'сплати'}: {(order.totalMinor / 100).toLocaleString('uk-UA')} ₴</p>}
         <p className="mb-3 text-sm text-[#666]">Доставка, крім самовивозу, оплачується окремо. Її вартість уточнить менеджер.</p>
         {saveError && <p role="alert" className="mb-3 text-sm text-red-700">{saveError}</p>}
-        <button type="button" disabled={!ready || saving || !order} onClick={submit} className="min-h-11 w-full bg-[#e53935] px-6 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-[#d32f2f] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e53935] disabled:cursor-not-allowed disabled:bg-[#bdbdbd] sm:w-auto">
+        <button type="button" disabled={!ready || saving || !order} onClick={submit} className="min-h-11 w-full bg-[#e53935] px-6 py-3 text-fs15 font-semibold text-white transition-colors hover:bg-[#d32f2f] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e53935] disabled:cursor-not-allowed disabled:bg-[#bdbdbd] sm:w-auto">
           {saving ? "Зачекайте…" : payment === "card" ? "Перейти до оплати" : "Підтвердити замовлення"}
         </button>
       </div>

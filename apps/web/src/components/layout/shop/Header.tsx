@@ -13,7 +13,7 @@ function Brand({ onNavigate }: { onNavigate?: () => void }) {
     <Image src="/nova-pidloha.png" alt="" width={42} height={42} className="logo-img size-8 -scale-y-100 rotate-180 object-cover sm:size-10" />
     <span>
       <span className="logo-title block text-sm font-bold leading-tight text-[#1a1a1a] sm:text-base lg:text-lg">НОВА ПІДЛОГА</span>
-      <span className="logo-subtitle block text-[10px] font-semibold uppercase leading-tight tracking-[0.14em] text-[#e53935] lg:text-[11px]">ТА ДВЕРІ</span>
+      <span className="logo-subtitle block text-fs10 font-semibold uppercase leading-tight tracking-[0.14em] text-[#e53935] lg:text-fs11">ТА ДВЕРІ</span>
     </span>
   </Link>;
 }
@@ -111,7 +111,7 @@ export default function Header({ categories }: { categories: Category[] }) {
             </button>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-6">
-            <p className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#e53935]"><span className="h-0.5 w-5 bg-[#e53935]" />Для вашого дому</p>
+            <p className="mb-2 flex items-center gap-2 text-fs10 font-bold uppercase tracking-[0.16em] text-[#e53935]"><span className="h-0.5 w-5 bg-[#e53935]" />Для вашого дому</p>
             <h2 id="mobile-menu-title" className="mb-6 text-2xl font-bold">Каталог та меню</h2>
             <Navigation categories={categories} mobile onNavigate={closeMenu} />
           </div>

@@ -1,3 +1,4 @@
+import LineIcon from "@/components/LineIcon";
 import Link from "next/link";
 
 export type PromoTicker = { label?: string; highlight?: string; text?: string; note?: string; url?: string };
@@ -12,10 +13,10 @@ export default function Promotion({ promo }: { promo: PromoTicker | null }) {
     <span className="sale-ticker-track flex w-max" aria-hidden="true">
       {[0, 1].map(group => <span key={group} className="sale-ticker-group flex shrink-0 items-center gap-10 pr-10 md:gap-16 md:pr-16">
         {[0, 1, 2].map(item => <span key={item} className="flex shrink-0 items-center gap-4 whitespace-nowrap text-sm font-semibold md:text-base">
-          {promo.label && <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/80">{promo.label}</span>}
+          {promo.label && <span className="text-fs11 font-bold uppercase tracking-[0.12em] text-white/80">{promo.label}</span>}
           <span>{promo.highlight && <strong className="text-lg font-extrabold md:text-xl">{promo.highlight}</strong>}{promo.highlight && promo.text ? " " : ""}{promo.text}</span>
           {promo.note && <><span className="size-1 rounded-full bg-white/70" /><span className="font-normal text-white/90">{promo.note}</span></>}
-          <span className="text-lg" aria-hidden="true">↗</span>
+          <LineIcon name="arrow" className="w-4" strokeWidth={2} />
         </span>)}
       </span>)}
     </span>

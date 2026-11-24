@@ -61,12 +61,12 @@ export default function PaymentForm() {
                 Накладений платіж (при отриманні)
               </span>
 
-              <span className="inline-flex shrink-0 items-center whitespace-nowrap border border-[#dedede] bg-[#f5f5f5] px-2 py-1 text-[10px] font-semibold uppercase leading-none tracking-[0.06em] text-[#555]">
+              <span className="inline-flex shrink-0 items-center whitespace-nowrap border border-[#dedede] bg-[#f5f5f5] px-2 py-1 text-fs10 font-semibold uppercase leading-none tracking-[0.06em] text-[#555]">
                 Рекомендовано
               </span>
             </div>
 
-            <div className="mt-1.5 text-[13px] leading-snug text-[#777]">
+            <div className="mt-1.5 text-fs13 leading-snug text-[#777]">
               Оплата готівкою або карткою у відділенні Нової Пошти після
               перевірки товару. Зверніть увагу, що перевізник стягує комісію за
               зворотну доставку грошей (2% + 20 ₴).
@@ -127,7 +127,7 @@ export default function PaymentForm() {
               </div>
             </div>
 
-            <div className="mt-1.5 text-[13px] leading-snug text-[#777]">
+            <div className="mt-1.5 text-fs13 leading-snug text-[#777]">
               Кошти буде зарезервовано на картці. Списання відбудеться після підтвердження замовлення магазином. Реквізити картки вводяться на сторінці LiqPay.
             </div>
           </div>
@@ -167,7 +167,7 @@ export default function PaymentForm() {
               Безготівковий розрахунок (для юр. осіб)
             </div>
 
-            <div className="mt-1.5 text-[13px] leading-snug text-[#777]">
+            <div className="mt-1.5 text-fs13 leading-snug text-[#777]">
               Рахунок-фактура буде надісланий на вказану електронну адресу після
               обробки замовлення менеджером. Пакет документів надається разом із
               товаром.
@@ -188,7 +188,7 @@ export default function PaymentForm() {
         <button
           type="button"
           onClick={handleBack}
-          className="border border-[#222] bg-white px-6 py-2.5 text-[15px] font-medium text-[#222] transition hover:bg-[#f5f5f5]"
+          className="border border-[#222] bg-white px-6 py-2.5 text-fs15 font-medium text-[#222] transition hover:bg-[#f5f5f5]"
         >
           Назад
         </button>
@@ -196,7 +196,7 @@ export default function PaymentForm() {
         <button
           type="button"
           onClick={handleSubmit} disabled={saving}
-          className="bg-[#e53935] px-8 py-2.5 text-[15px] font-medium text-white transition hover:bg-[#d32f2f]"
+          className="bg-[#e53935] px-8 py-2.5 text-fs15 font-medium text-white transition hover:bg-[#d32f2f]"
         >
           {saving ? "Зберігаємо…" : editing ? "Зберегти зміни" : "Продовжити"}
         </button>

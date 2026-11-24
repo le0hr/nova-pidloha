@@ -1,6 +1,19 @@
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
+/* Small text grows with the screen: the number is the design size in px, the clamp is phone → wide desktop. */
+@theme {
+  --text-fs10: clamp(11px, 10.6px + 0.1vw, 13px);
+  --text-fs11: clamp(12px, 11.5px + 0.13vw, 14px);
+  --text-fs12: clamp(13px, 12.4px + 0.15vw, 15.5px);
+  --text-fs13: clamp(14px, 13.4px + 0.16vw, 17px);
+  --text-fs14: clamp(15px, 14.4px + 0.16vw, 18px);
+  --text-fs15: clamp(16px, 15.4px + 0.16vw, 19px);
+  --text-xs: clamp(13px, 12.4px + 0.15vw, 15.5px);
+  --text-sm: clamp(15px, 14.4px + 0.16vw, 18px);
+  --text-base: clamp(16px, 15.4px + 0.2vw, 20px);
+}
+
 :root {
   color-scheme: light;
   --scrollbar-accent: #e53935;
@@ -74,14 +87,14 @@ body {
   display: flex;
   align-items: center;
   gap: 18px;
-  font-size: 11px;
+  font-size: 13px;
 }
 .topbar span:last-child {
   margin-left: auto;
 }
 .topbar b {
   color: #fff;
-  font-size: 11px;
+  font-size: 13px;
 }
 .site-footer {
   background: #1e1e1e;
@@ -99,7 +112,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 15px;
+  font-size: 16px;
 }
 .footer-brand img {
   width: 32px;
@@ -112,7 +125,7 @@ body {
 .footer-inner p {
   max-width: 360px;
   color: #a5a5a5;
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.5;
 }
 .footer-links {
@@ -120,14 +133,14 @@ body {
   flex-direction: column;
   gap: 8px;
   color: #b0b0b0;
-  font-size: 13px;
+  font-size: 15px;
 }
 .footer-links a:hover {
   color: white;
 }
 .footer-links b {
   color: white;
-  font-size: 12px;
+  font-size: 14px;
 }
 .copyright {
   border-top: 1px solid #363636;
@@ -135,7 +148,7 @@ body {
   margin: auto;
   padding: 15px 0 18px;
   color: #8a8a8a;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 @media (max-width: 800px) {
@@ -156,12 +169,12 @@ body {
   }
   .footer-inner p {
     margin: 0;
-    font-size: 10px;
+    font-size: 12px;
   }
   .copyright {
     margin: 0 13px;
     padding: 12px 0;
-    font-size: 9px;
+    font-size: 11px;
   }
 }
 
@@ -234,7 +247,7 @@ select {
   }
 
   .desktop-header .logo-subtitle {
-    font-size: clamp(11px, 0.72vw, 14px);
+    font-size: clamp(13px, calc(0.72vw + 2px), 16px);
   }
 
   .desktop-header nav {
@@ -242,7 +255,7 @@ select {
   }
 
   .desktop-header nav a {
-    font-size: clamp(14px, 0.9vw, 17px);
+    font-size: clamp(16px, calc(0.9vw + 2px), 19px);
   }
 
   .catalog-content {
@@ -256,7 +269,7 @@ select {
     font-size: clamp(32px, 2.1vw, 40px);
   }
   .catalog-additional {
-    font-size: clamp(14px, 0.9vw, 17px);
+    font-size: clamp(16px, calc(0.9vw + 2px), 19px);
   }
   .catalog-filter-wrap {
     width: clamp(300px, 18vw, 340px);
@@ -267,11 +280,11 @@ select {
     padding: clamp(16px, 1.15vw, 22px);
     gap: clamp(20px, 1.35vw, 26px);
   }
-  .catalog-filters h2 { font-size: clamp(16px, 1.05vw, 20px); }
+  .catalog-filters h2 { font-size: clamp(18px, calc(1.05vw + 2px), 22px); }
   .catalog-filters h3,
   .catalog-filters label span,
-  .catalog-filters input { font-size: clamp(14px, 0.9vw, 17px); }
-  .catalog-filters button span { font-size: clamp(12px, 0.82vw, 15px); }
+  .catalog-filters input { font-size: clamp(16px, calc(0.9vw + 2px), 19px); }
+  .catalog-filters button span { font-size: clamp(14px, calc(0.82vw + 2px), 17px); }
   .catalog-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: clamp(16px, 1.15vw, 22px);
@@ -279,11 +292,11 @@ select {
   .catalog-card { width: 100%; }
   .catalog-card-image { height: clamp(360px, 23vw, 460px); }
   .catalog-card-details { min-height: clamp(54px, 3.5vw, 68px); padding: clamp(14px, 0.95vw, 18px); }
-  .catalog-card-details h3 { font-size: clamp(15px, 1vw, 19px); }
-  .catalog-card-details span { font-size: clamp(12px, 0.8vw, 15px); }
+  .catalog-card-details h3 { font-size: clamp(17px, calc(1vw + 2px), 21px); }
+  .catalog-card-details span { font-size: clamp(14px, calc(0.8vw + 2px), 17px); }
   .catalog-card-purchase { height: clamp(55px, 3.6vw, 70px); padding-inline: clamp(10px, 0.7vw, 14px); }
-  .catalog-card-purchase > div:first-child > span:first-child { font-size: clamp(16px, 1.05vw, 20px); }
-  .catalog-card-purchase > div:first-child > span:last-child { font-size: clamp(12px, 0.8vw, 15px); }
+  .catalog-card-purchase > div:first-child > span:first-child { font-size: clamp(18px, calc(1.05vw + 2px), 22px); }
+  .catalog-card-purchase > div:first-child > span:last-child { font-size: clamp(14px, calc(0.8vw + 2px), 17px); }
 
   .footer-inner {
     max-width: min(1760px, calc(100% - 160px));
@@ -291,52 +304,52 @@ select {
     padding-bottom: clamp(24px, 1.6vw, 32px);
     gap: clamp(72px, 4.5vw, 96px);
   }
-  .footer-brand { font-size: clamp(15px, 1vw, 19px); gap: clamp(8px, 0.6vw, 12px); }
+  .footer-brand { font-size: clamp(17px, calc(1vw + 2px), 21px); gap: clamp(8px, 0.6vw, 12px); }
   .footer-brand img { width: clamp(32px, 2.1vw, 40px); height: clamp(32px, 2.1vw, 40px); }
   .footer-inner p,
   .footer-links,
-  .footer-links b { font-size: clamp(11px, 0.75vw, 14px); }
-  .copyright { max-width: min(1760px, calc(100% - 160px)); font-size: clamp(10px, 0.68vw, 13px); }
+  .footer-links b { font-size: clamp(13px, calc(0.75vw + 2px), 16px); }
+  .copyright { max-width: min(1760px, calc(100% - 160px)); font-size: clamp(12px, calc(0.68vw + 2px), 15px); }
   .product-title {
     font-size: clamp(32px, 2.1vw, 40px);
   }
   .product-category {
-    font-size: clamp(14px, 0.9vw, 17px);
+    font-size: clamp(16px, calc(0.9vw + 2px), 19px);
   }
   .product-step-label {
-    font-size: clamp(14px, 0.9vw, 17px);
+    font-size: clamp(16px, calc(0.9vw + 2px), 19px);
   }
   .product-step-note,
   .product-step-number {
-    font-size: clamp(12px, 0.8vw, 15px);
+    font-size: clamp(14px, calc(0.8vw + 2px), 17px);
   }
   .product-option-btn {
-    font-size: clamp(13px, 0.85vw, 16px);
+    font-size: clamp(15px, calc(0.85vw + 2px), 18px);
   }
   .product-price {
     font-size: clamp(28px, 1.8vw, 36px);
   }
   .product-old-price {
-    font-size: clamp(14px, 0.9vw, 17px);
+    font-size: clamp(16px, calc(0.9vw + 2px), 19px);
   }
   .product-add-btn {
-    font-size: clamp(15px, 0.95vw, 18px);
+    font-size: clamp(17px, calc(0.95vw + 2px), 20px);
     padding-block: clamp(14px, 0.9vw, 18px);
   }
   .product-accessory-name {
-    font-size: clamp(13px, 0.85vw, 16px);
+    font-size: clamp(15px, calc(0.85vw + 2px), 18px);
   }
   .product-accessory-spec {
-    font-size: clamp(12px, 0.78vw, 14px);
+    font-size: clamp(14px, calc(0.78vw + 2px), 16px);
   }
   .product-accessory-price {
-    font-size: clamp(13px, 0.85vw, 16px);
+    font-size: clamp(15px, calc(0.85vw + 2px), 18px);
   }
   .product-section-title {
-    font-size: clamp(15px, 0.95vw, 18px);
+    font-size: clamp(17px, calc(0.95vw + 2px), 20px);
   }
   .product-section-note {
-    font-size: clamp(12px, 0.8vw, 15px);
+    font-size: clamp(14px, calc(0.8vw + 2px), 17px);
   }
 
 }

@@ -18,7 +18,7 @@ export default function MobileFilterButton() {
           strokeLinecap="round"
         />
       </svg>
-      <span className="font-['Outfit',sans-serif] font-medium text-[#1a1a1a] text-[13px]">
+      <span className="font-['Outfit',sans-serif] font-medium text-[#1a1a1a] text-fs13">
         Фільтри
       </span>
     </button>

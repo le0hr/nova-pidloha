@@ -1,3 +1,4 @@
+import LineIcon from "@/components/LineIcon";
 import type { Metadata } from "next";
 import { Fragment } from "react";
 import Image from "next/image";
@@ -51,7 +52,7 @@ export default async function AboutPage() {
       </div>
       <div className="relative overflow-hidden bg-[#e8e4de]">
         <div suppressHydrationWarning className="img-shell relative h-[330px] sm:h-[420px] lg:h-[510px]"><Image src={page.heroImage} unoptimized={!optimizable(page.heroImage)} alt={page.heroImageAlt} fill priority sizes="(min-width: 1760px) 1584px, 100vw" className="object-cover object-[58%_center]" /></div>
-        {page.heroNote && <div className="flex items-center justify-between gap-5 bg-[#e53935] px-5 py-5 text-white sm:absolute sm:right-0 sm:bottom-0 sm:w-[330px] sm:p-7"><p className="text-lg font-semibold leading-snug"><Rich text={page.heroNote} accent="" /></p><span className="text-3xl" aria-hidden="true">↗</span></div>}
+        {page.heroNote && <div className="flex items-center justify-between gap-5 bg-[#e53935] px-5 py-5 text-white sm:absolute sm:right-0 sm:bottom-0 sm:w-[330px] sm:p-7"><p className="text-lg font-semibold leading-snug"><Rich text={page.heroNote} accent="" /></p><LineIcon name="arrow" className="w-7" /></div>}
       </div>
       <div className={`grid divide-y divide-[#e0e0e0] border-b border-[#e0e0e0] sm:divide-x sm:divide-y-0 ${["sm:grid-cols-1", "sm:grid-cols-2", "sm:grid-cols-3", "sm:grid-cols-4"][Math.min(page.highlights.length, 4) - 1]}`}>
         {page.highlights.map(item => <div key={item.title} className="flex items-center gap-4 px-2 py-5 sm:justify-center sm:px-5 md:py-7"><HomeIcon name={item.icon} size={24} /><div><p className="text-sm font-bold">{item.title}</p>{item.text && <p className="mt-1 text-xs text-[#666]">{item.text}</p>}</div></div>)}

@@ -1,3 +1,4 @@
+import LineIcon from "@/components/LineIcon";
 import Image from "next/image";
 import Link from "next/link";
 import { categoryHref, categoryImage, categoryRoot, flatSubcategories, type Category } from "@/lib/catalog/categories";
@@ -24,7 +25,7 @@ export default function SubclassSelector({ categories, current }: { categories: 
               {selected && <span aria-hidden="true" className="absolute right-2 top-2 flex size-6 items-center justify-center bg-[#e53935] text-sm text-white">✓</span>}
             </div>
             <div className={`flex min-h-12 items-center justify-between gap-2 px-3 py-2 text-xs font-semibold md:text-sm ${selected ? "bg-[#fff4f3] text-[#e53935]" : "text-[#1a1a1a] group-hover:text-[#e53935]"}`}>
-              <span>{index === 0 ? `Усі: ${category.name}` : category.name}</span><span aria-hidden="true" className="shrink-0">↗</span>
+              <span>{index === 0 ? `Усі: ${category.name}` : category.name}</span><LineIcon name="arrow" className="w-4" strokeWidth={2} />
             </div>
           </Link>;
         })}

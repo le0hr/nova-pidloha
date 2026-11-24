@@ -44,7 +44,7 @@ export default function ProductTabsClient({
                 type="button"
                 onClick={() => setActive(tab.id)}
                 className={`
-                  relative pb-3 font-['Outfit',sans-serif] text-[15px] whitespace-nowrap transition-colors
+                  relative pb-3 font-['Outfit',sans-serif] text-fs15 whitespace-nowrap transition-colors
                   ${isActive
                     ? "text-[#e53935] font-semibold"
                     : "text-[#666] hover:text-[#1a1a1a]"

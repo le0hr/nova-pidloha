@@ -72,10 +72,10 @@ export default function FloorConfigurator({
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <span className="font-['Outfit',sans-serif] font-bold text-[#1a1a1a] text-[15px]">
+          <span className="font-['Outfit',sans-serif] font-bold text-[#1a1a1a] text-fs15">
             Крок 2: Кількість
           </span>
-          <span className="font-['Outfit',sans-serif] font-medium text-[#b0b0b0] text-[13px]">
+          <span className="font-['Outfit',sans-serif] font-medium text-[#b0b0b0] text-fs13">
             2/3
           </span>
         </div>
@@ -83,7 +83,7 @@ export default function FloorConfigurator({
         {byPack && <>
         {/* Info*/}
         <div className="bg-[#fff8f0] border-l-[3px] border-[#e67e22] px-3 py-2">
-          <span className="font-['Outfit',sans-serif] text-[13px] font-medium text-[#e67e22]">
+          <span className="font-['Outfit',sans-serif] text-fs13 font-medium text-[#e67e22]">
             Упаковка: {packArea} м²{boardSize ? ` / дошка ${boardSize} мм` : ""}
           </span>
         </div>
@@ -93,7 +93,7 @@ export default function FloorConfigurator({
           <button
             type="button"
             onClick={() => onUnitChange("m2")}
-            className={`flex-1 h-11 font-['Outfit',sans-serif] text-[14px] font-semibold transition-colors ${
+            className={`flex-1 h-11 font-['Outfit',sans-serif] text-fs14 font-semibold transition-colors ${
               unit === "m2"
                 ? "bg-white outline outline-2 outline-[#e53935] text-[#e53935]"
                 : "bg-white outline outline-1 outline-[#e0e0e0] text-[#1a1a1a]"
@@ -104,7 +104,7 @@ export default function FloorConfigurator({
           <button
             type="button"
             onClick={() => onUnitChange("pack")}
-            className={`flex-1 h-11 font-['Outfit',sans-serif] text-[14px] font-semibold transition-colors ${
+            className={`flex-1 h-11 font-['Outfit',sans-serif] text-fs14 font-semibold transition-colors ${
               unit === "pack"
                 ? "bg-white outline outline-2 outline-[#e53935] text-[#e53935]"
                 : "bg-white outline outline-1 outline-[#e0e0e0] text-[#1a1a1a]"
@@ -136,7 +136,7 @@ export default function FloorConfigurator({
           </button>
         </div>
 
-        {byPack && <div className="flex items-center justify-between text-[13px]">
+        {byPack && <div className="flex items-center justify-between text-fs13">
           <span className="font-['Outfit',sans-serif] text-[#9e9e9e]">
             {unit === "m2" ? `${packsApprox} уп.` : `${+(packsApprox * packArea).toFixed(3)} м²`}
           </span>

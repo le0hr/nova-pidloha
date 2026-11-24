@@ -95,7 +95,7 @@ export default function Navigation({ categories, mobile = false, onNavigate }: {
             href={link.href}
             onClick={onNavigate}
             aria-current={link.active ? "page" : undefined}
-            className={`font-['Outfit',sans-serif] text-[14px] whitespace-nowrap transition-colors duration-150 ease-out motion-reduce:transition-none ${
+            className={`font-['Outfit',sans-serif] text-fs14 whitespace-nowrap transition-colors duration-150 ease-out motion-reduce:transition-none ${
               link.active
                 ? "font-bold !text-[#e53935]"
                     : "font-medium text-[#1a1a1a] hover:text-[#e53935]"

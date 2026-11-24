@@ -16,33 +16,33 @@ export default function FilledCart() {
     <div className="flex flex-col gap-[32px] lg:flex-row lg:items-start">
       <div className="min-w-0 flex-1 border border-[#E0E0E0]">
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
+          <table className="block w-full border-collapse md:table">
               {/* Table  Header */}
-            <thead>
+            <thead className="block md:table-header-group">
               <tr className="hidden border-b border-[#E0E0E0] md:table-row">
-                <th className="w-[100px] px-[24px] py-[14px] text-left font-['Inter',sans-serif] text-[12px] font-medium uppercase text-[#9E9E9E]">
+                <th className="w-[100px] px-[24px] py-[14px] text-left font-['Inter',sans-serif] text-fs12 font-medium uppercase text-[#9E9E9E]">
                   Фото
                 </th>
-                <th className="px-[12px] py-[14px] text-left font-['Inter',sans-serif] text-[12px] font-medium uppercase text-[#9E9E9E]">
+                <th className="px-[12px] py-[14px] text-left font-['Inter',sans-serif] text-fs12 font-medium uppercase text-[#9E9E9E]">
                   Назва
                 </th>
-                <th className="min-w-[160px] px-[12px] py-[14px] text-left font-['Inter',sans-serif] text-[12px] font-medium uppercase text-[#9E9E9E]">
+                <th className="min-w-[160px] px-[12px] py-[14px] text-left font-['Inter',sans-serif] text-fs12 font-medium uppercase text-[#9E9E9E]">
                   Модифікації
                 </th>
-                <th className="w-[110px] px-[12px] py-[14px] text-center font-['Inter',sans-serif] text-[12px] font-medium uppercase text-[#9E9E9E]">
+                <th className="w-[110px] px-[12px] py-[14px] text-center font-['Inter',sans-serif] text-fs12 font-medium uppercase text-[#9E9E9E]">
                   Ціна
                 </th>
-                <th className="w-[140px] px-[12px] py-[14px] text-center font-['Inter',sans-serif] text-[12px] font-medium uppercase text-[#9E9E9E]">
+                <th className="w-[140px] px-[12px] py-[14px] text-center font-['Inter',sans-serif] text-fs12 font-medium uppercase text-[#9E9E9E]">
                   Кількість
                 </th>
-                <th className="w-[110px] px-[12px] py-[14px] text-right font-['Inter',sans-serif] text-[12px] font-medium uppercase text-[#9E9E9E]">
+                <th className="w-[110px] px-[12px] py-[14px] text-right font-['Inter',sans-serif] text-fs12 font-medium uppercase text-[#9E9E9E]">
                   Сума
                 </th>
                 <th className="w-[40px] px-[12px] py-[14px]" />
               </tr>
             </thead>
 
-            <tbody>
+            <tbody className="block md:table-row-group">
               {items.map((item) => (
                 <CartItem key={item.id} item={item} />
               ))}
@@ -54,7 +54,7 @@ export default function FilledCart() {
         <div className="border-t border-[#E0E0E0] px-[24px] py-[16px]">
           <Link
             href="/catalog"
-            className="font-['Outfit',sans-serif] text-[13px] font-semibold text-[#1A1A1A] transition-colors hover:text-[#E53935]"
+            className="font-['Outfit',sans-serif] text-fs13 font-semibold text-[#1A1A1A] transition-colors hover:text-[#E53935]"
           >
             ← Продовжити покупки
           </Link>
@@ -71,19 +71,19 @@ export default function FilledCart() {
 
         <div className="flex flex-col gap-[14px] px-[24px] py-[20px]">
           <div className="flex items-center justify-between">
-            <span className="font-['Inter',sans-serif] text-[14px] text-[#666666]">
+            <span className="font-['Inter',sans-serif] text-fs14 text-[#666666]">
               Товари
             </span>
-            <span className="font-['Outfit',sans-serif] text-[14px] font-semibold text-[#1A1A1A]">
+            <span className="font-['Outfit',sans-serif] text-fs14 font-semibold text-[#1A1A1A]">
               {totalQty}
             </span>
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="font-['Inter',sans-serif] text-[14px] text-[#666666]">
+            <span className="font-['Inter',sans-serif] text-fs14 text-[#666666]">
               Доставка
             </span>
-            <span className="font-['Inter',sans-serif] text-[14px] text-[#666666]">
+            <span className="font-['Inter',sans-serif] text-fs14 text-[#666666]">
               За домовленістю
             </span>
           </div>
@@ -91,7 +91,7 @@ export default function FilledCart() {
           <div className="my-[4px] border-t border-[#E0E0E0]" />
 
           <div className="flex items-center justify-between">
-            <span className="font-['Inter',sans-serif] text-[15px] font-medium text-[#1A1A1A]">
+            <span className="font-['Inter',sans-serif] text-fs15 font-medium text-[#1A1A1A]">
               Разом
             </span>
             <span className="font-['Outfit',sans-serif] text-[22px] font-extrabold text-[#E53935]">
@@ -103,7 +103,7 @@ export default function FilledCart() {
             <button
               onClick={() => {router.push('/cart/checkout/contacts')}}
               type="button"
-              className="mt-[8px] w-full bg-[#E53935] py-[14px] font-['Outfit',sans-serif] text-[15px] font-bold text-white transition-colors hover:bg-[#C62828]"
+              className="mt-[8px] w-full bg-[#E53935] py-[14px] font-['Outfit',sans-serif] text-fs15 font-bold text-white transition-colors hover:bg-[#C62828]"
             >
               Оформити замовлення
             </button>

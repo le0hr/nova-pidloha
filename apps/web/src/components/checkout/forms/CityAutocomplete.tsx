@@ -34,7 +34,7 @@ export default function CityAutocomplete({ value, cities, loading, error, select
 
   return (
     <div className="relative">
-      <label htmlFor="delivery-city" className="mb-1.5 block text-[13px] text-[#444]">Місто доставки</label>
+      <label htmlFor="delivery-city" className="mb-1.5 block text-fs13 text-[#444]">Місто доставки</label>
       <div className="relative">
         <input
           id="delivery-city"
@@ -67,7 +67,7 @@ export default function CityAutocomplete({ value, cities, loading, error, select
               setActiveIndex(-1);
             }
           }}
-          className="w-full border border-[#d0d0d0] bg-white px-3 py-2.5 pr-10 text-[15px] text-[#222] outline-none transition-colors placeholder:text-[#999] hover:border-[#999] focus:border-[#e53935] focus:ring-1 focus:ring-[#e53935]"
+          className="w-full border border-[#d0d0d0] bg-white px-3 py-2.5 pr-10 text-fs15 text-[#222] outline-none transition-colors placeholder:text-[#999] hover:border-[#999] focus:border-[#e53935] focus:ring-1 focus:ring-[#e53935]"
         />
         <span aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#777]">
           {loading ? <span className="block h-4 w-4 rounded-full border-2 border-[#e0e0e0] border-t-[#e53935] motion-safe:animate-spin" /> :
@@ -88,12 +88,12 @@ export default function CityAutocomplete({ value, cities, loading, error, select
                 onClick={() => select(city)}
                 className={`cursor-pointer border-l-2 px-3 py-2.5 transition-colors ${activeIndex === index ? "border-[#e53935] bg-[#fff3f2]" : "border-transparent bg-white hover:bg-[#f5f5f5]"}`}
               >
-                <span className="block text-[15px] font-medium text-[#222]">{city.name}</span>
-                {city.area && <span className="mt-0.5 block text-[13px] text-[#777]">{city.area}</span>}
+                <span className="block text-fs15 font-medium text-[#222]">{city.name}</span>
+                {city.area && <span className="mt-0.5 block text-fs13 text-[#777]">{city.area}</span>}
               </li>
             ))}
           </ul>
-          {!options.length && <p className={`px-3 pb-3 pt-2 text-[13px] ${error ? "text-[#c62828]" : "text-[#777]"}`}>{status}</p>}
+          {!options.length && <p className={`px-3 pb-3 pt-2 text-fs13 ${error ? "text-[#c62828]" : "text-[#777]"}`}>{status}</p>}
         </div>
       )}
       <span id="delivery-city-status" role="status" className="sr-only">{visible ? status : selected ? "Місто обрано" : "Введіть щонайменше 2 літери"}</span>

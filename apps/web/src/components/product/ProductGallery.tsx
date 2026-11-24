@@ -177,7 +177,7 @@ export default function ProductGallery({
         {edgeBadge && (
           <div className="absolute top-3 left-3 md:top-4 md:left-4 bg-[#1a1a1a] flex items-center gap-1.5 px-2.5 py-1.5 md:px-3 md:py-1.5">
             <span className="block w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-white shrink-0" />
-            <span className="font-['Outfit',sans-serif] font-semibold text-[11px] md:text-[12px] text-white whitespace-nowrap">
+            <span className="font-['Outfit',sans-serif] font-semibold text-fs11 md:text-fs12 text-white whitespace-nowrap">
               {edgeBadge}
             </span>
           </div>

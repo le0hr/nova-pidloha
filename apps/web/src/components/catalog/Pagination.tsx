@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 
-const navClass = "flex items-start border border-[#E0E0E0] px-4 py-2 text-[#1A1A1A] font-['Outfit'] text-[13px] font-normal leading-normal";
+const navClass = "flex items-start border border-[#E0E0E0] px-4 py-2 text-[#1A1A1A] font-['Outfit'] text-fs13 font-normal leading-normal";
 
 /** Real links (not buttons), so search engines can walk every catalog page. */
 export default function Pagination({
@@ -62,7 +62,7 @@ export default function Pagination({
                     return (
                     <span
                         key={`dots-${index}`}
-                        className="px-1 text-[#1A1A1A] font-['Outfit'] text-[13px]"
+                        className="px-1 text-[#1A1A1A] font-['Outfit'] text-fs13"
                     >
                         ...
                     </span>
@@ -76,7 +76,7 @@ export default function Pagination({
                     key={page}
                     href={pageHref(page)}
                     aria-current={isActive ? "page" : undefined}
-                    className={`flex min-w-8 items-start justify-center px-3 py-2 font-['Outfit'] text-[13px] leading-normal ${
+                    className={`flex min-w-8 items-start justify-center px-3 py-2 font-['Outfit'] text-fs13 leading-normal ${
                         isActive
                         ? "bg-[#E53935] font-bold text-white"
                         : "text-[#1A1A1A] font-normal hover:bg-[#F5F5F5]"

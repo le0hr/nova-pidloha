@@ -150,7 +150,7 @@ export default async function CatalogPage({
           </div>
           {/* Category text from the CMS (Category → description): unique content for search, only on the clean first page. */}
           {current.description && pagination.page === 1 && !isFiltered(query) && (
-            <section className="catalog-seo-text max-w-[860px] text-[15px] leading-[1.6] text-[#555] pb-10">
+            <section className="catalog-seo-text max-w-[860px] text-fs15 leading-[1.6] text-[#555] pb-10">
               {String(current.description).split(/\n\s*\n/).map(plainText).filter(Boolean).map((paragraph, index) => (
                 <p key={index} className="mb-3">{paragraph}</p>
               ))}

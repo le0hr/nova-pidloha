@@ -1,3 +1,4 @@
+import LineIcon from "@/components/LineIcon";
 import Link from "next/link";
 import { categoryHref } from "@/lib/catalog/categories";
 import { telHref, type SiteContacts } from "@/lib/site-contacts";
@@ -35,9 +36,9 @@ export default function Footer({ contacts }: { contacts?: SiteContacts }) {
         </nav>
         <div className="footer-links">
           <b>КОНТАКТИ</b>
-          {contacts?.phone && <a href={telHref(contacts.phone)}>☎ {contacts.phone}</a>}
-          {contacts?.email && <a href={`mailto:${contacts.email}`}>✉ {contacts.email}</a>}
-          {addresses.map(address => <span key={address}>⌖ {address}</span>)}
+          {contacts?.phone && <a href={telHref(contacts.phone)} className="flex items-start gap-2"><LineIcon name="phone" className="w-[1.2em]" />{contacts.phone}</a>}
+          {contacts?.email && <a href={`mailto:${contacts.email}`} className="flex items-start gap-2"><LineIcon name="mail" className="w-[1.2em]" />{contacts.email}</a>}
+          {addresses.map(address => <span key={address} className="flex items-start gap-2"><LineIcon name="pin" className="w-[1.2em]" />{address}</span>)}
           <Link href="/#contacts">Магазини на мапі</Link>
           <Link href="/about">Про нас</Link>
         </div>

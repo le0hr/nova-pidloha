@@ -50,14 +50,14 @@ export default function ColorSelector({
                             <img src={imageSrc(images[color], 256)} alt={color} loading="lazy" className="absolute inset-0 size-full object-cover" />
                           ) : (
                             <div className="absolute inset-0 flex items-center justify-center">
-                              <span className="font-['Outfit',sans-serif] text-[10px] text-[#888] text-center px-1 leading-tight">
+                              <span className="font-['Outfit',sans-serif] text-fs10 text-[#888] text-center px-1 leading-tight">
                                 {color}
                               </span>
                             </div>
                           )}
                         </div>
                         <span
-                          className={`w-full text-center font-['Outfit',sans-serif] text-[11px] leading-tight sm:text-[13px] product-option-btn truncate ${
+                          className={`w-full text-center font-['Outfit',sans-serif] text-fs11 leading-tight sm:leading-snug [overflow-wrap:anywhere] ${
                             active ? "font-semibold text-[#1a1a1a]" : "text-[#555]"
                           }`}
                         >

@@ -36,13 +36,13 @@ export default function EmptyCart() {
         Кошик порожній
       </h2>
 
-      <p className="mt-[8px] font-['Inter',sans-serif] text-[14px] font-normal text-[#666666]">
+      <p className="mt-[8px] font-['Inter',sans-serif] text-fs14 font-normal text-[#666666]">
         Додайте товари з каталогу
       </p>
 
       <Link
         href="/catalog"
-        className="mt-[24px] bg-[#E53935] px-[28px] py-[12px] font-['Outfit',sans-serif] text-[14px] font-bold text-white transition-colors hover:bg-[#C62828]"
+        className="mt-[24px] bg-[#E53935] px-[28px] py-[12px] font-['Outfit',sans-serif] text-fs14 font-bold text-white transition-colors hover:bg-[#C62828]"
       >
         Перейти до каталогу
       </Link>

@@ -164,12 +164,12 @@ export default function DeliveryForm({ shops }: { shops: ShopLocation[] }) {
                 <div className="font-medium leading-tight">
                   Самовивіз з магазину
                 </div>
-                <div className="mt-0.5 text-[13px] leading-snug text-[#777]">
+                <div className="mt-0.5 text-fs13 leading-snug text-[#777]">
                   Оберіть зручний магазин для отримання замовлення
                 </div>
               </div>
 
-              <span className="whitespace-nowrap text-[14px] font-medium text-[#2e7d32]">
+              <span className="whitespace-nowrap text-fs14 font-medium text-[#2e7d32]">
                 Безкоштовно
               </span>
             </div>
@@ -186,7 +186,7 @@ export default function DeliveryForm({ shops }: { shops: ShopLocation[] }) {
           {method === "pickup" && (
             <div className="border-t border-[#f0f0f0] px-4 pb-5 pt-4">
               <fieldset>
-                <legend className="mb-2 text-[13px] text-[#444]">Оберіть магазин</legend>
+                <legend className="mb-2 text-fs13 text-[#444]">Оберіть магазин</legend>
                 <div className="space-y-2">
                   {shops.map((shop) => (
                     <div key={shopKey(shop)} className={`border p-3 ${pickupShopKey === shopKey(shop) ? "border-[#e53935] bg-[#fff3f2]" : "border-[#e0e0e0]"}`}>
@@ -205,7 +205,7 @@ export default function DeliveryForm({ shops }: { shops: ShopLocation[] }) {
                           {shop.hours && <span className="mt-1 block text-[#777]">{shop.hours}</span>}
                         </span>
                       </label>
-                      <a href={shopDirectionsUrl(shop)} target="_blank" rel="noopener noreferrer" className="ml-7 mt-2 inline-block text-[13px] text-[#e53935] underline">Показати на мапі</a>
+                      <a href={shopDirectionsUrl(shop)} target="_blank" rel="noopener noreferrer" className="ml-7 mt-2 inline-block text-fs13 text-[#e53935] underline">Показати на мапі</a>
                     </div>
                   ))}
                 </div>
@@ -243,12 +243,12 @@ export default function DeliveryForm({ shops }: { shops: ShopLocation[] }) {
                   <div className="font-medium leading-tight">
                     Нова Пошта (відділення або поштомат)
                   </div>
-                  <div className="mt-0.5 text-[13px] leading-snug text-[#777]">
+                  <div className="mt-0.5 text-fs13 leading-snug text-[#777]">
                     Відправка протягом 1-2 днів
                   </div>
                 </div>
 
-                <span className="whitespace-nowrap text-[14px] text-[#333]">
+                <span className="whitespace-nowrap text-fs14 text-[#333]">
                   за тарифами
                 </span>
               </div>
@@ -276,16 +276,16 @@ export default function DeliveryForm({ shops }: { shops: ShopLocation[] }) {
               />
 
               <fieldset>
-                <legend className="mb-1.5 text-[13px] text-[#444]">Оберіть відділення або поштомат</legend>
+                <legend className="mb-1.5 text-fs13 text-[#444]">Оберіть відділення або поштомат</legend>
                 {selectedWarehouse && !warehouseOpen ? (
                   <button
                     type="button"
                     onClick={() => { setWarehouseQuery(""); setWarehouseOpen(true); }}
                     aria-expanded={false}
-                    className="flex w-full items-center justify-between gap-3 border border-[#d0d0d0] bg-white px-3 py-2.5 text-left text-[15px] text-[#222] outline-none hover:border-[#999] focus-visible:border-[#e53935] focus-visible:ring-1 focus-visible:ring-[#e53935]"
+                    className="flex w-full items-center justify-between gap-3 border border-[#d0d0d0] bg-white px-3 py-2.5 text-left text-fs15 text-[#222] outline-none hover:border-[#999] focus-visible:border-[#e53935] focus-visible:ring-1 focus-visible:ring-[#e53935]"
                   >
                     <span>{selectedWarehouse.description}</span>
-                    <span className="shrink-0 text-[13px] font-medium text-[#e53935]">Змінити</span>
+                    <span className="shrink-0 text-fs13 font-medium text-[#e53935]">Змінити</span>
                   </button>
                 ) : (
                   <>
@@ -302,16 +302,16 @@ export default function DeliveryForm({ shops }: { shops: ShopLocation[] }) {
                     onKeyDown={(event) => { if (event.key === "Enter") event.preventDefault(); }}
                     aria-controls="delivery-warehouse-results"
                     aria-describedby="delivery-warehouse-count"
-                    className="w-full border border-[#d0d0d0] bg-white py-2.5 pl-10 pr-3 text-[15px] text-[#222] outline-none transition-colors placeholder:text-[#999] focus:border-[#e53935] focus:ring-1 focus:ring-[#e53935] disabled:bg-[#f5f5f5] disabled:text-[#999]"
+                    className="w-full border border-[#d0d0d0] bg-white py-2.5 pl-10 pr-3 text-fs15 text-[#222] outline-none transition-colors placeholder:text-[#999] focus:border-[#e53935] focus:ring-1 focus:ring-[#e53935] disabled:bg-[#f5f5f5] disabled:text-[#999]"
                   />
                   <svg aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#777]" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
                 </div>
-                <p id="delivery-warehouse-count" role="status" className="mt-2 text-[13px] text-[#777]">
+                <p id="delivery-warehouse-count" role="status" className="mt-2 text-fs13 text-[#777]">
                   {!warehouseDisabled && `Знайдено: ${filteredWarehouses.length} із ${warehouses.length}`}
                 </p>
                 <div id="delivery-warehouse-results" className="mt-2 max-h-64 overflow-y-auto overscroll-contain border border-[#e0e0e0] empty:hidden">
                   {!warehouseDisabled && filteredWarehouses.map((item) => (
-                    <label key={item.ref} className={`flex cursor-pointer items-start gap-3 border-b border-l-2 border-b-[#f0f0f0] px-3 py-3 text-[14px] leading-snug last:border-b-0 hover:bg-[#fff3f2] focus-within:bg-[#fff3f2] ${department === item.ref ? "border-l-[#e53935] bg-[#fff3f2]" : "border-l-transparent bg-white"}`}>
+                    <label key={item.ref} className={`flex cursor-pointer items-start gap-3 border-b border-l-2 border-b-[#f0f0f0] px-3 py-3 text-fs14 leading-snug last:border-b-0 hover:bg-[#fff3f2] focus-within:bg-[#fff3f2] ${department === item.ref ? "border-l-[#e53935] bg-[#fff3f2]" : "border-l-transparent bg-white"}`}>
                       <input
                         type="radio"
                         name="delivery-warehouse"
@@ -323,9 +323,9 @@ export default function DeliveryForm({ shops }: { shops: ShopLocation[] }) {
                       <span>{item.description}</span>
                     </label>
                   ))}
-                  {!warehouseDisabled && !filteredWarehouses.length && <p className="px-3 py-4 text-[13px] text-[#777]">{warehouses.length ? "Нічого не знайдено. Спробуйте інший номер або назву вулиці." : "У цьому місті відділень не знайдено."}</p>}
+                  {!warehouseDisabled && !filteredWarehouses.length && <p className="px-3 py-4 text-fs13 text-[#777]">{warehouses.length ? "Нічого не знайдено. Спробуйте інший номер або назву вулиці." : "У цьому місті відділень не знайдено."}</p>}
                 </div>
-                {selectedWarehouse && <button type="button" onClick={() => setWarehouseOpen(false)} className="mt-2 text-[13px] text-[#666] underline underline-offset-2">Залишити поточне відділення</button>}
+                {selectedWarehouse && <button type="button" onClick={() => setWarehouseOpen(false)} className="mt-2 text-fs13 text-[#666] underline underline-offset-2">Залишити поточне відділення</button>}
                   </>
                 )}
               </fieldset>
@@ -369,12 +369,12 @@ export default function DeliveryForm({ shops }: { shops: ShopLocation[] }) {
                 <div className="font-medium leading-tight">
                   Кур&apos;єрська доставка по місту
                 </div>
-                <div className="mt-0.5 text-[13px] leading-snug text-[#777]">
+                <div className="mt-0.5 text-fs13 leading-snug text-[#777]">
                   До дверей нашим автотранспортом
                 </div>
               </div>
 
-              <span className="whitespace-nowrap text-[14px] text-[#333]">
+              <span className="whitespace-nowrap text-fs14 text-[#333]">
                 від 450 ₴
               </span>
             </div>
@@ -416,12 +416,12 @@ export default function DeliveryForm({ shops }: { shops: ShopLocation[] }) {
                 <div className="font-medium leading-tight">
                   Адресна доставка по Україні
                 </div>
-                <div className="mt-0.5 text-[13px] leading-snug text-[#777]">
+                <div className="mt-0.5 text-fs13 leading-snug text-[#777]">
                   Новою Поштою на вашу адресу
                 </div>
               </div>
 
-              <span className="whitespace-nowrap text-[14px] text-[#333]">
+              <span className="whitespace-nowrap text-fs14 text-[#333]">
                 за тарифами
               </span>
             </div>
@@ -448,14 +448,14 @@ export default function DeliveryForm({ shops }: { shops: ShopLocation[] }) {
         <button
           type="button"
           onClick={handleBack}
-          className="border border-[#222] bg-white px-6 py-2.5 text-[15px] font-medium text-[#222] transition hover:bg-[#f5f5f5]"
+          className="border border-[#222] bg-white px-6 py-2.5 text-fs15 font-medium text-[#222] transition hover:bg-[#f5f5f5]"
         >
           Назад
         </button>
 
         <button
           type="submit" disabled={saving}
-          className="bg-[#e53935] px-8 py-2.5 text-[15px] font-medium text-white transition hover:bg-[#d32f2f]"
+          className="bg-[#e53935] px-8 py-2.5 text-fs15 font-medium text-white transition hover:bg-[#d32f2f]"
         >
           {saving ? "Зберігаємо…" : editing ? "Зберегти зміни" : "Продовжити"}
         </button>

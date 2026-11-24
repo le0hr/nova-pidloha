@@ -1,5 +1,5 @@
 import Image from "next/image";
-import HomeIcon from "./HomeIcon";
+import LineIcon from "@/components/LineIcon";
 import SectionHeader from "./SectionHeader";
 
 import { SHOP_LOCATIONS, shopDirectionsUrl, type ShopLocation } from "@/lib/catalog/shop-locations";
@@ -17,9 +17,9 @@ export default function Stores({ shops = SHOP_LOCATIONS }: { shops?: ShopLocatio
             <h3 className="text-lg font-bold leading-snug">{store.name}</h3>
             {store.description && <p className="whitespace-pre-line text-sm leading-relaxed text-[#666]">{store.description}</p>}
             <address className="flex flex-col gap-3 text-sm not-italic">
-              <p className="flex items-start gap-2"><HomeIcon name="map-pin" size={16} /><span>{store.address ?? "Черкаси — точне розташування на карті"}</span></p>
-              {store.phone && <a href={`tel:${store.phone.replace(/[^+\d]/g, "")}`} className="flex items-center gap-2 font-semibold hover:text-[#e53935]"><HomeIcon name="phone" size={16} />{store.phone}</a>}
-              {store.hours && <p className="flex items-start gap-2 text-[#666]"><HomeIcon name="clock" size={16} /><span>{store.hours}</span></p>}
+              <p className="flex items-start gap-2"><LineIcon name="pin" className="w-5 text-[#e53935]" /><span>{store.address ?? "Черкаси — точне розташування на карті"}</span></p>
+              {store.phone && <a href={`tel:${store.phone.replace(/[^+\d]/g, "")}`} className="flex items-center gap-2 font-semibold hover:text-[#e53935]"><LineIcon name="phone" className="w-5 text-[#e53935]" />{store.phone}</a>}
+              {store.hours && <p className="flex items-start gap-2 text-[#666]"><LineIcon name="clock" className="w-5 text-[#e53935]" /><span>{store.hours}</span></p>}
             </address>
             <div className="mt-auto flex flex-wrap gap-3 pt-2 text-xs font-bold">
               <a href={shopDirectionsUrl(store)} target="_blank" rel="noopener noreferrer" aria-label={`Маршрут на карті: ${store.name} (нова вкладка)`} className="flex min-h-11 items-center border border-[#e0e0e0] bg-white px-4 py-2 transition-colors hover:border-[#e53935]">Маршрут на карті</a>

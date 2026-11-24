@@ -6,7 +6,7 @@ import { optimizable } from "@/lib/image";
 
 /** Shared carousel size for homepage cards; the "next" button sits 40px above the bottom of the photo. */
 export const homeCardCarousel = {
-  className: "h-[355px] bg-white md:h-[397px]",
+  className: "h-[380px] bg-white md:h-[430px]",
   controlClassName: "top-[160px] md:top-[210px]",
 };
 
@@ -29,7 +29,7 @@ export default function HomeCard({ title, href, image, imagePortrait, badge, des
     {image
       ? <Image src={image} alt={title} fill sizes="(min-width: 1024px) 24vw, 48vw" unoptimized={!optimizable(image)} className={imagePortrait ? "object-contain py-2" : "object-cover"} />
       : <span className="flex h-full items-center justify-center bg-[#f5f5f5] text-sm text-[#666]">Фото готується</span>}
-    {badge && <span className="absolute top-2 left-2 bg-[#e53935] px-2 py-1 text-[10px] font-bold text-white md:top-3 md:left-3 md:text-xs">{badge}</span>}
+    {badge && <span className="absolute top-2 left-2 bg-[#e53935] px-2 py-1 text-fs10 font-bold text-white md:top-3 md:left-3 md:text-xs">{badge}</span>}
   </>;
   const mediaClass = `${image ? "img-shell " : ""}relative block h-[200px] shrink-0 overflow-hidden md:h-[250px]`;
 
@@ -42,7 +42,7 @@ export default function HomeCard({ title, href, image, imagePortrait, badge, des
         <h3 className="line-clamp-1 text-xs font-medium leading-snug md:text-sm" title={title}>
           {linkContent ? <Link href={href} className="hover:text-[#e53935]">{title}</Link> : title}
         </h3>
-        {description && <p className="line-clamp-2 text-[11px] leading-[1.4] text-[#666] md:text-xs">{description}</p>}
+        {description && <p className="line-clamp-2 text-fs11 leading-[1.4] text-[#666] md:text-xs">{description}</p>}
         <div className={`mt-auto flex flex-col gap-2 md:flex-row md:items-end ${footer ? "md:justify-between" : "md:justify-end"}`}>
           {footer}
           <Link href={href} aria-label={`${actionLabel}: ${title}`} className="flex min-h-11 items-center justify-center gap-2 bg-[#e53935] px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-[#c62828] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e53935]"><span>{actionLabel}</span><HomeIcon name="arrow-white" size={14} /></Link>

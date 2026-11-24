@@ -12,14 +12,14 @@ export default function Header({ contacts }: { contacts?: SiteContacts }) {
           <Image src="/nova-pidloha.png" width={42} height={42} alt="" className="size-8 -scale-y-100 rotate-180 object-cover md:size-[42px]" />
           <div>
             <p className="text-sm font-bold leading-tight text-[#1a1a1a] md:text-lg">НОВА ПІДЛОГА</p>
-            <p className="text-[10px] font-semibold uppercase leading-tight text-[#e53935] md:text-[11px]">ТА ДВЕРІ</p>
+            <p className="text-fs10 font-semibold uppercase leading-tight text-[#e53935] md:text-fs11">ТА ДВЕРІ</p>
           </div>
         </Link>
         <div className="flex items-center gap-8">
           {contacts?.phone && (
             <a href={telHref(contacts.phone)} className="flex flex-col items-end gap-0.5 md:items-start">
               <span className="text-xs font-bold leading-tight text-[#1a1a1a] md:text-sm">{contacts.phone}</span>
-              <span className="text-right text-[10px] leading-tight text-[#666]">За тарифами оператора</span>
+              <span className="text-right text-fs10 leading-tight text-[#666]">За тарифами оператора</span>
             </a>
           )}
           {shop && (

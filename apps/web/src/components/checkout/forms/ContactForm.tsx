@@ -226,7 +226,7 @@ export default function ContactsForm() {
       <button
         disabled={saving}
         type="submit"
-        className="mt-2 w-full bg-[#E53935] py-3.5 font-['Outfit',sans-serif] text-[15px] font-bold text-white transition-colors hover:bg-[#C62828]"
+        className="mt-2 w-full bg-[#E53935] py-3.5 font-['Outfit',sans-serif] text-fs15 font-bold text-white transition-colors hover:bg-[#C62828]"
       >
         {saving ? "Зберігаємо…" : editing ? "Зберегти зміни" : "Продовжити"}
       </button>

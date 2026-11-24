@@ -1,5 +1,6 @@
 "use client";
 
+import LineIcon from "@/components/LineIcon";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
@@ -81,7 +82,7 @@ export default function SearchBox({ initialQuery = "", variant = "header", autoF
             else if (event.key === "ArrowUp") { event.preventDefault(); setActive(i => Math.max(i - 1, -1)); }
             else if (event.key === "Escape") { setOpen(false); setActive(-1); if (!trimmed) onNavigate?.(); }
           }}
-          className="h-full min-w-0 flex-1 bg-transparent px-3 font-['Inter',sans-serif] text-[15px] text-[#1a1a1a] outline-none placeholder:text-[#9e9e9e] [&::-webkit-search-cancel-button]:hidden"
+          className="h-full min-w-0 flex-1 bg-transparent px-3 font-['Inter',sans-serif] text-fs15 text-[#1a1a1a] outline-none placeholder:text-[#9e9e9e] [&::-webkit-search-cancel-button]:hidden"
         />
         {query && <button type="button" aria-label="Очистити пошук" onClick={() => setQuery("")}
           className="animate-chip-in flex size-11 shrink-0 items-center justify-center text-[#9e9e9e] transition-colors hover:text-[#1a1a1a]">
@@ -103,12 +104,12 @@ export default function SearchBox({ initialQuery = "", variant = "header", autoF
           )}
           {result.categories.length > 0 && (
             <div key={`c-${answer.q}`} className="search-suggestion border-b border-[#f0f0f0] py-2">
-              <p className="px-4 pb-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#9e9e9e]">Категорії</p>
+              <p className="px-4 pb-1 text-fs10 font-bold uppercase tracking-[0.14em] text-[#9e9e9e]">Категорії</p>
               {result.categories.map((category, index) => (
                 <Link key={category.href} id={`${listId}-${index}`} role="option" aria-selected={active === index} href={category.href}
                   onClick={(event) => { event.preventDefault(); go(category.href); }}
                   className={`flex items-center justify-between px-4 py-2 text-sm font-semibold transition-colors duration-150 ${active === index ? "bg-[#fff4f3] text-[#e53935]" : "text-[#1a1a1a] hover:bg-[#f7f7f7]"}`}>
-                  {category.name}<span aria-hidden="true">↗</span>
+                  {category.name}<LineIcon name="arrow" className="w-4" />
                 </Link>
               ))}
             </div>

@@ -6,7 +6,7 @@ export default function NotFound() {
     <main className="flex min-h-[70vh] flex-col items-center justify-center gap-4 px-4 py-16 text-center font-['Outfit',sans-serif]">
       <p className="text-[56px] font-extrabold leading-none text-[#e53935]">404</p>
       <h1 className="text-[24px] font-bold text-[#1a1a1a] md:text-[32px]">Сторінку не знайдено</h1>
-      <p className="max-w-[460px] text-[15px] text-[#555]">
+      <p className="max-w-[460px] text-fs15 text-[#555]">
         Можливо, товар уже не продається або адресу змінено. Перегляньте каталог або поверніться на головну.
       </p>
       <div className="flex flex-wrap justify-center gap-3">

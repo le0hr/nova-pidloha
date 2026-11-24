@@ -24,7 +24,7 @@ export interface SizeOptions {
   onPick: (size: Partial<Size>) => void;
 }
 
-const chip = (active: boolean) => `min-h-9 px-3 font-['Outfit',sans-serif] text-[13px] transition-colors ${
+const chip = (active: boolean) => `min-h-9 px-3 font-['Outfit',sans-serif] text-fs13 transition-colors ${
   active ? "bg-white outline outline-1 outline-[#e53935] font-semibold text-[#e53935]" : "bg-[#f5f5f5] text-[#1a1a1a] hover:bg-[#eee]"}`;
 
 /** Typed size: rounded up to the allowed step when the field is left (or Enter is pressed). */
@@ -38,7 +38,7 @@ function SizeInput({ label, value, allowed, onCommit }: { label: string; value: 
   };
   return (
     <label className="flex-1 flex flex-col gap-1">
-      <span className="font-['Outfit',sans-serif] text-[12px] text-[#9e9e9e]">{label}</span>
+      <span className="font-['Outfit',sans-serif] text-fs12 text-[#9e9e9e]">{label}</span>
       <input
         type="number"
         inputMode="numeric"
@@ -48,7 +48,7 @@ function SizeInput({ label, value, allowed, onCommit }: { label: string; value: 
         onChange={(event) => setDraft(event.target.value)}
         onBlur={commit}
         onKeyDown={(event) => { if (event.key === "Enter") event.currentTarget.blur(); }}
-        className="w-full border border-[#e0e0e0] bg-white px-3 py-2 font-['Outfit',sans-serif] text-[13px] text-[#1a1a1a] outline-none focus:border-[#bbb]"
+        className="w-full border border-[#e0e0e0] bg-white px-3 py-2 font-['Outfit',sans-serif] text-fs13 text-[#1a1a1a] outline-none focus:border-[#bbb]"
       />
     </label>
   );
@@ -99,7 +99,7 @@ export default function VariationSelector({ value, onChange, options, beforeDime
         {/* Standard sizes only */}
         {dimensions.filter((dimension) => !sizes.rules[dimension.key].length).map((dimension) => (
           <div key={dimension.key} className="flex flex-col gap-1">
-            <span className="font-['Outfit',sans-serif] text-[12px] text-[#9e9e9e]">{dimension.label}</span>
+            <span className="font-['Outfit',sans-serif] text-fs12 text-[#9e9e9e]">{dimension.label}</span>
             <div className="flex flex-wrap gap-1.5">
               {dimension.standards.map((size) => (
                 <button key={size} type="button" aria-pressed={sizes.value[dimension.key] === size}
@@ -118,7 +118,7 @@ export default function VariationSelector({ value, onChange, options, beforeDime
             ))}
           </div>
           {typed.map((dimension) => (
-            <span key={dimension.key} className="font-['Outfit',sans-serif] text-[12px] text-[#9e9e9e]">
+            <span key={dimension.key} className="font-['Outfit',sans-serif] text-fs12 text-[#9e9e9e]">
               {dimension.key === "width" ? "Ширина" : "Висота"}: {describeRules(dimension.standards, sizes.rules[dimension.key])}
             </span>
           ))}
@@ -130,7 +130,7 @@ export default function VariationSelector({ value, onChange, options, beforeDime
               <circle cx="7" cy="7" r="6" stroke="#757575" strokeWidth="1.5" />
               <path d="M7 6.5v3.5M7 4v.25" stroke="#757575" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
-            <span className="font-['Outfit',sans-serif] text-[12px] text-[#555]">{note}</span>
+            <span className="font-['Outfit',sans-serif] text-fs12 text-[#555]">{note}</span>
           </div>
         ))}
 
@@ -140,7 +140,7 @@ export default function VariationSelector({ value, onChange, options, beforeDime
               <circle cx="7" cy="7" r="6" stroke="#E67E22" strokeWidth="1.5" />
               <path d="M7 4.5v3M7 9.5v.25" stroke="#E67E22" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
-            <span className="font-['Outfit',sans-serif] text-[12px] font-medium text-[#e67e22]">
+            <span className="font-['Outfit',sans-serif] text-fs12 font-medium text-[#e67e22]">
               {sizes.percent ? `Нестандартний розмір: +${sizes.percent}% до ціни стандартного` : "Нестандартний розмір без націнки"}
             </span>
           </div>
