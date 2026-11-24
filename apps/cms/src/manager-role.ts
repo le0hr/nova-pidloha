@@ -16,9 +16,9 @@
  * Bump ROLE_VERSION after changing the rules below or adding fields to these content types.
  */
 const ROLE_CODE = 'nova-manager';
-const ROLE_VERSION = 8;
-/** Visible, never editable: importer keys (an edited one makes the next import create a duplicate) and the automatic kind. */
-const READ_ONLY = ['external_id', 'kind'];
+const ROLE_VERSION = 10;
+/** Visible, never editable: importer keys (an edited one makes the next import create a duplicate) and the inherited kind. */
+const READ_ONLY = ['external_id', 'kind', 'isSub'];
 
 const CM = 'plugin::content-manager.explorer';
 type Rule = { uid: string; actions: string[]; fields?: string[] };

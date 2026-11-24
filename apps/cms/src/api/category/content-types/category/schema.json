@@ -42,6 +42,26 @@
       "target": "api::category.category",
       "inversedBy": "children"
     },
+    "kind": {
+      "type": "enumeration",
+      "enum": [
+        "door",
+        "floor",
+        "hardware"
+      ],
+      "conditions": {
+        "visible": {
+          "!": [
+            {
+              "var": "isSub"
+            }
+          ]
+        }
+      }
+    },
+    "isSub": {
+      "type": "boolean"
+    },
     "isFeatured": {
       "type": "boolean"
     },

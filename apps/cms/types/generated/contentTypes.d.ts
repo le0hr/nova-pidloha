@@ -581,6 +581,8 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
     >;
     image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     isFeatured: Schema.Attribute.Boolean;
+    isSub: Schema.Attribute.Boolean;
+    kind: Schema.Attribute.Enumeration<['door', 'floor', 'hardware']>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',

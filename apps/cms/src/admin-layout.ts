@@ -6,12 +6,12 @@
  */
 const LAYOUTS: Record<string, string[]> = {
   'api::product.product': [
-    'name/8 active/4', 'category/8 kind/4', 'brand/12', 'image/6 price/6',
+    'name/8 active/4', 'category/8 kind/4', 'brand/12', 'image/12',
     'shortDescription/12', 'description/12',
     'product_variations/12', 'characteristics/12',
     'isNew/4 isPromo/4 isSale/4', 'isFeatured/4 filter_values/8',
     'addons/12', 'size_rules/12', 'size_notes/12',
-    'slug/6 external_id/6', 'seo/12',
+    'price/4 slug/4 external_id/4', 'seo/12',
   ],
   'api::product-variation.product-variation': [
     'products/8 active/4', 'kind/12',
@@ -23,7 +23,7 @@ const LAYOUTS: Record<string, string[]> = {
     'supplier_code/4 slug/4 external_id/4',
   ],
   'api::category.category': [
-    'name/8 isFeatured/4', 'parent/6 image/6', 'description/12', 'children/6 products/6', 'filter_groups/12',
+    'name/8 isFeatured/4', 'parent/8 kind/4', 'image/12', 'description/12', 'children/6 products/6', 'filter_groups/12',
     'slug/6 external_id/6', 'seo/12',
   ],
   'api::brand.brand': ['name/12', 'size_rules/12', 'products/12', 'slug/6 external_id/6'],
@@ -81,6 +81,9 @@ const LAYOUTS: Record<string, string[]> = {
 /** Filled by the CMS itself (kind.ts): shown, not editable. */
 const READ_ONLY: Record<string, string[]> = { 'api::product.product': ['kind'], 'api::product-variation.product-variation': ['kind'] };
 
+/** Service fields that are not shown in the form at all. */
+const HIDDEN: Record<string, string[]> = { 'api::category.category': ['isSub'] };
+
 type Row = { name: string; size: number }[];
 const STORE_KEY = 'nova-admin-layout';
 
@@ -90,7 +93,7 @@ export async function applyAdminLayout(strapi: any) {
   for (const [uid, rows] of Object.entries(LAYOUTS)) {
     const isComponent = !uid.startsWith('api::');
     const model = isComponent ? strapi.components[uid] : strapi.contentTypes[uid];
-    const wanted = JSON.stringify(rows);
+    const wanted = JSON.stringify([rows, READ_ONLY[uid], HIDDEN[uid]]);
     if (!model || applied[uid] === wanted) continue;
     const service = strapi.plugin('content-manager').service(isComponent ? 'components' : 'content-types');
     const config = await service.findConfiguration(model);
@@ -100,7 +103,7 @@ export async function applyAdminLayout(strapi: any) {
       const [name, size] = field.split('/');
       return { name, size: Number(size) };
     }).filter((field) => known.has(field.name))).filter((row) => row.length);
-    const placed = new Set(layout.flat().map((field) => field.name));
+    const placed = new Set([...layout.flat().map((field) => field.name), ...(HIDDEN[uid] ?? [])]);
     const rest = current.map((row) => row.filter((field) => !placed.has(field.name))).filter((row) => row.length);
     for (const name of READ_ONLY[uid] ?? []) if (config.metadatas?.[name]?.edit) config.metadatas[name].edit = { ...config.metadatas[name].edit, editable: false };
     await service.updateConfiguration(model, { ...config, layouts: { ...config.layouts, edit: [...layout, ...rest] } });

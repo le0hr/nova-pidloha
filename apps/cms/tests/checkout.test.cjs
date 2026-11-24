@@ -129,13 +129,19 @@ async function run() {
     assert.equal(domain.paymentState('sandbox',true),'test'); assert.equal(domain.paymentState('sandbox',false),'pending');
 
     // --- kind: product from its root category, variation from its product -----------------------------------------
-    const cat = async (slug, parent) => (await app.documents('api::category.category').create({data:{name:slug, slug, ...(parent ? {parent} : {})}, status:'published'})).documentId;
-    const floorCat = await cat('pidloha-test', await cat('pidloha')), doorCat = await cat('zbirni-test', await cat('mizhkimnatni', await cat('dveri')));
+    const cat = async (slug, parent, kind) => (await app.documents('api::category.category').create({data:{name:slug, slug, kind, ...(parent ? {parent} : {})}, status:'published'})).documentId;
+    const doorRoot = await cat('root-a', null, 'door');
+    const floorCat = await cat('sub-b', await cat('root-b', null, 'floor')), doorCat = await cat('sub-a2', await cat('sub-a', doorRoot));
     const kinds = async (uid, documentId) => (await app.db.query(uid).findMany({where:{documentId}})).map(r => r.kind).join();
     const P = 'api::product.product', V = 'api::product-variation.product-variation';
+    const tree = async id => (await app.db.query('api::category.category').findMany({where:{documentId:id}})).map(r => r.isSub).join();
+    assert.equal(await tree(doorRoot), 'false,false'); assert.equal(await tree(doorCat), 'true,true');
+    await app.documents('api::category.category').update({documentId:doorCat, data:{kind:'floor'}});
     const kp = await app.documents(P).create({data:{name:'Вид', slug:'test-kind', category:doorCat, kind:'hardware'}, status:'published'});
     const kv = await app.documents(V).create({data:{slug:'test-kind-v', price:'1', packArea:2.5, products:[kp.documentId]}, status:'published'});
     assert.equal(await kinds(P, kp.documentId), 'door,door'); assert.equal(await kinds(V, kv.documentId), 'door,door');
+    await app.documents('api::category.category').update({documentId:doorRoot, data:{kind:'hardware'}});
+    assert.equal(await kinds(P, kp.documentId), 'hardware,hardware', 'a root category changes everything under it'); assert.equal(await kinds(V, kv.documentId), 'hardware,hardware');
     await app.documents(P).update({documentId:kp.documentId, data:{category:floorCat}, status:'published'});
     assert.equal(await kinds(P, kp.documentId), 'floor,floor'); assert.equal(await kinds(V, kv.documentId), 'floor,floor', 'variations follow the product');
     await app.documents(V).update({documentId:kv.documentId, data:{kind:'door'}});

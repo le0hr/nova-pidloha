@@ -1,7 +1,7 @@
 /**
  * One-off: moves «Конструкція», «Кромка» and «Сторона відкривання» from the variations' option list into the fields
  * construction / edge / opening_side (dictionary records are created by name) and fills `kind` of products and
- * variations from the root category. Other options stay in the list. Only changed documents are written.
+ * variations from the categories. Other options stay in the list. Only changed documents are written.
  *
  *   STRAPI_SCRIPT=1 node scripts/options-to-fields.js [--apply]                       local CMS
  *   STRAPI_URL=… STRAPI_TOKEN=… node scripts/options-to-fields.js --remote [--apply]  another CMS over REST
@@ -15,11 +15,10 @@ const PRODUCT = 'api::product.product';
 const VARIATION = 'api::product-variation.product-variation';
 const STEPS = { 'Конструкція': ['construction', 'api::construction.construction'], 'Кромка': ['edge', 'api::edge.edge'],
   'Сторона відкривання': ['opening_side', 'api::opening-side.opening-side'] };
-const KINDS = { dveri: 'door', mizhkimnatni: 'door', pidloha: 'floor', furnitura: 'hardware' };
 const ROUTES = { [PRODUCT]: 'products', [VARIATION]: 'product-variations', 'api::category.category': 'categories',
   'api::construction.construction': 'constructions', 'api::edge.edge': 'edges', 'api::opening-side.opening-side': 'opening-sides' };
 const QUERIES = {
-  category: ['api::category.category', { fields: ['slug'], populate: { parent: { fields: ['slug'] } } }],
+  category: ['api::category.category', { fields: ['slug', 'kind'], populate: { parent: { fields: ['slug'] } } }],
   product: [PRODUCT, { fields: ['kind'], populate: { category: { fields: ['slug'] } } }],
   variation: [VARIATION, { fields: ['kind'], populate: { options: true, products: { fields: ['slug'] }, construction: { fields: ['name'] },
     edge: { fields: ['name'] }, opening_side: { fields: ['name'] } } }],
@@ -67,11 +66,11 @@ function remoteStore(url, token) {
 }
 
 async function main(store) {
-  const parent = new Map((await store.all(...QUERIES.category)).map((c) => [c.slug, c.parent?.slug]));
+  const categories = new Map((await store.all(...QUERIES.category)).map((c) => [c.slug, c]));
   const kindOf = (slug) => {
     const seen = new Set();
-    while (slug && parent.get(slug) && !seen.has(slug)) { seen.add(slug); slug = parent.get(slug); }
-    return KINDS[slug] ?? null;
+    for (let c = categories.get(slug); c && !seen.has(c); c = categories.get(c.parent?.slug)) { if (!c.parent) return c.kind ?? null; seen.add(c); }
+    return null;
   };
   const writes = [];
   const productKind = new Map();
