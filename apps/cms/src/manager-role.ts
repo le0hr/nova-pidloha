@@ -16,11 +16,12 @@
  * Bump ROLE_VERSION after changing the rules below or adding fields to these content types.
  */
 const ROLE_CODE = 'nova-manager';
-const ROLE_VERSION = 11;
+const ROLE_VERSION = 13;
 /** Visible, never editable: importer keys (an edited one makes the next import create a duplicate) and the inherited kind. */
 const READ_ONLY = ['external_id', 'kind', 'isSub'];
-/** Counted from the variations. */
-const READ_ONLY_OF: Record<string, string[]> = { 'api::product.product': ['price'] };
+/** Filled by the CMS (price.ts, identity.ts). */
+const READ_ONLY_OF: Record<string, string[]> = { 'api::product.product': ['price'], 'api::product-variation.product-variation': ['title'],
+  'api::decor-color.decor-color': ['title'] };
 
 const CM = 'plugin::content-manager.explorer';
 type Rule = { uid: string; actions: string[]; fields?: string[] };

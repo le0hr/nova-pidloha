@@ -520,7 +520,7 @@ export interface ApiArchitraveTypeArchitraveType
       'api::architrave-type.architrave-type'
     > &
       Schema.Attribute.Private;
-    name: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     price: Schema.Attribute.Decimal;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
@@ -547,7 +547,7 @@ export interface ApiBrandBrand extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::brand.brand'> &
       Schema.Attribute.Private;
-    name: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
     size_rules: Schema.Attribute.Component<'catalog.size-rule', true>;
@@ -589,12 +589,12 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
       'api::category.category'
     > &
       Schema.Attribute.Private;
-    name: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     parent: Schema.Attribute.Relation<'manyToOne', 'api::category.category'>;
     products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
-    slug: Schema.Attribute.UID;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -623,7 +623,7 @@ export interface ApiConstructionConstruction
       'api::construction.construction'
     > &
       Schema.Attribute.Private;
-    name: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     product_variations: Schema.Attribute.Relation<
       'oneToMany',
       'api::product-variation.product-variation'
@@ -658,12 +658,13 @@ export interface ApiDecorColorDecorColor extends Struct.CollectionTypeSchema {
       'api::decor-color.decor-color'
     > &
       Schema.Attribute.Private;
-    name: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     product_variations: Schema.Attribute.Relation<
       'oneToMany',
       'api::product-variation.product-variation'
     >;
     publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -691,7 +692,7 @@ export interface ApiDecorGlassDecorGlass extends Struct.CollectionTypeSchema {
       'api::decor-glass.decor-glass'
     > &
       Schema.Attribute.Private;
-    name: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     product_variations: Schema.Attribute.Relation<
       'oneToMany',
       'api::product-variation.product-variation'
@@ -725,7 +726,7 @@ export interface ApiDecorDecor extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::decor.decor'> &
       Schema.Attribute.Private;
-    name: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     product_variations: Schema.Attribute.Relation<
       'oneToMany',
       'api::product-variation.product-variation'
@@ -755,7 +756,7 @@ export interface ApiEdgeEdge extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::edge.edge'> &
       Schema.Attribute.Private;
-    name: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     product_variations: Schema.Attribute.Relation<
       'oneToMany',
       'api::product-variation.product-variation'
@@ -792,7 +793,7 @@ export interface ApiFilterCodeFilterCode extends Struct.CollectionTypeSchema {
       'api::filter-code.filter-code'
     > &
       Schema.Attribute.Private;
-    name: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     products: Schema.Attribute.Relation<'manyToMany', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.String & Schema.Attribute.Unique;
@@ -831,7 +832,7 @@ export interface ApiFilterGroupFilterGroup extends Struct.CollectionTypeSchema {
       'api::filter-group.filter-group'
     > &
       Schema.Attribute.Private;
-    name: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.String & Schema.Attribute.Unique;
     type: Schema.Attribute.Enumeration<['select', 'color', 'price', 'boolean']>;
@@ -896,7 +897,7 @@ export interface ApiOpeningSideOpeningSide extends Struct.CollectionTypeSchema {
       'api::opening-side.opening-side'
     > &
       Schema.Attribute.Private;
-    name: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     product_variations: Schema.Attribute.Relation<
       'oneToMany',
       'api::product-variation.product-variation'
@@ -1130,6 +1131,7 @@ export interface ApiProductVariationProductVariation
     sku: Schema.Attribute.String;
     slug: Schema.Attribute.UID;
     supplier_code: Schema.Attribute.String;
+    title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1183,7 +1185,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       'api::product.product'
     > &
       Schema.Attribute.Private;
-    name: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     price: Schema.Attribute.Decimal;
     product_variations: Schema.Attribute.Relation<
       'manyToMany',
@@ -1194,7 +1196,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     shortDescription: Schema.Attribute.String;
     size_notes: Schema.Attribute.Component<'catalog.size-note', true>;
     size_rules: Schema.Attribute.Component<'catalog.size-rule', true>;
-    slug: Schema.Attribute.UID;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

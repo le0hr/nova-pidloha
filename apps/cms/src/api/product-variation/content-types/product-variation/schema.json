@@ -11,6 +11,9 @@
   },
   "pluginOptions": {},
   "attributes": {
+    "title": {
+      "type": "string"
+    },
     "kind": {
       "type": "enumeration",
       "enum": [

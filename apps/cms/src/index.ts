@@ -6,6 +6,7 @@ import { syncManagerRole } from './manager-role';
 import { seedAboutPage } from './about-page';
 import { applyAdminLabels } from './admin-labels';
 import { registerKind, seedCategoryKinds } from './kind';
+import { registerIdentity, seedTitles } from './identity';
 import { registerPrice } from './price';
 import { applyAdminLayout } from './admin-layout';
 
@@ -15,6 +16,7 @@ export default {
   register({ strapi }: { strapi: Core.Strapi }) {
     registerKind(strapi);
     registerPrice(strapi);
+    registerIdentity(strapi);
     // Checkout data is never exposed through the catalog GraphQL API.
     const extension = strapi.plugin('graphql')?.service('extension');
     for (const uid of ['api::order.order', 'api::payment-attempt.payment-attempt']) extension?.shadowCRUD(uid).disable();
@@ -29,6 +31,7 @@ export default {
     await syncManagerRole(strapi);
     await seedAboutPage(strapi);
     await seedCategoryKinds(strapi);
+    await seedTitles(strapi);
     await applyAdminLabels(strapi);
     await applyAdminLayout(strapi);
     // One-off maintenance scripts (STRAPI_SCRIPT=1, scripts/*.js) load Strapi next to the running CMS:

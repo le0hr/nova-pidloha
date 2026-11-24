@@ -82,7 +82,25 @@ const LAYOUTS: Record<string, string[]> = {
 const READ_ONLY: Record<string, string[]> = { 'api::product.product': ['kind', 'price'], 'api::product-variation.product-variation': ['kind'] };
 
 /** Service fields that are not shown in the form at all. */
-const HIDDEN: Record<string, string[]> = { 'api::category.category': ['isSub'] };
+const HIDDEN: Record<string, string[]> = { 'api::category.category': ['isSub'], 'api::product-variation.product-variation': ['title'],
+  'api::decor-color.decor-color': ['title'] };
+
+/** Columns of the list views. */
+const LISTS: Record<string, string[]> = {
+  'api::product.product': ['name', 'category', 'brand', 'price', 'active'],
+  'api::product-variation.product-variation': ['title', 'products', 'price', 'availability', 'active'],
+  'api::category.category': ['name', 'parent', 'isFeatured', 'kind'],
+  'api::brand.brand': ['name', 'slug'],
+  'api::decor.decor': ['name', 'decor_colors'],
+  'api::decor-color.decor-color': ['name', 'decor', 'image'],
+  'api::decor-glass.decor-glass': ['name', 'product_variations'],
+  'api::edge.edge': ['name', 'product_variations'],
+  'api::opening-side.opening-side': ['name', 'product_variations'],
+  'api::construction.construction': ['name', 'product_variations'],
+  'api::architrave-type.architrave-type': ['name', 'group', 'additionalCost'],
+  'api::filter-group.filter-group': ['name', 'type', 'categories'],
+  'api::filter-code.filter-code': ['name', 'filter_group'],
+};
 
 type Row = { name: string; size: number }[];
 const STORE_KEY = 'nova-admin-layout';
@@ -107,6 +125,27 @@ export async function applyAdminLayout(strapi: any) {
     const rest = current.map((row) => row.filter((field) => !placed.has(field.name))).filter((row) => row.length);
     for (const name of READ_ONLY[uid] ?? []) if (config.metadatas?.[name]?.edit) config.metadatas[name].edit = { ...config.metadatas[name].edit, editable: false };
     await service.updateConfiguration(model, { ...config, layouts: { ...config.layouts, edit: [...layout, ...rest] } });
+    applied[uid] = wanted;
+  }
+  await store.set({ value: applied });
+  await useTitles(strapi);
+}
+
+/** Once each: list columns, and the automatic titles as the name of variations and colours. Later changes by hand stay. */
+async function useTitles(strapi: any) {
+  const store = strapi.store({ type: 'plugin', name: 'content-manager', key: 'nova-admin-lists' });
+  const applied: Record<string, string> = (await store.get()) ?? {};
+  const service = strapi.plugin('content-manager').service('content-types');
+  const TITLED = ['api::product-variation.product-variation', 'api::decor-color.decor-color'];
+  for (const [uid, model] of Object.entries<any>(strapi.contentTypes).filter(([key]) => key.startsWith('api::'))) {
+    const relations = Object.keys(model.attributes).filter((field) => TITLED.includes(model.attributes[field].target));
+    const wanted = JSON.stringify([LISTS[uid], relations, TITLED.includes(uid)]);
+    if (applied[uid] === wanted) continue;
+    const config = await service.findConfiguration(model);
+    if (LISTS[uid]) config.layouts.list = LISTS[uid];
+    if (TITLED.includes(uid)) config.settings.mainField = 'title';
+    for (const field of relations) if (config.metadatas?.[field]?.edit) config.metadatas[field].edit = { ...config.metadatas[field].edit, mainField: 'title' };
+    await service.updateConfiguration(model, config);
     applied[uid] = wanted;
   }
   await store.set({ value: applied });

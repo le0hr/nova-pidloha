@@ -155,7 +155,8 @@ async function run() {
     const D = app.documents(V), price = async () => { const rows = await app.db.query(P).findMany({where:{documentId:pp.documentId}});
       return [false, true].map(pub => { const r = rows.find(x => !!x.publishedAt === pub); return r ? Number(r.price) : null; }).join(); };
     const pp = await app.documents(P).create({data:{name:'Ціна', slug:'test-price'}, status:'published'});
-    const pv = (slug, value, data = {}) => D.create({data:{slug, price:value, products:[pp.documentId], ...data}, status:'published'});
+    const grey = (await app.documents('api::decor-color.decor-color').create({data:{name:'Сірий'}, status:'published'})).documentId;
+    const pv = (slug, value, data = {}) => D.create({data:{slug, price:value, products:[pp.documentId], decor_color:grey, ...data}, status:'published'});
     const a = await pv('test-price-a', '500'), b = await pv('test-price-b', '300.5'); await pv('test-price-c', '100', {active:false});
     assert.equal(await price(), '300.5,300.5', 'inactive variations do not count');
     await D.update({documentId:b.documentId, data:{price:'450'}}); assert.equal(await price(), '450,300.5', 'an unpublished price stays off the site');
@@ -166,6 +167,25 @@ async function run() {
     await D.unpublish({documentId:a.documentId}); assert.equal((await price()).split(',')[0], '500');
     for (const bad of ['1 200', '1200 грн', '12,5', '0', '0.00', '', '-5', null]) await assert.rejects(pv('test-price-bad', bad), undefined, `price ${bad}`);
     await D.delete({documentId:(await pv('test-price-ok', '809.76')).documentId});
+
+    // --- variation title, automatic slugs, checks before publishing ------------------------------------------------
+    const dict = async (uid, name) => (await app.documents(uid).create({data:{name}, status:'published'})).documentId;
+    const C = 'api::decor-color.decor-color', decorId = await dict('api::decor.decor', 'PP'), colorId = (await app.documents(C).create({data:{name:'Білий мат', decor:decorId}, status:'published'})).documentId, edgeId = await dict('api::edge.edge', 'Чорна');
+    const ip = await app.documents(P).create({data:{name:'Двері Тест Назви'}}), ip2 = await app.documents(P).create({data:{name:'Двері Тест Назви'}});
+    assert.match(ip.slug, /^dveri-test-nazvi/); assert.notEqual(ip.slug, ip2.slug, 'the same name gets another address');
+    const iv = await D.create({data:{price:'10', products:[ip.documentId], decor:decorId, decor_color:colorId, edge:edgeId, width:800, height:2000}});
+    const titles = async () => (await app.db.query(V).findMany({where:{documentId:iv.documentId}, orderBy:{id:'asc'}})).map(r => r.title);
+    assert.match(iv.slug, /^variation-[0-9a-f]{12}$/); assert.equal(iv.title, 'PP · Білий мат · Чорна · 800×2000');
+    await assert.rejects(app.documents(P).publish({documentId:ip.documentId}), /вкажіть: категорію/);
+    await app.documents(P).update({documentId:ip.documentId, data:{category:doorCat}}); await app.documents(P).publish({documentId:ip.documentId});
+    await D.publish({documentId:iv.documentId});
+    await app.documents(C).update({documentId:colorId, data:{name:'Білий'}, status:'published'});
+    assert.deepEqual(await titles(), ['PP · Білий · Чорна · 800×2000', 'PP · Білий · Чорна · 800×2000'], 'a renamed colour renames variations');
+    const colorTitles = async () => (await app.db.query(C).findMany({where:{documentId:colorId}})).map(r => r.title).join();
+    assert.equal(await colorTitles(), 'Білий · PP,Білий · PP');
+    await app.documents('api::decor.decor').update({documentId:decorId, data:{name:'PVC'}, status:'published'});
+    assert.equal(await colorTitles(), 'Білий · PVC,Білий · PVC'); assert.equal((await titles())[0], 'PVC · Білий · Чорна · 800×2000');
+    const empty = await D.create({data:{price:'10'}}); await assert.rejects(D.publish({documentId:empty.documentId}), /вкажіть: товар, колір/);
 
     // --- add-on pieces: casing by door sides, everything else 1 ----------------------------------------------------
     const casing = await app.documents('api::architrave-type.architrave-type').create({data:{name:'Лиштва', additionalCost:100, group:'Лиштва'}, status:'published'});
