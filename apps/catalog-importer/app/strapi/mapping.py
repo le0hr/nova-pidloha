@@ -21,6 +21,9 @@ ORDER = (
     "decors",
     "decor-colors",
     "decor-glasses",
+    "constructions",
+    "edges",
+    "opening-sides",
     "filter-groups",
     "filter-codes",
     "architrave-types",
@@ -45,6 +48,9 @@ RELATIONS: dict[str, dict[str, tuple[str, bool]]] = {
         "decor": ("decors", False),
         "decor_color": ("decor-colors", False),
         "decor_glass": ("decor-glasses", False),
+        "construction": ("constructions", False),
+        "edge": ("edges", False),
+        "opening_side": ("opening-sides", False),
         "addons": ("architrave-types", True),
         "filter_values": ("filter-codes", True),
         "image": ("media", False),
@@ -320,6 +326,8 @@ def desired_records(
         fields = classify(v)[0]
         if fields["availability"] is None and "під замовлення" in marks(product_of[v.product_external_id].attributes):
             fields["availability"] = "on_order"
+        for field, entity in (("construction", "constructions"), ("edge", "edges"), ("opening_side", "opening-sides")):
+            fields[field] = named(entity, fields[field]) if fields[field] else None
         labels = {
             normalize(a.display_name): v.attributes.get(a.key) for a in v.attribute_definitions
         }

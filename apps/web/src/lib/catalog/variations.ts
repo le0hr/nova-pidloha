@@ -2,17 +2,36 @@ import type { ProductVariation } from "@/types/product";
 
 export type OptionField = { key: string; display_name: string };
 
-/** Selection steps of the product (the variations' option names), in the order the variations list them. */
+type Named = { name: string } | null | undefined;
+/** Step order on the page; other options follow in the order the variations list them. */
+const STEPS = ["Конструкція", "Кромка", "Сторона відкривання"];
+
+/** Door parameters and the rare options of a CMS variation as one list of selection steps. */
+export function stepOptions({ construction, edge, opening_side, options }: { construction?: Named; edge?: Named; opening_side?: Named;
+  options?: ProductVariation["options"] }): NonNullable<ProductVariation["options"]> {
+  const fields = [
+    { name: STEPS[0], value: construction?.name ?? "", changesLook: false },
+    { name: STEPS[1], value: edge?.name ?? "", changesLook: false },
+    { name: STEPS[2], value: opening_side?.name ?? "", changesLook: false },
+  ].filter((step) => step.value);
+  return [...fields, ...(options ?? []).filter((option) => !fields.some((step) => step.name === option.name))];
+}
+
+/** Selection steps of the product. */
 export function extraFields(variations: ProductVariation[]): OptionField[] {
   const names: string[] = [];
   for (const variation of variations) {
     for (const option of variation.options ?? []) if (!names.includes(option.name)) names.push(option.name);
   }
-  return names.map((name) => ({ key: name, display_name: name }));
+  const rank = (name: string) => (STEPS.includes(name) ? STEPS.indexOf(name) : STEPS.length);
+  return names.sort((a, b) => rank(a) - rank(b)).map((name) => ({ key: name, display_name: name }));
 }
 
 export const attributeValue = (variation: ProductVariation, key: string) =>
   (variation.options ?? []).find((option) => option.name === key)?.value.trim() ?? "";
+
+/** Button of the variations without a value, shown next to the ones that have it. */
+export const NO_VALUE = "Не вказано";
 
 export function sameDecor(left: ProductVariation, right: ProductVariation) {
   return ["decor", "decor_color", "decor_glass"].every((key) => {
@@ -32,7 +51,7 @@ export function visibleExtraFields(variations: ProductVariation[], selected: Pro
     extraRows(variations, selected, field.key).some((row) => attributeValue(row, field.key) !== ""));
 }
 
-/** One look = decor + colour + glass + options seen on the photo (e.g. construction); never the edge or size. */
+/** One look = decor + colour + glass + rare options marked as seen on the photo; never the construction, edge, side or size. */
 export function lookKey(variation: ProductVariation) {
   const visible = (variation.options ?? []).filter((option) => option.changesLook).map((option) => [option.name, option.value]);
   return JSON.stringify([variation.decor?.name ?? "", variation.decor_color?.name ?? "", variation.decor_glass?.name ?? "", visible]);

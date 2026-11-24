@@ -1,3 +1,4 @@
+import { stepOptions } from "@/lib/catalog/variations";
 import { cache } from 'react';
 import { plainText } from '@/lib/seo';
 
@@ -58,6 +59,9 @@ const PRODUCT_QUERY = `
         packArea
         boardSize
         availability
+        construction { name }
+        edge { name }
+        opening_side { name }
         options { name value changesLook }
         decor {
           name
@@ -94,6 +98,9 @@ type ProductGraphQLItem = {
   brand?: { name: string; size_rules?: SizeRule[] | null } | null;
   product_variations: Array<
     Omit<ProductVariation, "image" | "price" | "addons" | "decor_color"> & {
+  construction?: { name: string } | null;
+  edge?: { name: string } | null;
+  opening_side?: { name: string } | null;
       decor_color?: { name: string; image?: { url?: string | null } | null } | null;
       addons?: RawAddon[] | null;
       price: string | number;
@@ -182,8 +189,9 @@ export const getProductBySlug = cache(async (slug: string): Promise<ProductRetur
     // Product rules override the brand's (see sizing.ts).
     sizeRules: product.size_rules?.length ? product.size_rules : product.brand?.size_rules ?? [],
     sizeNotes: product.size_notes ?? [],
-    variations: variations.filter((variation) => variation.active !== false).map(({ image, price, addons, decor_color, ...variation }) => ({
+    variations: variations.filter((variation) => variation.active !== false).map(({ image, price, addons, decor_color, construction, edge, opening_side, ...variation }) => ({
       ...variation,
+      options: stepOptions({ construction, edge, opening_side, options: variation.options }),
       decor_color: decor_color ? {
         name: decor_color.name,
         image: decor_color.image?.url ? mediaUrl(decor_color.image.url) : null,

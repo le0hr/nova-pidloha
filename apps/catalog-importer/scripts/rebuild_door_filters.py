@@ -1,4 +1,4 @@
-"""Rebuild door filters: Колір / Скло / Тип покриття / Кромка families from variations (decor, colour, glass, edge option);
+"""Rebuild door filters: Колір / Скло / Тип покриття / Кромка families from variations (decor, colour, glass, edge);
 drop junk door groups.
 Usage: python rebuild_door_filters.py URL TOKEN DOORS_JSON|- JOURNAL [--write]
 DOORS_JSON "-" fetches the door products from the CMS itself. A missing price group ("cost") is created."""
@@ -39,7 +39,7 @@ def vslug(group, name):
 def values_of(variation, fn, group):
     if group == "kolir": return fn((variation.get("decor_color") or {}).get("name"))
     if group == "sklo": return fn((variation.get("decor_glass") or {}).get("name"))
-    if group == "kromka": return fn(next((o["value"] for o in variation.get("options") or [] if o["name"] == "Кромка"), None))
+    if group == "kromka": return fn((variation.get("edge") or {}).get("name"))
     return fn((variation.get("decor") or {}).get("name"))  # тип покриття
 
 def fetch_doors():
@@ -52,7 +52,7 @@ def fetch_doors():
               "populate[category][fields][0]": "slug", "populate[filter_values][fields][0]": "name",
               "populate[product_variations][fields][0]": "active",
               "populate[product_variations][populate][decor][fields][0]": "name",
-              "populate[product_variations][populate][options]": "true",
+              "populate[product_variations][populate][edge][fields][0]": "name",
               "populate[product_variations][populate][decor_color][fields][0]": "name",
               "populate[product_variations][populate][decor_glass][fields][0]": "name"}
     for i, slug in enumerate(s for s in parent if root(s) == "dveri"):

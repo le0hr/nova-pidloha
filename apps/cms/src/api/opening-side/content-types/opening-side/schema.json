@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "opening_sides",
+  "info": {
+    "singularName": "opening-side",
+    "pluralName": "opening-sides",
+    "displayName": "Сторона відкривання"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "product_variations": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product-variation.product-variation",
+      "mappedBy": "opening_side"
+    },
+    "external_id": {
+      "type": "string",
+      "unique": true
+    }
+  }
+}

@@ -5,12 +5,14 @@ import { startPolling } from './checkout/telegram';
 import { syncManagerRole } from './manager-role';
 import { seedAboutPage } from './about-page';
 import { applyAdminLabels } from './admin-labels';
+import { registerKind } from './kind';
 import { applyAdminLayout } from './admin-layout';
 
 let stopTelegram = () => {};
 
 export default {
   register({ strapi }: { strapi: Core.Strapi }) {
+    registerKind(strapi);
     // Checkout data is never exposed through the catalog GraphQL API.
     const extension = strapi.plugin('graphql')?.service('extension');
     for (const uid of ['api::order.order', 'api::payment-attempt.payment-attempt']) extension?.shadowCRUD(uid).disable();
@@ -41,13 +43,14 @@ export default {
     if (!role) return;
 
     const permissions = strapi.db.query('plugin::users-permissions.permission');
-    // Homepage settings and add-ons follow the existing public catalog access.
+    // Homepage settings, add-ons and door parameters follow the existing public catalog access.
     const productRead = await permissions.findOne({
       where: { role: role.id, action: 'api::product.product.find' },
     });
     if (!productRead) return;
 
-    for (const action of ['api::architrave-type.architrave-type.find', 'api::global.global.find', 'api::about-page.about-page.find']) {
+    for (const action of ['api::edge.edge.find', 'api::opening-side.opening-side.find', 'api::construction.construction.find',
+      'api::architrave-type.architrave-type.find', 'api::global.global.find', 'api::about-page.about-page.find']) {
       const existing = await permissions.findOne({ where: { role: role.id, action } });
       if (!existing) {
         await permissions.create({ data: { role: role.id, action } });

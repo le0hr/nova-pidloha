@@ -11,6 +11,14 @@
   },
   "pluginOptions": {},
   "attributes": {
+    "kind": {
+      "type": "enumeration",
+      "enum": [
+        "door",
+        "floor",
+        "hardware"
+      ]
+    },
     "products": {
       "type": "relation",
       "relation": "manyToMany",
@@ -46,27 +54,197 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::decor-glass.decor-glass",
-      "inversedBy": "product_variations"
+      "inversedBy": "product_variations",
+      "conditions": {
+        "visible": {
+          "!": [
+            {
+              "in": [
+                {
+                  "var": "kind"
+                },
+                [
+                  "floor",
+                  "hardware"
+                ]
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "construction": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::construction.construction",
+      "inversedBy": "product_variations",
+      "conditions": {
+        "visible": {
+          "!": [
+            {
+              "in": [
+                {
+                  "var": "kind"
+                },
+                [
+                  "floor",
+                  "hardware"
+                ]
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "opening_side": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::opening-side.opening-side",
+      "inversedBy": "product_variations",
+      "conditions": {
+        "visible": {
+          "!": [
+            {
+              "in": [
+                {
+                  "var": "kind"
+                },
+                [
+                  "floor",
+                  "hardware"
+                ]
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "edge": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::edge.edge",
+      "inversedBy": "product_variations",
+      "conditions": {
+        "visible": {
+          "!": [
+            {
+              "in": [
+                {
+                  "var": "kind"
+                },
+                [
+                  "floor",
+                  "hardware"
+                ]
+              ]
+            }
+          ]
+        }
+      }
     },
     "width": {
       "type": "integer",
-      "min": 1
+      "min": 1,
+      "conditions": {
+        "visible": {
+          "!": [
+            {
+              "in": [
+                {
+                  "var": "kind"
+                },
+                [
+                  "floor",
+                  "hardware"
+                ]
+              ]
+            }
+          ]
+        }
+      }
     },
     "height": {
       "type": "integer",
-      "min": 1
+      "min": 1,
+      "conditions": {
+        "visible": {
+          "!": [
+            {
+              "in": [
+                {
+                  "var": "kind"
+                },
+                [
+                  "floor",
+                  "hardware"
+                ]
+              ]
+            }
+          ]
+        }
+      }
     },
     "options": {
       "type": "component",
       "repeatable": true,
-      "component": "catalog.variation-option"
+      "component": "catalog.variation-option",
+      "conditions": {
+        "visible": {
+          "!": [
+            {
+              "in": [
+                {
+                  "var": "kind"
+                },
+                [
+                  "floor"
+                ]
+              ]
+            }
+          ]
+        }
+      }
     },
     "packArea": {
       "type": "float",
-      "min": 0
+      "min": 0,
+      "conditions": {
+        "visible": {
+          "!": [
+            {
+              "in": [
+                {
+                  "var": "kind"
+                },
+                [
+                  "door",
+                  "hardware"
+                ]
+              ]
+            }
+          ]
+        }
+      }
     },
     "boardSize": {
-      "type": "string"
+      "type": "string",
+      "conditions": {
+        "visible": {
+          "!": [
+            {
+              "in": [
+                {
+                  "var": "kind"
+                },
+                [
+                  "door",
+                  "hardware"
+                ]
+              ]
+            }
+          ]
+        }
+      }
     },
     "availability": {
       "type": "enumeration",
@@ -78,7 +256,24 @@
     "characteristics": {
       "type": "component",
       "repeatable": true,
-      "component": "catalog.characteristic"
+      "component": "catalog.characteristic",
+      "conditions": {
+        "visible": {
+          "!": [
+            {
+              "in": [
+                {
+                  "var": "kind"
+                },
+                [
+                  "door",
+                  "hardware"
+                ]
+              ]
+            }
+          ]
+        }
+      }
     },
     "slug": {
       "type": "uid"
@@ -108,7 +303,23 @@
     "addons": {
       "type": "relation",
       "relation": "manyToMany",
-      "target": "api::architrave-type.architrave-type"
+      "target": "api::architrave-type.architrave-type",
+      "conditions": {
+        "visible": {
+          "!": [
+            {
+              "in": [
+                {
+                  "var": "kind"
+                },
+                [
+                  "hardware"
+                ]
+              ]
+            }
+          ]
+        }
+      }
     }
   }
 }

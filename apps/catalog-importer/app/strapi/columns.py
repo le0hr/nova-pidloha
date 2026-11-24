@@ -1,7 +1,6 @@
 """Price-list columns of a variation -> typed CMS fields.
 
-The one place that knows what a column means. Keep in sync with apps/cms/scripts/typed-variation-fields.js.
-Relation columns (decor, colour, glass) are mapped in mapping.py; descriptive specs become variation characteristics.
+The one place that knows what a column means. Relation columns (decor, colour, glass, construction, edge, side) become dictionary records in mapping.py; descriptive specs become variation characteristics.
 """
 
 import re
@@ -10,11 +9,14 @@ from typing import Any
 from app.models.catalog import Variation
 
 RELATION = re.compile(r"^(тип покриття|декор|decor|покриття|колір|color|скло|glass)$")
-# (pattern, option name on the site, visible on the photo)
+# (pattern, variation field)
+PARAMETERS = (
+    (re.compile(r"^конструкція$"), "construction"),
+    (re.compile(r"^кромка$"), "edge"),
+    (re.compile(r"^сторона( відкривання)?$"), "opening_side"),
+)
+# Rare steps without a field: (pattern, option name on the site, visible on the photo)
 OPTIONS = (
-    (re.compile(r"^конструкція$"), "Конструкція", True),
-    (re.compile(r"^кромка$"), "Кромка", False),
-    (re.compile(r"^сторона( відкривання)?$"), "Сторона відкривання", False),
     (re.compile(r"^підготовка під замок$"), "Підготовка під замок", False),
 )
 # Descriptive specs -> variation characteristics: (pattern, name, unit), in table order.
@@ -65,6 +67,7 @@ def classify(variation: Variation) -> tuple[dict[str, Any], list[str]]:
     names = {a.key: a.display_name for a in variation.attribute_definitions}
     fields: dict[str, Any] = {
         "width": None, "height": None, "packArea": None, "boardSize": None, "availability": None, "options": [],
+        "construction": None, "edge": None, "opening_side": None,
         "characteristics": [],
     }
     unknown: list[str] = []
@@ -91,6 +94,8 @@ def classify(variation: Variation) -> tuple[dict[str, Any], list[str]]:
             unit = spec[2]
             text = re.sub(rf"\s*{unit}$", "", value, flags=re.I) if unit else value
             fields["characteristics"].append({"name": spec[1], "value": text, "unit": unit})
+        elif parameter := next((x for x in PARAMETERS if x[0].match(name)), None):
+            fields[parameter[1]] = value
         elif option := next((o for o in OPTIONS if o[0].match(name)), None):
             fields["options"].append({"name": option[1], "value": value, "changesLook": option[2]})
         else:

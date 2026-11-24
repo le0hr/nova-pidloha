@@ -1,7 +1,7 @@
 /**
  * Admin role "Менеджер": products, banners and orders only.
  *
- * - Товари: products and variations — create, edit, publish, delete. Brands, decors, colours, glass, add-ons and
+ * - Товари: products and variations — create, edit, publish, delete. Brands, decors, colours, glass, edges, sides, constructions, add-ons and
  *   filter values — create and edit (a new product often needs a new colour or brand), never delete.
  *   Categories — only texts, photo, SEO and "on the home page" (not slug or parent: that would break site URLs).
  *   Filter groups — read only.
@@ -16,9 +16,9 @@
  * Bump ROLE_VERSION after changing the rules below or adding fields to these content types.
  */
 const ROLE_CODE = 'nova-manager';
-const ROLE_VERSION = 7;
-/** Importer keys: visible, never editable (editing one would make the next import create a duplicate). */
-const READ_ONLY = ['external_id'];
+const ROLE_VERSION = 8;
+/** Visible, never editable: importer keys (an edited one makes the next import create a duplicate) and the automatic kind. */
+const READ_ONLY = ['external_id', 'kind'];
 
 const CM = 'plugin::content-manager.explorer';
 type Rule = { uid: string; actions: string[]; fields?: string[] };
@@ -26,7 +26,7 @@ type Rule = { uid: string; actions: string[]; fields?: string[] };
 const RULES: Rule[] = [
   { uid: 'api::product.product', actions: ['create', 'read', 'update', 'delete', 'publish'] },
   { uid: 'api::product-variation.product-variation', actions: ['create', 'read', 'update', 'delete', 'publish'] },
-  ...['brand.brand', 'decor.decor', 'decor-color.decor-color', 'decor-glass.decor-glass', 'architrave-type.architrave-type', 'filter-code.filter-code']
+  ...['brand.brand', 'decor.decor', 'decor-color.decor-color', 'decor-glass.decor-glass', 'edge.edge', 'opening-side.opening-side', 'construction.construction', 'architrave-type.architrave-type', 'filter-code.filter-code']
     .map((name) => ({ uid: `api::${name}`, actions: ['create', 'read', 'update', 'publish'] })),
   { uid: 'api::filter-group.filter-group', actions: ['read'] },
   { uid: 'api::category.category', actions: ['read'] },

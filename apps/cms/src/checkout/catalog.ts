@@ -34,7 +34,7 @@ export async function snapshot(strapi: any, input: any): Promise<Item[]> {
     ensure(typeof slug === 'string' && slug.length <= 500, 'Некоректний товар');
     const variation = await strapi.documents('api::product-variation.product-variation').findFirst({
       status: 'published', filters: { slug, active: { $ne: false } },
-      populate: { addons: true, options: true, decor: true, decor_color: true, decor_glass: true,
+      populate: { addons: true, options: true, decor: true, decor_color: true, decor_glass: true, construction: true, edge: true, opening_side: true,
         products: { populate: { addons: true, size_rules: true, characteristics: true, brand: { populate: { size_rules: true } } } } },
     });
     ensure(variation, 'Варіант товару більше недоступний');
@@ -77,6 +77,8 @@ export async function snapshot(strapi: any, input: any): Promise<Item[]> {
     const unit = base + addons.reduce((sum: number, a: any) => sum + a.price, 0);
     const mods: string[] = [];
     for (const key of ['decor', 'decor_color', 'decor_glass']) if (variation[key]?.name) mods.push(variation[key].name);
+    for (const [key, step] of [['construction', 'Конструкція'], ['edge', 'Кромка'], ['opening_side', 'Сторона відкривання']])
+      if (variation[key]?.name) mods.push(`${step}: ${variation[key].name}`);
     for (const option of variation.options || []) if (option.value) mods.push(`${option.name}: ${option.value}`);
     if (!hasSize && variation.width && variation.height) mods.push(`Розмір: ${variation.width}×${variation.height} мм`);
     const size = hasSize ? { width: Number(line.size.width), height: Number(line.size.height), percent } : undefined;

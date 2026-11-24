@@ -450,12 +450,12 @@ def test_edge_is_an_option_not_an_addon(tmp_path: Path, heading: str) -> None:
     ]:
         assert records[collection][mapped[field]["$id"]]["name"] == expected
     addon = mapped["addons"][0]
-    assert mapped["options"] == [{"name": "Кромка", "value": "value3", "changesLook": False}]
+    assert records["edges"][mapped["edge"]["$id"]]["name"] == "value3" and mapped["options"] == []
     assert "architrave_types" not in mapped and len(records["architrave-types"]) == 1
     assert records["architrave-types"][addon["$id"]]["name"] == "Frame"
     variation.attributes.pop(variation.attribute_definitions[-1].key)
     mapped = desired_records(result.catalog, result.assets)["product-variations"][
         variation.external_id
     ]
-    assert mapped["options"] == []
+    assert mapped["edge"] is None
     assert len(mapped["addons"]) == 1

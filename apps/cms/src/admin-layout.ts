@@ -6,7 +6,7 @@
  */
 const LAYOUTS: Record<string, string[]> = {
   'api::product.product': [
-    'name/8 active/4', 'category/6 brand/6', 'image/6 price/6',
+    'name/8 active/4', 'category/8 kind/4', 'brand/12', 'image/6 price/6',
     'shortDescription/12', 'description/12',
     'product_variations/12', 'characteristics/12',
     'isNew/4 isPromo/4 isSale/4', 'isFeatured/4 filter_values/8',
@@ -14,8 +14,8 @@ const LAYOUTS: Record<string, string[]> = {
     'slug/6 external_id/6', 'seo/12',
   ],
   'api::product-variation.product-variation': [
-    'products/8 active/4',
-    'decor/6 decor_color/6', 'decor_glass/12', 'image/6 note/6',
+    'products/8 active/4', 'kind/12',
+    'decor/6 decor_color/6', 'decor_glass/6 construction/6', 'edge/6 opening_side/6', 'image/6 note/6',
     'price/4 availability/4 sku/4',
     'width/6 height/6', 'options/12',
     'packArea/4 boardSize/8', 'characteristics/12',
@@ -30,6 +30,9 @@ const LAYOUTS: Record<string, string[]> = {
   'api::decor.decor': ['name/12', 'decor_colors/12', 'product_variations/12', 'external_id/12'],
   'api::decor-color.decor-color': ['name/6 decor/6', 'image/12', 'product_variations/12', 'external_id/12'],
   'api::decor-glass.decor-glass': ['name/12', 'product_variations/12', 'external_id/12'],
+  'api::edge.edge': ['name/12', 'product_variations/12', 'external_id/12'],
+  'api::opening-side.opening-side': ['name/12', 'product_variations/12', 'external_id/12'],
+  'api::construction.construction': ['name/12', 'product_variations/12', 'external_id/12'],
   'api::architrave-type.architrave-type': ['group/4 name/8', 'additionalCost/6 price/6', 'external_id/12'],
   'api::filter-group.filter-group': ['name/8 type/4', 'categories/12', 'filter_values/12', 'slug/6 external_id/6'],
   'api::filter-code.filter-code': ['name/6 filter_group/6', 'products/12', 'slug/6 external_id/6'],
@@ -75,6 +78,9 @@ const LAYOUTS: Record<string, string[]> = {
   'shared.open-graph': ['ogTitle/12', 'ogDescription/12', 'ogImage/6 ogUrl/6', 'ogType/12'],
 };
 
+/** Filled by the CMS itself (kind.ts): shown, not editable. */
+const READ_ONLY: Record<string, string[]> = { 'api::product.product': ['kind'], 'api::product-variation.product-variation': ['kind'] };
+
 type Row = { name: string; size: number }[];
 const STORE_KEY = 'nova-admin-layout';
 
@@ -96,6 +102,7 @@ export async function applyAdminLayout(strapi: any) {
     }).filter((field) => known.has(field.name))).filter((row) => row.length);
     const placed = new Set(layout.flat().map((field) => field.name));
     const rest = current.map((row) => row.filter((field) => !placed.has(field.name))).filter((row) => row.length);
+    for (const name of READ_ONLY[uid] ?? []) if (config.metadatas?.[name]?.edit) config.metadatas[name].edit = { ...config.metadatas[name].edit, editable: false };
     await service.updateConfiguration(model, { ...config, layouts: { ...config.layouts, edit: [...layout, ...rest] } });
     applied[uid] = wanted;
   }

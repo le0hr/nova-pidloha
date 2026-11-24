@@ -128,6 +128,23 @@ async function run() {
     assert.ok(payment.heldAt && payment.holdReviewAt); assert.equal(payment.events.length,3);
     assert.equal(domain.paymentState('sandbox',true),'test'); assert.equal(domain.paymentState('sandbox',false),'pending');
 
+    // --- kind: product from its root category, variation from its product -----------------------------------------
+    const cat = async (slug, parent) => (await app.documents('api::category.category').create({data:{name:slug, slug, ...(parent ? {parent} : {})}, status:'published'})).documentId;
+    const floorCat = await cat('pidloha-test', await cat('pidloha')), doorCat = await cat('zbirni-test', await cat('mizhkimnatni', await cat('dveri')));
+    const kinds = async (uid, documentId) => (await app.db.query(uid).findMany({where:{documentId}})).map(r => r.kind).join();
+    const P = 'api::product.product', V = 'api::product-variation.product-variation';
+    const kp = await app.documents(P).create({data:{name:'Вид', slug:'test-kind', category:doorCat, kind:'hardware'}, status:'published'});
+    const kv = await app.documents(V).create({data:{slug:'test-kind-v', price:'1', packArea:2.5, products:[kp.documentId]}, status:'published'});
+    assert.equal(await kinds(P, kp.documentId), 'door,door'); assert.equal(await kinds(V, kv.documentId), 'door,door');
+    await app.documents(P).update({documentId:kp.documentId, data:{category:floorCat}, status:'published'});
+    assert.equal(await kinds(P, kp.documentId), 'floor,floor'); assert.equal(await kinds(V, kv.documentId), 'floor,floor', 'variations follow the product');
+    await app.documents(V).update({documentId:kv.documentId, data:{kind:'door'}});
+    assert.equal(await kinds(V, kv.documentId), 'floor,floor', 'a typed kind is corrected');
+    await app.documents(V).update({documentId:kv.documentId, data:{price:'2'}, status:'published'});
+    assert.equal((await app.documents(V).findOne({documentId:kv.documentId, status:'published'})).packArea, 2.5);
+    await app.documents(P).update({documentId:kp.documentId, data:{category:null}});
+    assert.equal(await kinds(V, kv.documentId), ',');
+
     // --- add-on pieces: casing by door sides, everything else 1 ----------------------------------------------------
     const casing = await app.documents('api::architrave-type.architrave-type').create({data:{name:'Лиштва', additionalCost:100, group:'Лиштва'}, status:'published'});
     const casingSet = await app.documents('api::architrave-type.architrave-type').create({data:{name:'Лиштва плоска, 1 комплект (2,5 шт.)', additionalCost:2800, group:'Лиштва'}, status:'published'});
@@ -160,10 +177,11 @@ async function run() {
     const floor = await app.documents('api::product.product').create({data:{name:'Ламінат', slug:'test-floor', active:true}, status:'published'});
     const floorRow = await app.documents('api::product-variation.product-variation').create({data:{slug:'test-floor-oak', price:'500', active:true,
       products:[floor.documentId], packArea:2.13}, status:'published'});
+    const side = await app.documents('api::opening-side.opening-side').create({data:{name:'Ліве'}, status:'published'});
     const sized = await app.documents('api::product.product').create({data:{name:'Двері розмір', slug:'test-door-size', active:true,
       size_rules:[{dimension:'height', min:1700, max:1990, step:10, percent:15}]}, status:'published'});
     const sizedRow = await app.documents('api::product-variation.product-variation').create({data:{slug:'test-door-size-white', price:'1000', active:true,
-      products:[sized.documentId], options:[{name:'Сторона відкривання', value:'Ліве'}]}, status:'published'});
+      products:[sized.documentId], opening_side: side.documentId, options:[{name:'Підготовка під замок', value:'Під замок'}]}, status:'published'});
     const sizeToken = randomBytes(32).toString('hex');
     const sizeBody = {step:'cart', items:[
       {id:'floor', variationSlug:floorRow.slug, qty:3, price:1},
@@ -176,7 +194,8 @@ async function run() {
     assert.equal(lines[1].unit, 100000, 'standard size costs the standard price');
     assert.equal(lines[2].unit, 115000, 'non-standard height +15%');
     assert.deepEqual(lines[2].size, {width:800, height:1950, percent:15});
-    assert.ok(lines[1].mods.includes('Сторона відкривання: Ліве'), 'variation options go to the order line');
+    assert.ok(lines[1].mods.includes('Сторона відкривання: Ліве'), 'variation parameters go to the order line');
+    assert.ok(lines[1].mods.includes('Підготовка під замок: Під замок'), 'other options too');
     assert.ok(lines[2].mods.includes('Нестандартний розмір: 800×1950 мм (+15%)')); assert.ok(lines[1].mods.includes('Розмір: 800×2000 мм'));
     assert.equal(sizeDraft.totalMinor, 3 * 106500 + 100000 + 115000);
     await assert.rejects(orders.save(app, sizeToken, {step:'cart', items:[{id:'x', variationSlug:sizedRow.slug, qty:1, size:{width:800, height:1955}}]}), /розмір/i, 'off the 10 mm step');

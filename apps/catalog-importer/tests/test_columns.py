@@ -21,11 +21,8 @@ def test_door_columns() -> None:
     }))
     assert unknown == []
     assert (fields["width"], fields["height"]) == (800, 2000)
-    assert fields["options"] == [
-        {"name": "Конструкція", "value": "Каркасно-щитові", "changesLook": True},
-        {"name": "Кромка", "value": "Чорна", "changesLook": False},
-        {"name": "Сторона відкривання", "value": "Ліве", "changesLook": False},
-    ]
+    assert fields["options"] == []
+    assert (fields["construction"], fields["edge"], fields["opening_side"]) == ("Каркасно-щитові", "Чорна", "Ліве")
 
 
 def test_floor_columns() -> None:

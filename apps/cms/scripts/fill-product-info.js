@@ -68,7 +68,6 @@ function kindOf(slug) {
 const values = (variations, field) => uniq(variations.flatMap((v) => field(v) ?? []));
 /** A variation characteristic (specs from the price list: «Клас зносостійкості», «Товщина»…). */
 const spec = (name) => (v) => (v.characteristics ?? []).filter((c) => c.name === name).map((c) => c.value);
-const option = (name) => (v) => (v.options ?? []).filter((o) => o.name === name).map((o) => o.value);
 /** Interior door subcategory (Каркасно-щитові, Збірні…) stands for the construction. */
 const construction = (product) => (product.category?.parent?.slug === 'mizhkimnatni' ? product.category.name : null);
 
@@ -143,8 +142,8 @@ function plan(product) {
     const glass = values(vars, (v) => v.decor_glass?.name);
     const widths = values(vars, (v) => v.width).sort(byNumber);
     const heights = values(vars, (v) => v.height).sort(byNumber);
-    const sides = values(vars, option('Сторона відкривання')).sort();
-    const edges = values(vars, option('Кромка'));
+    const sides = values(vars, (v) => v.opening_side?.name).sort();
+    const edges = values(vars, (v) => v.edge?.name);
     const subclass = existing.find((c) => /^конструкц/i.test(c.name))?.value ?? construction(product);
 
     if (kind === 'interior') {
@@ -213,7 +212,7 @@ function localStore(strapi) {
           populate: { category: { fields: ['slug', 'name'], populate: { parent: { fields: ['slug'] } } }, brand: { fields: ['name'] },
             characteristics: true, product_variations: { fields: ['active', 'width', 'height', 'packArea', 'boardSize'],
               populate: { decor: { fields: ['name'] }, decor_color: { fields: ['name'] }, decor_glass: { fields: ['name'] },
-                options: true, characteristics: true } } },
+                edge: { fields: ['name'] }, opening_side: { fields: ['name'] }, characteristics: true } } },
         });
         products.push(...page);
         if (page.length < 100) break;
@@ -246,8 +245,8 @@ function remoteStore(url, token) {
       const query = 'status=published&pagination[pageSize]=100&populate[category][fields][0]=slug&populate[category][fields][1]=name'
         + '&populate[category][populate][parent][fields][0]=slug&populate[brand][fields][0]=name&populate[characteristics]=true'
         + ['active', 'width', 'height', 'packArea', 'boardSize'].map((f, i) => `&${v}[fields][${i}]=${f}`).join('')
-        + ['decor', 'decor_color', 'decor_glass'].map((r) => `&${v}[populate][${r}][fields][0]=name`).join('')
-        + `&${v}[populate][options]=true&${v}[populate][characteristics]=true`;
+        + ['decor', 'decor_color', 'decor_glass', 'edge', 'opening_side'].map((r) => `&${v}[populate][${r}][fields][0]=name`).join('')
+        + `&${v}[populate][characteristics]=true`;
       for (let page = 1; ; page++) {
         const body = await call('GET', `api/products?${query}&pagination[page]=${page}`);
         products.push(...body.data);

@@ -599,6 +599,40 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiConstructionConstruction
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'constructions';
+  info: {
+    displayName: '\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0446\u0456\u044F';
+    pluralName: 'constructions';
+    singularName: 'construction';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    external_id: Schema.Attribute.String & Schema.Attribute.Unique;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::construction.construction'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String;
+    product_variations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::product-variation.product-variation'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiDecorColorDecorColor extends Struct.CollectionTypeSchema {
   collectionName: 'decor_colors';
   info: {
@@ -688,6 +722,36 @@ export interface ApiDecorDecor extends Struct.CollectionTypeSchema {
     external_id: Schema.Attribute.String & Schema.Attribute.Unique;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::decor.decor'> &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String;
+    product_variations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::product-variation.product-variation'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiEdgeEdge extends Struct.CollectionTypeSchema {
+  collectionName: 'edges';
+  info: {
+    displayName: '\u041A\u0440\u043E\u043C\u043A\u0430';
+    pluralName: 'edges';
+    singularName: 'edge';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    external_id: Schema.Attribute.String & Schema.Attribute.Unique;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::edge.edge'> &
       Schema.Attribute.Private;
     name: Schema.Attribute.String;
     product_variations: Schema.Attribute.Relation<
@@ -803,6 +867,39 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     shopLocations: Schema.Attribute.Component<'shops.location', true>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiOpeningSideOpeningSide extends Struct.CollectionTypeSchema {
+  collectionName: 'opening_sides';
+  info: {
+    displayName: '\u0421\u0442\u043E\u0440\u043E\u043D\u0430 \u0432\u0456\u0434\u043A\u0440\u0438\u0432\u0430\u043D\u043D\u044F';
+    pluralName: 'opening-sides';
+    singularName: 'opening-side';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    external_id: Schema.Attribute.String & Schema.Attribute.Unique;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::opening-side.opening-side'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String;
+    product_variations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::product-variation.product-variation'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -975,6 +1072,10 @@ export interface ApiProductVariationProductVariation
     availability: Schema.Attribute.Enumeration<['in_stock', 'on_order']>;
     boardSize: Schema.Attribute.String;
     characteristics: Schema.Attribute.Component<'catalog.characteristic', true>;
+    construction: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::construction.construction'
+    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -987,6 +1088,7 @@ export interface ApiProductVariationProductVariation
       'manyToOne',
       'api::decor-glass.decor-glass'
     >;
+    edge: Schema.Attribute.Relation<'manyToOne', 'api::edge.edge'>;
     external_id: Schema.Attribute.String & Schema.Attribute.Unique;
     filter_values: Schema.Attribute.Relation<
       'manyToMany',
@@ -1000,6 +1102,7 @@ export interface ApiProductVariationProductVariation
         number
       >;
     image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    kind: Schema.Attribute.Enumeration<['door', 'floor', 'hardware']>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1007,6 +1110,10 @@ export interface ApiProductVariationProductVariation
     > &
       Schema.Attribute.Private;
     note: Schema.Attribute.String;
+    opening_side: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::opening-side.opening-side'
+    >;
     options: Schema.Attribute.Component<'catalog.variation-option', true>;
     packArea: Schema.Attribute.Float &
       Schema.Attribute.SetMinMax<
@@ -1067,6 +1174,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     isNew: Schema.Attribute.Boolean;
     isPromo: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     isSale: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    kind: Schema.Attribute.Enumeration<['door', 'floor', 'hardware']>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1611,12 +1719,15 @@ declare module '@strapi/strapi' {
       'api::architrave-type.architrave-type': ApiArchitraveTypeArchitraveType;
       'api::brand.brand': ApiBrandBrand;
       'api::category.category': ApiCategoryCategory;
+      'api::construction.construction': ApiConstructionConstruction;
       'api::decor-color.decor-color': ApiDecorColorDecorColor;
       'api::decor-glass.decor-glass': ApiDecorGlassDecorGlass;
       'api::decor.decor': ApiDecorDecor;
+      'api::edge.edge': ApiEdgeEdge;
       'api::filter-code.filter-code': ApiFilterCodeFilterCode;
       'api::filter-group.filter-group': ApiFilterGroupFilterGroup;
       'api::global.global': ApiGlobalGlobal;
+      'api::opening-side.opening-side': ApiOpeningSideOpeningSide;
       'api::order.order': ApiOrderOrder;
       'api::payment-attempt.payment-attempt': ApiPaymentAttemptPaymentAttempt;
       'api::product-variation.product-variation': ApiProductVariationProductVariation;

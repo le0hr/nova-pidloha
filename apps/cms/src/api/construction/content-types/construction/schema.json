@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "constructions",
+  "info": {
+    "singularName": "construction",
+    "pluralName": "constructions",
+    "displayName": "Конструкція"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "product_variations": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product-variation.product-variation",
+      "mappedBy": "construction"
+    },
+    "external_id": {
+      "type": "string",
+      "unique": true
+    }
+  }
+}

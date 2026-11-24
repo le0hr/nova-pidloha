@@ -32,6 +32,14 @@
       "target": "api::category.category",
       "inversedBy": "products"
     },
+    "kind": {
+      "type": "enumeration",
+      "enum": [
+        "door",
+        "floor",
+        "hardware"
+      ]
+    },
     "brand": {
       "type": "relation",
       "relation": "manyToOne",
@@ -80,7 +88,23 @@
     "addons": {
       "type": "relation",
       "relation": "manyToMany",
-      "target": "api::architrave-type.architrave-type"
+      "target": "api::architrave-type.architrave-type",
+      "conditions": {
+        "visible": {
+          "!": [
+            {
+              "in": [
+                {
+                  "var": "kind"
+                },
+                [
+                  "hardware"
+                ]
+              ]
+            }
+          ]
+        }
+      }
     },
     "image": {
       "type": "media",
@@ -92,12 +116,46 @@
     "size_rules": {
       "type": "component",
       "repeatable": true,
-      "component": "catalog.size-rule"
+      "component": "catalog.size-rule",
+      "conditions": {
+        "visible": {
+          "!": [
+            {
+              "in": [
+                {
+                  "var": "kind"
+                },
+                [
+                  "floor",
+                  "hardware"
+                ]
+              ]
+            }
+          ]
+        }
+      }
     },
     "size_notes": {
       "type": "component",
       "repeatable": true,
-      "component": "catalog.size-note"
+      "component": "catalog.size-note",
+      "conditions": {
+        "visible": {
+          "!": [
+            {
+              "in": [
+                {
+                  "var": "kind"
+                },
+                [
+                  "floor",
+                  "hardware"
+                ]
+              ]
+            }
+          ]
+        }
+      }
     },
     "seo": {
       "type": "component",
