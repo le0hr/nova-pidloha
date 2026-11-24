@@ -127,8 +127,14 @@ export default function DynamicField({ product, config }: { product: ProductRetu
   }
   const colorNote = new Set(colorPrices.values()).size > 1 ? undefined : "(не впливає на ціну)";
 
+  // Another variation keeps the chosen add-ons it also offers; the rest are cleared.
+  const keepAddons = (variation: ProductVariation) => {
+    const offered = new Set([...(variation.addons ?? []), ...(product.addons ?? [])].map((addon) => addon.id));
+    setAddonSelection((current) => Object.fromEntries(Object.entries(current).filter(([, id]) => offered.has(id))));
+  };
+
   const selectVariation = (variation: ProductVariation) => {
-    if (variation.slug !== selectedSlug) setAddonSelection({});
+    if (variation.slug !== selectedSlug) keepAddons(variation);
     setSelectedSlug(variation.slug);
     setSelection((current) => withSize(toState(variation, current), variation));
   };
@@ -148,7 +154,7 @@ export default function DynamicField({ product, config }: { product: ProductRetu
       candidates.find((row) => sameExtras(row) && row.width === selectedVariation.width && row.height === selectedVariation.height) ??
       candidates.find(sameExtras) ??
       candidates[0] ?? selectedVariation;
-    if (next.slug !== selectedSlug) setAddonSelection({});
+    if (next.slug !== selectedSlug) keepAddons(next);
     setSelectedSlug(next.slug);
     setSelection(withSize(toState(next, requested), next));
   };
@@ -181,7 +187,7 @@ export default function DynamicField({ product, config }: { product: ProductRetu
       const row = variationForSize(variations, selectedVariation, base);
       const rowSize = sizeOf(row);
       custom = (rowSize.width !== undefined && rowSize.width !== wanted.width) || (rowSize.height !== undefined && rowSize.height !== wanted.height);
-      if (row.slug !== selectedSlug) setAddonSelection({});
+      if (row.slug !== selectedSlug) keepAddons(row);
       setSelectedSlug(row.slug);
     }
     setSelection((current) => ({ ...current, ...wanted, sizeMode: custom ? "custom" : "standard" }));
