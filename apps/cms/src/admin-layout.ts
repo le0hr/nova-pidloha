@@ -78,8 +78,8 @@ const LAYOUTS: Record<string, string[]> = {
   'shared.open-graph': ['ogTitle/12', 'ogDescription/12', 'ogImage/6 ogUrl/6', 'ogType/12'],
 };
 
-/** Filled by the CMS itself (kind.ts): shown, not editable. */
-const READ_ONLY: Record<string, string[]> = { 'api::product.product': ['kind'], 'api::product-variation.product-variation': ['kind'] };
+/** Filled by the CMS itself (kind.ts, price.ts): shown, not editable. */
+const READ_ONLY: Record<string, string[]> = { 'api::product.product': ['kind', 'price'], 'api::product-variation.product-variation': ['kind'] };
 
 /** Service fields that are not shown in the form at all. */
 const HIDDEN: Record<string, string[]> = { 'api::category.category': ['isSub'] };

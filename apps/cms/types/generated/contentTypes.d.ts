@@ -1124,7 +1124,7 @@ export interface ApiProductVariationProductVariation
         },
         number
       >;
-    price: Schema.Attribute.String;
+    price: Schema.Attribute.String & Schema.Attribute.Required;
     products: Schema.Attribute.Relation<'manyToMany', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
     sku: Schema.Attribute.String;

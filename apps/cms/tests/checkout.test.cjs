@@ -151,6 +151,22 @@ async function run() {
     await app.documents(P).update({documentId:kp.documentId, data:{category:null}});
     assert.equal(await kinds(V, kv.documentId), ',');
 
+    // --- product price: the lowest active variation, draft and published apart; variation price is a number --------
+    const D = app.documents(V), price = async () => { const rows = await app.db.query(P).findMany({where:{documentId:pp.documentId}});
+      return [false, true].map(pub => { const r = rows.find(x => !!x.publishedAt === pub); return r ? Number(r.price) : null; }).join(); };
+    const pp = await app.documents(P).create({data:{name:'Ціна', slug:'test-price'}, status:'published'});
+    const pv = (slug, value, data = {}) => D.create({data:{slug, price:value, products:[pp.documentId], ...data}, status:'published'});
+    const a = await pv('test-price-a', '500'), b = await pv('test-price-b', '300.5'); await pv('test-price-c', '100', {active:false});
+    assert.equal(await price(), '300.5,300.5', 'inactive variations do not count');
+    await D.update({documentId:b.documentId, data:{price:'450'}}); assert.equal(await price(), '450,300.5', 'an unpublished price stays off the site');
+    await D.publish({documentId:b.documentId}); assert.equal(await price(), '450,450');
+    await app.documents(P).update({documentId:pp.documentId, data:{price:1}, status:'published'}); assert.equal(await price(), '450,450', 'a typed price is corrected');
+    await D.update({documentId:b.documentId, data:{active:false}, status:'published'}); assert.equal(await price(), '500,500');
+    await D.update({documentId:b.documentId, data:{active:true}, status:'published'}); await D.delete({documentId:b.documentId}); assert.equal(await price(), '500,500');
+    await D.unpublish({documentId:a.documentId}); assert.equal((await price()).split(',')[0], '500');
+    for (const bad of ['1 200', '1200 грн', '12,5', '0', '0.00', '', '-5', null]) await assert.rejects(pv('test-price-bad', bad), undefined, `price ${bad}`);
+    await D.delete({documentId:(await pv('test-price-ok', '809.76')).documentId});
+
     // --- add-on pieces: casing by door sides, everything else 1 ----------------------------------------------------
     const casing = await app.documents('api::architrave-type.architrave-type').create({data:{name:'Лиштва', additionalCost:100, group:'Лиштва'}, status:'published'});
     const casingSet = await app.documents('api::architrave-type.architrave-type').create({data:{name:'Лиштва плоска, 1 комплект (2,5 шт.)', additionalCost:2800, group:'Лиштва'}, status:'published'});

@@ -16,9 +16,11 @@
  * Bump ROLE_VERSION after changing the rules below or adding fields to these content types.
  */
 const ROLE_CODE = 'nova-manager';
-const ROLE_VERSION = 10;
+const ROLE_VERSION = 11;
 /** Visible, never editable: importer keys (an edited one makes the next import create a duplicate) and the inherited kind. */
 const READ_ONLY = ['external_id', 'kind', 'isSub'];
+/** Counted from the variations. */
+const READ_ONLY_OF: Record<string, string[]> = { 'api::product.product': ['price'] };
 
 const CM = 'plugin::content-manager.explorer';
 type Rule = { uid: string; actions: string[]; fields?: string[] };
@@ -69,7 +71,7 @@ function permissions(strapi: any) {
       const entry = merged.get(key) ?? { action: `${CM}.${action}`, subject: rule.uid,
         ...(['create', 'read', 'update'].includes(action) ? { fields: new Set<string>() } : {}) };
       const allowed = rule.fields ? all.filter((path) => rule.fields!.some((f) => path === f || path.startsWith(`${f}.`))) : all;
-      for (const field of allowed) if (action === 'read' || !READ_ONLY.includes(field)) entry.fields?.add(field);
+      for (const field of allowed) if (action === 'read' || ![...READ_ONLY, ...(READ_ONLY_OF[rule.uid] ?? [])].includes(field)) entry.fields?.add(field);
       merged.set(key, entry);
     }
   }

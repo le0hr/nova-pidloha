@@ -26,7 +26,9 @@
       "inversedBy": "product_variations"
     },
     "price": {
-      "type": "string"
+      "type": "string",
+      "required": true,
+      "regex": "^(?!0+(\\.0+)?$)\\d+(\\.\\d{1,2})?$"
     },
     "decor": {
       "type": "relation",
